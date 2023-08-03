@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  box-sizing: border-box;
 }
 
 .App-logo {
@@ -35,4 +36,111 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+.container {}
+
+.background-flur{
+  background-image: url("/public/assets/images/background-login.png");
+  height: 100vh;
+  background-size: cover;
+  background-blend-mode: multiply; 
+  filter: blur(3px);
+  -webkit-filter: blur(3px);
+}
+
+.login-section {
+  height: 80vh;
+  width: 100vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.h-100{
+  height: 100%;
+}
+
+.shadow {
+  box-shadow: 2px 2px 9px navy
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col-6 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.center {
+  justify-content: center;
+  align-items: center;
+}
+
+.background-left {
+  background-image: url("/public/assets/images/background-login.png");
+  background-size: cover;
+}
+
+.description {
+  font-size: medium;
+}
+
+.title {
+  font-size: x-large;
+}
+
+.white {
+  color: white;
+}
+
+p {
+  display: block;
+}
+
+.lable {
+  display: block;
+  font-size: medium;
+}
+
+
+.button-login {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 8px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  width: 100%;
+  border-radius: 15%;
+  transition-duration: 0.4s;
+}
+
+.button-login:hover {
+  background-color: white;
+  color: #4CAF50;
+  cursor: pointer;
+}
+
+
+.mb-4{
+  margin: 8px;
+}
+
+.herf{
+
+}
+
+.herf:hover{
+  cursor: pointer;
+  color: red;
 }
