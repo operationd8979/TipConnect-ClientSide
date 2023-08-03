@@ -15,8 +15,8 @@ const Login = () => {
                         <p className="title white">Login Account</p>
                         <form className="form-login">
                             <div className="form-outline mb-4">
-                                <label className="lable">User</label>
-                                <input placeholder="username"></input>
+                                <label className="lable">Email</label>
+                                <input placeholder="email"></input>
                             </div>
                             <div className="form-outline mb-4">
                                 <label className="lable">Password</label>
