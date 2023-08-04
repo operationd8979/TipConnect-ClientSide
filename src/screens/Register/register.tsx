@@ -1,7 +1,9 @@
-import React, {ChangeEvent} from "react";
+import React, {ChangeEvent,FormEvent, useState} from "react";
 import useRegister from "./useRegister";
 
 const Register = () => {
+
+    const [isLoading,setIsLoading] = useState(false);
 
     const {email,lastName,firstName,password,rePassword,
     setEmail,setLastName,setFirstName,setPassword,setRePassword,
@@ -29,6 +31,16 @@ const Register = () => {
         const { value } = event.target;
         setRePassword(value); 
     };
+    async function handleRegister (event : FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        setIsLoading(true);
+        try {
+            await registerAction();
+            setIsLoading(false);
+          } catch (error) {
+            setIsLoading(false);
+          }
+    }
 
     return (
         <div className="login-screen">
@@ -37,7 +49,7 @@ const Register = () => {
                 <div className="row shadow h-100">
                 <div className="col-6 wrap-left center">
                         <p className="title white">Login Account</p>
-                        <form className="form-login" onSubmit={registerAction}>
+                        <form className="form-login" onSubmit={handleRegister}>
                             <div className="form-outline mb-4">
                                 <label className="lable">Email</label>
                                 <input placeholder="email" value={email} onChange={handleChangeEmail}></input>
@@ -59,7 +71,7 @@ const Register = () => {
                                 <input placeholder="retype passwrod" value={rePassword} onChange={handleChangeRePassword}></input>
                             </div>
                             <div className="form-outline mb-4">
-                                <button className="button-login" type="submit">SGIN UP</button>
+                                <button className="button-login" type="submit" disabled={isLoading} style={{backgroundColor: isLoading? "white" : "green"}}>SGIN UP</button>
                             </div>
                         </form>
                         <div className="row center">

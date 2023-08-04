@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import axios from "axios";
 import { equal } from "assert";
 import { error } from "console";
 
-const useRegister = () =>{
+const useRegister = () => {
 
-    const [email,setEmail] = useState<string>('');
-    const [lastName,setLastName] = useState<string>('');
-    const [firstName,setFirstName] = useState<string>('');
-    const [password,setPassword] = useState<string>('');
-    const [rePassword,setRePassword] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
+    const [firstName, setFirstName] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [rePassword, setRePassword] = useState<string>('');
 
-    const [emailError,setEmailError] = useState('');
-    const [lastNameError,setLastNameError] = useState('');
-    const [fristNameError,setFirstNameError] = useState('');
-    const [passwrodError,setPasswordError] = useState('');
-    const [rePasswordError,setRePasswordError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [lastNameError, setLastNameError] = useState('');
+    const [fristNameError, setFirstNameError] = useState('');
+    const [passwrodError, setPasswordError] = useState('');
+    const [rePasswordError, setRePasswordError] = useState('');
 
     const validateCredentials = () => {
         let result = true;
@@ -25,21 +25,17 @@ const useRegister = () =>{
         setPasswordError('');
         setRePasswordError('');
 
-        if(!email){
+        if (!email) {
             result = false;
-            alert('email');
         }
-        if(!lastName){
+        if (!lastName) {
             result = false;
-            alert('lastName');
         }
-        if(!firstName){
+        if (!firstName) {
             result = false;
-            alert('firstName');
         }
-        if(!password){
+        if (!password) {
             result = false;
-            alert('password');
         }
         // if(rePassword){
         //     result = false;
@@ -52,72 +48,24 @@ const useRegister = () =>{
         return result;
     }
 
-    const registerAction = async () =>{
-
-        const formData = {
-            email: 'operationddd2@gmail.com',
-            lastName: 'VO',
-            firstName: 'Dung',
-            password: 'Mashiro1',
+    const registerAction = async () => {
+        if(validateCredentials()){
+            const formData = {
+                email: email,
+                lastName: lastName,
+                firstName: firstName,
+                password: password,
+            }
+            try{
+                const response = await axios.post('http://localhost:8080/api/v1/registration', formData);
+                alert("Tạo tài khoản thành công, tokken: " + response.data);
+            }catch(error){
+                alert("Lỗi tạo tài khoản: " + error);
+            }
         }
-        // axios.post('http://localhost:8080/api/v1/registration', formData, {
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        // })
-        //     .then((response) => {
-        //         alert(response);
-        //     })
-        //     .catch((error) => {
-        //         alert(error);
-        //     });
-
-        // const headers = {
-        //     "Content-Type": "application/json",
-        //   };
-        // const url = "http://localhost:8080/api/v1/registration/hello";
-        // axios.get(url, { headers })
-        //     .then((response) => {
-        //         alert(response);
-        //     })
-        //     .catch((error) => {
-        //         alert(error)
-        //     })
-
-        fetch('http://localhost:8080/api/v1/registration', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                // Xử lý kết quả trả về từ server
-                alert('Response from server:'+ data);
-            })
-            .catch((error) => {
-                alert('Error:'+ error);
-            });
-
-        // if(validateCredentials()){
-        //     const formData = {
-        //         email: email,
-        //         lastName: lastName,
-        //         firstName: firstName,
-        //         password: password,
-        //     }
-        //     axios.post('http://localhost:8080/api/v1/registration',formData)
-        //     .then((response)=>{
-        //         alert(response);
-        //     })
-        //     .catch((error)=>{
-        //         alert(error);
-        //     });
-        // }
-        // else{
-        //     alert('SomeThing wrong!');
-        // }
+        else{
+            alert('SomeThing wrong!');
+        }
     }
 
     return {
