@@ -11,11 +11,11 @@ const useRegister = () => {
     const [password, setPassword] = useState<string>('');
     const [rePassword, setRePassword] = useState<string>('');
 
-    const [emailError, setEmailError] = useState('');
-    const [lastNameError, setLastNameError] = useState('');
-    const [fristNameError, setFirstNameError] = useState('');
-    const [passwrodError, setPasswordError] = useState('');
-    const [rePasswordError, setRePasswordError] = useState('');
+    const [emailError, setEmailError] = useState<string>('');
+    const [lastNameError, setLastNameError] = useState<string>('');
+    const [fristNameError, setFirstNameError] = useState<string>('');
+    const [passwrodError, setPasswordError] = useState<string>('');
+    const [rePasswordError, setRePasswordError] = useState<string>('');
 
     const validateCredentials = () => {
         let result = true;

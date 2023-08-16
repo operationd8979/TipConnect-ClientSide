@@ -1,6 +1,12 @@
-import React from "react";
+import React, {useContext} from "react";
+import userContext from "../../context/User/userContext";
+import { log } from "console";
 
 const Login = () => {
+
+    const state = useContext(userContext);
+
+    console.log(state);
 
     return (
         <div className="login-screen">
