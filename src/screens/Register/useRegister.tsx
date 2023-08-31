@@ -59,6 +59,7 @@ const useRegister = () => {
             try{
                 const response = await axios.post('http://localhost:8080/api/v1/registration', formData);
                 alert("Tạo tài khoản thành công, tokken: " + response.data);
+                console.log(response);
             }catch(error){
                 alert("Lỗi tạo tài khoản: " + error);
             }

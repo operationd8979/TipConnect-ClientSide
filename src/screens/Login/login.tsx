@@ -1,10 +1,32 @@
-import React, {useContext} from "react";
+import React, {useContext, useState, ChangeEvent} from "react";
 import userContext from "../../context/User/userContext";
 import { log } from "console";
+import axios from "axios";
+
 
 const Login = () => {
 
     const state = useContext(userContext);
+    const [email,setEmail] = useState("");
+    const [password,setPassword] = useState("");
+
+    const handleLogin = async () =>{
+        console.log('handle login')
+        if(email&&password){
+            const formData = {
+                email: email,
+                password: password,
+            }
+            try{
+                const response = await axios.post('http://localhost:8080/api/v1/auth/login', formData);
+                alert("Đăng nhập thành công, tokken: " + response.data);
+                console.log(response)
+            }catch(error){
+                alert("Lỗi đăng nhập: " + error);
+                console.log(error)
+            }
+        }
+    }
 
     console.log(state);
 
@@ -22,14 +44,14 @@ const Login = () => {
                         <form className="form-login">
                             <div className="form-outline mb-4">
                                 <label className="lable">Email</label>
-                                <input placeholder="email"></input>
+                                <input placeholder="email" value={email} onChange={(e:ChangeEvent<HTMLInputElement>)=>setEmail(e.target.value)}></input>
                             </div>
                             <div className="form-outline mb-4">
                                 <label className="lable">Password</label>
-                                <input placeholder="password"></input>
+                                <input placeholder="password" value={password} onChange={(e:ChangeEvent<HTMLInputElement>)=>setPassword(e.target.value)}></input>
                             </div>
                             <div className="form-outline mb-4">
-                                <button className="button-login">LOGIN</button>
+                                <button className="button-login" onClick={handleLogin}>LOGIN</button>
                             </div>
                         </form>
                         <div className="row center">
