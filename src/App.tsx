@@ -1,21 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
-import { Home, Login, Register } from './screens'
+import { Routes, Route } from 'react-router-dom';
+import { publicRoutes } from './routes/index';
 
 function App() {
-  return (
-    <div className="container">
-      <Router>
-        <Routes>
-          <Route path="/" Component={Home} />
-          <Route path="/login" Component={Login} />
-          <Route path="/register" Component={Register} />
-        </Routes>
-      </Router>
-    </div>
-  );
+    return (
+        <div className="App">
+            <Routes>
+                {publicRoutes.map((route, index) => {
+                    const Page = route.component;
+                    return <Route key={index} path={route.path} element={<Page />} />;
+                })}
+            </Routes>
+        </div>
+    );
 }
 
 export default App;
