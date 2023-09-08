@@ -3,6 +3,16 @@
 
 :root {
     --primary: #fff;
+    // Default layout
+    --default-layout-header-heigh: 60px;
+    --default-layout-width: 1150px;
+    --default-layout-width-sidebar: 356px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 html {

@@ -1,4 +1,5 @@
 import { Header } from '../components';
+import './OnlyHeader.moudle.scss';
 
 const OnlyHeader = ({ children }: { children: JSX.Element }) => {
     return (

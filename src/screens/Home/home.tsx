@@ -1,6 +1,6 @@
 const Home = () => {
     return (
-        <div style={{ margin: 10 }}>
+        <div>
             <h1>home</h1>
         </div>
     );
