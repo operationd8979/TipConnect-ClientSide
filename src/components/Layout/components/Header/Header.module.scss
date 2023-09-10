@@ -10,4 +10,10 @@
     height: 100%;
     width: var(--default-layout-width);
     background-color: antiquewhite;
+    display: flex;
+    justify-content: space-between;
+}
+
+.search {
+    display: flex;
 }

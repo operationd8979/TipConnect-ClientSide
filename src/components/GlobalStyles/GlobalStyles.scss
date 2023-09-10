@@ -2,10 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary: #fff;
+    --primary: #969;
+    --black: #000;
+    --white: #fff;
+    --textColor: #333;
     // Default layout
-    --default-layout-header-heigh: 60px;
-    --default-layout-width: 1150px;
+    --default-layout-header-heigh: 90px;
+    --default-layout-width: 1720px;
     --default-layout-width-sidebar: 356px;
 }
 
@@ -24,4 +27,16 @@ body {
     font-size: 1.6rem;
     line-height: 1.5;
     text-rendering: optimizeSpeed;
+}
+
+button,
+input,
+[tabindex] {
+    border: none;
+    outline: none;
+}
+
+a[href] {
+    color: var(--textColor);
+    text-decoration: none;
 }
