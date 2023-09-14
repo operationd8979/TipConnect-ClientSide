@@ -4,10 +4,48 @@
     border-radius: 4px;
     font-size: 1.6rem;
     font-weight: 700;
+    background-color: var(--white);
+    border: 1px solid transparent;
     cursor: pointer;
+    user-select: none;
+
+    + .wrapper {
+        margin-left: 8px;
+    }
+
+    &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
 }
 
 .primary {
     color: var(--white);
     background-color: var(--primary);
+    &:hover {
+        background-color: var(--hover-primary);
+    }
+}
+
+.outline {
+    color: var(--primary);
+    border-color: currentColor;
+
+    &:hover {
+        background-color: var(--black);
+    }
+}
+
+.rounded {
+    border-radius: 999px;
+}
+
+.small {
+    min-width: 88px;
+    padding: 4px 16px;
+}
+
+.large {
+    min-width: 124;
+    padding: 14px 16px;
 }

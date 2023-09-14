@@ -19,7 +19,7 @@ function Header() {
                     <button className={cx('search-btn')}>{/*Search */}</button>
                 </div>
                 <div className={cx('actions')}>
-                    <Button>action</Button>
+                    <Button primary>Login in</Button>
                 </div>
             </div>
         </header>

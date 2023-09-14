@@ -12,8 +12,26 @@
     background-color: antiquewhite;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .search {
+    width: 361px;
+    height: 46px;
+    padding: 0 16px;
     display: flex;
+    border-radius: 92px;
+    background-color: var(--white);
+    input {
+        flex: 1;
+        height: 100%;
+        color: var(--black);
+        font-size: 1.6rem;
+        background-color: transparent;
+    }
+}
+
+.action {
+    display: flex;
+    align-items: center;
 }
