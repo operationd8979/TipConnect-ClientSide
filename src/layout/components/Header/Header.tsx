@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from './Header.module.scss';
-import images from '../../../../assets/images';
-import Button from '../../../Button';
+import images from '../../../assets/images';
+import Button from '../../../components/Button';
 
 const cx = classNames.bind(styles);
 
