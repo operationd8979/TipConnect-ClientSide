@@ -1,12 +1,15 @@
 import { Header } from '../components';
-import './OnlyHeader.moudle.scss';
+import styles from './OnlyHeader.module.scss';
+import className from 'classnames/bind';
+
+const cx = className.bind(styles);
 
 const OnlyHeader = ({ children }: { children: JSX.Element }) => {
     return (
-        <div>
+        <div className={cx('wrapper')}>
             <Header />
-            <div className="container">
-                <div className="content">{children}</div>
+            <div className={cx('container')}>
+                <div className={cx('content')}>{children}</div>
             </div>
         </div>
     );

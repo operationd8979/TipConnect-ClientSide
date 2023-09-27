@@ -3,9 +3,8 @@ export interface User {
     refreshToken: string;
 }
 
-
 export interface State {
-    user: User
+    user: User;
 }
 
 export interface Action {
@@ -13,3 +12,14 @@ export interface Action {
     payload: string | number;
 }
 
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface RegisterRequest {
+    email: string;
+    fristName: string;
+    lastName: string;
+    password: string;
+}

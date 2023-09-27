@@ -1,0 +1,81 @@
+.wrapper {
+    display: flex;
+    height: 1200px;
+    background-image: url('../../../public/assets/images/background-login.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.content-side {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+
+    * {
+        z-index: 1;
+    }
+}
+
+.background-image {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: url('../../../public/assets/images/background-login.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: blur(10px);
+}
+.header {
+    font-size: xx-large;
+}
+.title {
+    font-size: x-large;
+}
+
+.box-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 8px;
+}
+
+.lable {
+    font-size: 1.8rem;
+    position: absolute;
+    width: 150px;
+    left: 0;
+}
+
+.input-text {
+    margin-left: 120px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    width: 100%;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+}
+
+.box-submit {
+    margin: 8px;
+    width: 360px;
+}
+
+.box-link {
+    display: flex;
+}
+
+.link {
+    margin-left: 5px;
+    color: blue;
+}
+
+.img-side {
+    flex: 1;
+}

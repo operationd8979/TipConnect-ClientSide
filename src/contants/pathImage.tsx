@@ -1,4 +1,3 @@
-
 export default {
-    backgroundLogin: "../assets/images/background-login.png",
-}
+    backgroundLogin: '../assets/images/background-login.png',
+};

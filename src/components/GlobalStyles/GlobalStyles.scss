@@ -2,8 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary: #969;
-    --hover-primary: #869;
+    --primary: #006ce8;
+    --hover-primary: #0f519c;
     --black: #000;
     --white: #fff;
     --textColor: #333;
@@ -37,7 +37,7 @@ input,
     outline: none;
 }
 
-a[href] {
+a {
     color: var(--textColor);
     text-decoration: none;
 }

@@ -1,5 +1,6 @@
 .wrapper {
     min-width: 100px;
+    width: 100%;
     padding: 9px 16px;
     border-radius: 4px;
     font-size: 1.6rem;
@@ -19,11 +20,25 @@
     }
 }
 
+.rounded {
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+    border-color: rgba(22, 24, 35, 0.12);
+
+    &:hover {
+        border-color: rgba(22, 24, 35, 0.2);
+        background-color: rgba(22, 24, 35, 0.03);
+    }
+}
+
 .primary {
     color: var(--white);
     background-color: var(--primary);
+    border-color: var(--primary);
+
     &:hover {
-        background-color: var(--hover-primary);
+        border-color: var(--primary);
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)), var(--hover-primary);
     }
 }
 
@@ -32,7 +47,14 @@
     border-color: currentColor;
 
     &:hover {
-        background-color: var(--black);
+        border-color: currentColor;
+        background-color: rgba(21, 175, 218, 0.3);
+    }
+}
+
+.text {
+    &:hover {
+        text-decoration: underline;
     }
 }
 
