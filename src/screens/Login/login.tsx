@@ -21,7 +21,15 @@ const Login = () => {
         if (email && password) {
             try {
                 const reponse = await post({ path: 'v1/auth/login', options: loginRequest });
-                alert(reponse.data);
+                if (reponse.data.code === 403) {
+                    alert(reponse.data.errorMessage);
+                } else {
+                    if (reponse.data.accessToken) {
+                        alert(reponse.data.accessToken);
+                    } else {
+                        alert('Some thing lost!');
+                    }
+                }
             } catch (error) {
                 alert(error);
             }
