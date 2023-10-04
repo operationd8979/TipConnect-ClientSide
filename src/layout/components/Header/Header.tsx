@@ -8,11 +8,19 @@ import { InboxIcon, MessageIcon, UploadIcon } from '../../../components/Icons';
 import Button from '../../../components/Button';
 import Search from '../Search';
 import i18n from '../../../i18n/i18n';
+import { useEffect, useState } from 'react';
 
 const cx = classNames.bind(styles);
 
 function Header() {
-    const currentUser = false;
+    const [currentUser, setCurrentUser] = useState('');
+
+    useEffect(() => {
+        const fullName = localStorage.getItem('fullName');
+        if (fullName) {
+            setCurrentUser(fullName);
+        }
+    }, []);
 
     return (
         <header className={cx('wrapper')}>

@@ -1,16 +1,17 @@
 import classNames from 'classnames/bind';
 import Styles from './Login.module.scss';
 import Button from '../../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
 import { LoginRequest } from '../../type';
 import { useState } from 'react';
 import { post } from '../../utils/httpRequest';
-import axios from 'axios';
 
 const cx = classNames.bind(Styles);
 
 const Login = () => {
+    const navigate = useNavigate();
+
     const [loginRequest, setLoginRequest] = useState<LoginRequest>({
         email: '',
         password: '',
@@ -22,12 +23,13 @@ const Login = () => {
             try {
                 const reponse = await post({ path: 'v1/auth/login', options: loginRequest });
                 if (reponse.data.code === 403) {
-                    alert(reponse.data.errorMessage);
+                    alert(reponse.data.error_message);
                 } else {
-                    if (reponse.data.accessToken) {
-                        alert(reponse.data.accessToken);
+                    if (reponse.data.full_name) {
+                        localStorage.setItem('fullName', reponse.data.full_name);
+                        navigate('/');
                     } else {
-                        alert('Some thing lost!');
+                        alert('SomeThing wrong');
                     }
                 }
             } catch (error) {
@@ -36,7 +38,6 @@ const Login = () => {
         } else {
             alert('Username and Password is required!!!');
         }
-        // axios.get('http://localhost:8080/api/hello');
     };
 
     return (

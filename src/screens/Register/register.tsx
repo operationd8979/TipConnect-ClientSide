@@ -89,6 +89,7 @@ const Register = () => {
                     <label className={cx('lable')}>Password</label>
                     <input
                         className={cx('input-text')}
+                        type="password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => {
@@ -103,6 +104,7 @@ const Register = () => {
                     <label className={cx('lable')}>Rety-Password</label>
                     <input
                         className={cx('input-text')}
+                        type="password"
                         placeholder="Re-type Password"
                         value={rePassword}
                         onChange={(e) => {
