@@ -19,7 +19,7 @@ export interface LoginRequest {
 
 export interface RegisterRequest {
     email: string;
-    fristName: string;
+    firstName: string;
     lastName: string;
     password: string;
 }

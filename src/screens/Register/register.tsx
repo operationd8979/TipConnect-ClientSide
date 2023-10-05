@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import Styles from './Register.module.scss';
 import Button from '../../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
 import { RegisterRequest } from '../../type';
 import { useState } from 'react';
@@ -10,21 +10,30 @@ import { post } from '../../utils/httpRequest';
 const cx = classNames.bind(Styles);
 
 const Register = () => {
+    const navigate = useNavigate();
     const [registerRequest, setRegisterRequest] = useState<RegisterRequest>({
         email: '',
-        fristName: '',
+        firstName: '',
         lastName: '',
         password: '',
     });
     const [rePassword, setRePassword] = useState<string>('');
-    const { email, fristName, lastName, password } = registerRequest;
+    const { email, firstName, lastName, password } = registerRequest;
 
     const handleSubmit = async () => {
-        if (email && fristName && lastName && password) {
+        if (email && firstName && lastName && password) {
             if (password === rePassword) {
                 try {
                     const reponse = await post({ path: 'v1/registration', options: registerRequest });
-                    alert(reponse.data);
+                    if(reponse.data.code != 200){
+                        alert(reponse.data.error_message);
+                    }
+                    else{
+                        alert(reponse.data.message);
+                        localStorage.setItem('fullName', reponse.data.full_name);
+                        navigate('/');
+
+                    }
                 } catch (error) {
                     alert(error);
                 }
@@ -62,11 +71,11 @@ const Register = () => {
                     <input
                         className={cx('input-text')}
                         placeholder="Fristname"
-                        value={fristName}
+                        value={firstName}
                         onChange={(e) => {
                             setRegisterRequest({
                                 ...registerRequest,
-                                fristName: e.target.value,
+                                firstName: e.target.value,
                             });
                         }}
                     ></input>

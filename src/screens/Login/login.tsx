@@ -22,7 +22,7 @@ const Login = () => {
         if (email && password) {
             try {
                 const reponse = await post({ path: 'v1/auth/login', options: loginRequest });
-                if (reponse.data.code === 403) {
+                if (reponse.data.code !== 200) {
                     alert(reponse.data.error_message);
                 } else {
                     if (reponse.data.full_name) {
