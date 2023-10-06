@@ -3,13 +3,17 @@ import Styles from './Register.module.scss';
 import Button from '../../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
-import { RegisterRequest } from '../../type';
+import { RegisterRequest, AuthenticationReponse } from '../../type';
 import { useState } from 'react';
 import { post } from '../../utils/httpRequest';
+import { AuthService } from '../../apiService';
+import { registerSuccess, registerFail } from '../../reducers/userReducer/Action';
+import { useDispatch } from 'react-redux';
 
 const cx = classNames.bind(Styles);
 
 const Register = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [registerRequest, setRegisterRequest] = useState<RegisterRequest>({
         email: '',
@@ -24,18 +28,18 @@ const Register = () => {
         if (email && firstName && lastName && password) {
             if (password === rePassword) {
                 try {
-                    const reponse = await post({ path: 'v1/registration', options: registerRequest });
-                    if(reponse.data.code != 200){
-                        alert(reponse.data.error_message);
-                    }
-                    else{
-                        alert(reponse.data.message);
-                        localStorage.setItem('fullName', reponse.data.full_name);
+                    const reponse = (await AuthService.Register(registerRequest)) as AuthenticationReponse;
+                    if (reponse.code == 200) {
+                        localStorage.setItem('currentUser', JSON.stringify(reponse.user));
+                        dispatch(registerSuccess(reponse.user));
                         navigate('/');
-
+                    } else {
+                        alert(reponse.error_message);
+                        dispatch(registerFail());
                     }
                 } catch (error) {
                     alert(error);
+                    dispatch(registerFail());
                 }
             } else {
                 alert('retype');

@@ -1,15 +1,12 @@
 export interface User {
-    accessToken: string;
-    refreshToken: string;
-}
-
-export interface State {
-    user: User;
+    fullName: string;
+    role: string;
+    enable: boolean;
 }
 
 export interface Action {
     type: string;
-    payload: string | number;
+    payload: any;
 }
 
 export interface LoginRequest {
@@ -22,4 +19,16 @@ export interface RegisterRequest {
     firstName: string;
     lastName: string;
     password: string;
+}
+
+export interface AuthenticationReponse {
+    code: number;
+    user: User;
+    message: string;
+    error_message: string;
+}
+
+export interface State {
+    isLoggedIn: boolean;
+    user: User | null;
 }

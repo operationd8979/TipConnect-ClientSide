@@ -3,14 +3,17 @@ import Styles from './Login.module.scss';
 import Button from '../../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
-import { LoginRequest } from '../../type';
-import { useState } from 'react';
-import { post } from '../../utils/httpRequest';
+import { AuthenticationReponse, LoginRequest } from '../../type';
+import { useEffect, useState } from 'react';
+import { AuthService } from '../../apiService';
+import { loginSuccess, loginFail } from '../../reducers/userReducer/Action';
+import { useDispatch } from 'react-redux';
 
 const cx = classNames.bind(Styles);
 
 const Login = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [loginRequest, setLoginRequest] = useState<LoginRequest>({
         email: '',
@@ -21,19 +24,19 @@ const Login = () => {
     const handleSubmit = async () => {
         if (email && password) {
             try {
-                const reponse = await post({ path: 'v1/auth/login', options: loginRequest });
-                if (reponse.data.code !== 200) {
-                    alert(reponse.data.error_message);
+                const reponse = (await AuthService.Login(loginRequest)) as AuthenticationReponse;
+                if (reponse.code == 200) {
+                    alert(reponse.message);
+                    localStorage.setItem('currentUser', JSON.stringify(reponse.user));
+                    dispatch(loginSuccess(reponse.user));
+                    navigate('/');
                 } else {
-                    if (reponse.data.full_name) {
-                        localStorage.setItem('fullName', reponse.data.full_name);
-                        navigate('/');
-                    } else {
-                        alert('SomeThing wrong');
-                    }
+                    alert(reponse.error_message);
+                    dispatch(loginFail());
                 }
             } catch (error) {
                 alert(error);
+                dispatch(loginFail());
             }
         } else {
             alert('Username and Password is required!!!');

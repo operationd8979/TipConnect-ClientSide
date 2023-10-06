@@ -9,18 +9,16 @@ import Button from '../../../components/Button';
 import Search from '../Search';
 import i18n from '../../../i18n/i18n';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { State } from '../../../type';
 
 const cx = classNames.bind(styles);
 
 function Header() {
-    const [currentUser, setCurrentUser] = useState('');
+    const currentUser = useSelector<any>((state) => state.UserReducer) as State;
+    const { isLoggedIn, user } = currentUser;
 
-    useEffect(() => {
-        const fullName = localStorage.getItem('fullName');
-        if (fullName) {
-            setCurrentUser(fullName);
-        }
-    }, []);
+    useEffect(() => {}, []);
 
     return (
         <header className={cx('wrapper')}>
@@ -28,9 +26,9 @@ function Header() {
                 <Link to={config.routes.home} className={cx('logo')}>
                     <img src={images.logo} alt="TipConnect" />
                 </Link>
-                {currentUser && <Search />}
+                {isLoggedIn && <Search />}
                 <div className={cx('actions')}>
-                    {currentUser ? (
+                    {isLoggedIn ? (
                         <>
                             <Tippy delay={[0, 50]} content="Upload video" placement="bottom">
                                 <button className={cx('action-btn')}>
