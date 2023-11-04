@@ -9,15 +9,15 @@ import Store from './store';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-    <React.StrictMode>
-        <GlobalStyles>
-            <Provider store={Store}>
-                <Router>
-                    <App />
-                </Router>
-            </Provider>
-        </GlobalStyles>
-    </React.StrictMode>,
+    // <React.StrictMode>
+    <GlobalStyles>
+        <Provider store={Store}>
+            <Router>
+                <App />
+            </Router>
+        </Provider>
+    </GlobalStyles>,
+    // </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

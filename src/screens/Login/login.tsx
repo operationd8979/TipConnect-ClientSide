@@ -16,8 +16,8 @@ const Login = () => {
     const dispatch = useDispatch();
 
     const [loginRequest, setLoginRequest] = useState<LoginRequest>({
-        email: '',
-        password: '',
+        email: 'operationddd@gmail.com',
+        password: 'Mashiro1',
     });
     const { email, password } = loginRequest;
 
@@ -26,8 +26,7 @@ const Login = () => {
             try {
                 const reponse = (await AuthService.Login(loginRequest)) as AuthenticationReponse;
                 if (reponse.code == 200) {
-                    alert(reponse.message);
-                    localStorage.setItem('currentUser', JSON.stringify(reponse.user));
+                    //localStorage.setItem('currentUser', JSON.stringify(reponse.user));
                     dispatch(loginSuccess(reponse.user));
                     navigate('/');
                 } else {

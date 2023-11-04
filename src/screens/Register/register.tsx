@@ -16,12 +16,12 @@ const Register = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [registerRequest, setRegisterRequest] = useState<RegisterRequest>({
-        email: '',
-        firstName: '',
-        lastName: '',
-        password: '',
+        email: 'operationddd@gmail.com',
+        firstName: 'Dung',
+        lastName: 'Vo',
+        password: 'Mashiro1',
     });
-    const [rePassword, setRePassword] = useState<string>('');
+    const [rePassword, setRePassword] = useState<string>('Mashiro1');
     const { email, firstName, lastName, password } = registerRequest;
 
     const handleSubmit = async () => {
@@ -30,7 +30,7 @@ const Register = () => {
                 try {
                     const reponse = (await AuthService.Register(registerRequest)) as AuthenticationReponse;
                     if (reponse.code == 200) {
-                        localStorage.setItem('currentUser', JSON.stringify(reponse.user));
+                        //localStorage.setItem('currentUser', JSON.stringify(reponse.user));
                         dispatch(registerSuccess(reponse.user));
                         navigate('/');
                     } else {

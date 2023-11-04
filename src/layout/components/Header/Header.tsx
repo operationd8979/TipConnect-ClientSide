@@ -11,6 +11,7 @@ import i18n from '../../../i18n/i18n';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { State } from '../../../type';
+import { get } from '../../../utils/httpRequest';
 
 const cx = classNames.bind(styles);
 
@@ -18,7 +19,14 @@ function Header() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const { isLoggedIn, user } = currentUser;
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        if (currentUser.user) {
+            console.log('Call api get listFriend');
+            get({ path: `/user/getListFriend/${currentUser.user.userId}` }).then((response) => {
+                console.log(response);
+            });
+        }
+    }, []);
 
     return (
         <header className={cx('wrapper')}>
@@ -44,6 +52,11 @@ function Header() {
                                 <button className={cx('action-btn')}>
                                     <InboxIcon />
                                     <span className={cx('badge')}>12</span>
+                                </button>
+                            </Tippy>
+                            <Tippy delay={[0, 50]} content="UserAvatar" placement="bottom">
+                                <button className={cx('action-btn')}>
+                                    <img src={currentUser.user?.urlAvatar} alt="user" className={cx('avatar_user')} />
                                 </button>
                             </Tippy>
                         </>
