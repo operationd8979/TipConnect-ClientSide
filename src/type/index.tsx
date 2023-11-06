@@ -6,6 +6,12 @@ export interface User {
     enable: boolean;
 }
 
+export interface FriendShip {
+    id: bigint;
+    friend: User;
+    type: string;
+}
+
 export interface Action {
     type: string;
     payload: any;
@@ -33,4 +39,5 @@ export interface AuthenticationReponse {
 export interface State {
     isLoggedIn: boolean;
     user: User | null;
+    listFriend: FriendShip[] | null;
 }

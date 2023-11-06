@@ -12,13 +12,24 @@ const httpRequest = axios.create({
 });
 
 export const get = async ({ path, options = {} }: requestType) => {
-    const respone = await httpRequest.get(path, options);
-    return respone;
+    const response = await httpRequest.get(path, options);
+    return response;
 };
 
 export const post = async ({ path, options = {} }: requestType) => {
-    const respone = await httpRequest.post(path, options);
-    return respone;
+    const response = await httpRequest.post(path, options);
+    return response;
+};
+
+export const getStream = async ({ path, options = {} }: requestType) => {
+    const response = await fetch(`http://localhost:8080/api/${path}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    });
+    return response;
 };
 
 export default httpRequest;

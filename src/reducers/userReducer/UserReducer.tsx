@@ -7,7 +7,9 @@ if (currentUser) {
     user = JSON.parse(currentUser) as User;
 }
 
-const initalState: State = user ? { isLoggedIn: true, user } : { isLoggedIn: false, user: null };
+const initalState: State = user
+    ? { isLoggedIn: true, user, listFriend: null }
+    : { isLoggedIn: false, user: null, listFriend: null };
 
 const UserReducer = (state: State = initalState, action: Action) => {
     const { type, payload } = action;

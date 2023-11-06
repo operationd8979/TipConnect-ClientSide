@@ -1,5 +1,6 @@
 import AuthService from './AuthService';
+import UserService from './UserService';
 
-export { AuthService };
+export { AuthService, UserService };
 
-export default { AuthService };
+export default { AuthService, UserService };
