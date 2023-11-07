@@ -27,7 +27,7 @@ export const registerFail = () => {
     };
 };
 
-export const getListFriendSucess = (payload: FriendShip) => {
+export const getListFriendSucess = (payload: FriendShip[]|null|[]) => {
     return {
         type: userReducerAction.GET_LIST_FRIEND_SUCCESS,
         payload: payload,

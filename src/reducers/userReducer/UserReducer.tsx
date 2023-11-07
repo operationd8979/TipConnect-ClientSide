@@ -1,4 +1,4 @@
-import { Action, User, State } from '../../type';
+import { Action, User, State, FriendShip } from '../../type';
 import actionTypes from './Action';
 
 const currentUser = localStorage.getItem('currentUser');
@@ -22,6 +22,10 @@ const UserReducer = (state: State = initalState, action: Action) => {
             return { ...state, isLoggedIn: true, user: payload };
         case actionTypes.REGISTER_FAIL:
             return { ...state, isLoggedIn: false };
+        case actionTypes.GET_LIST_FRIEND_SUCCESS:
+            return { ...state, listFriend: payload};
+        case actionTypes.GET_LIST_FRIEND_FAIL:
+            return state;
         case actionTypes.LOGOUT:
             return { ...state, isLoggedIn: false, user: null };
         default:

@@ -8,50 +8,27 @@ import { InboxIcon, MessageIcon, UploadIcon } from '../../../components/Icons';
 import Button from '../../../components/Button';
 import Search from '../Search';
 import i18n from '../../../i18n/i18n';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { State, FriendShip } from '../../../type';
 import UserService from '../../../apiService/UserService';
+import FriendList from './FriendList';
+import { useDispatch } from 'react-redux';
+import {getListFriendSucess, getListFriendFail} from '../../../reducers/userReducer/Action/Action'
+
 
 const cx = classNames.bind(styles);
 
 function Header() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const { isLoggedIn, user } = currentUser;
-    const [listFriend, setListFriend] = useState<string[]>([]);
+    const [listFriend, setListFriend] = useState<FriendShip[]>([]);
+    const [history,setHistory] = useState(0);
+    //const memoizedListFriend = useMemo(() => currentUser.listFriend, [currentUser.listFriend]);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        let string1 = `
-        [{
-            "id": "1",
-            "firstName": "Dung"
-        }`;
-        let string2 = `
-        ,{
-            "id": "1",
-            "firstName": "Dung"
-        }`;
-        let string3 = `
-        ,{
-            "id": "1",
-            "firstName": "Dung"
-        }]`;
-
-        // string1 = string1.replace(',{', '[{');
-        // string1 = string1.replace('}', '}]');
-        // console.log(string1);
-        // console.log(JSON.parse(string1));
-
-        // string2 = string2.replace(',{', '[{');
-        // string2 = string2.replace('}', '}]');
-        // console.log(string2);
-        // //console.log(JSON.parse(string2));
-
-        // string3 = string3.replace(',{', '[{');
-        // string3 = string3.replace('} ', '}]');
-        // console.log(string3);
-        //console.log(JSON.parse(string3));
-
         if (currentUser.user) {
             console.log('Call api get listFriend');
             const callApiGetFriend = async () => {
@@ -69,25 +46,23 @@ function Header() {
                                         break;
                                     }
                                     let jsonData = decoder.decode(value, { stream: true });
+                                    const array = jsonData.split("]");
 
-                                    jsonData = jsonData.replace(',{', '{');
-                                    try {
-                                        const data = await JSON.parse(jsonData);
-                                        console.log(data);
-                                        console.log('--------------------------------');
-                                    } catch (error) {
-                                        if (jsonData.startsWith('[{')) {
-                                            jsonData = jsonData.replace('[{', '{');
-                                            const data = await JSON.parse(jsonData);
-                                            console.log(data);
-                                            console.log('--------------------------------');
-                                        } else {
-                                            jsonData = jsonData.replace('}]', '}');
-                                            const data = await JSON.parse(jsonData);
-                                            console.log(data);
-                                            console.log('--------------------------------');
+                                    array.forEach((jsonArray)=>{
+                                        try{
+                                            const json:FriendShip[] = JSON.parse(jsonArray+"]") as FriendShip[];
+                                            //console.log(json);
+                                            dispatch(getListFriendSucess(json));
+                                            //setListFriend((prevList) => [...prevList, ...json]);
+                                        }catch(error){
+                                            jsonArray = jsonArray.substring(1);
+                                            console.log(jsonArray);
+                                            const json:FriendShip[] = JSON.parse("["+jsonArray+"]") as FriendShip[];
+                                            //console.log(json);
+                                            dispatch(getListFriendSucess(json));
+                                            //setListFriend((prevList) => [...prevList, ...json]);
                                         }
-                                    }
+                                    })
                                 }
                             }
                         }
@@ -105,11 +80,7 @@ function Header() {
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
-                <div>
-                    {listFriend.map((listFriend) => {
-                        return <p>{listFriend}</p>;
-                    })}
-                </div>
+                <FriendList listFriend = {currentUser.listFriend??[]}/>
                 <Link to={config.routes.home} className={cx('logo')}>
                     <img src={images.logo} alt="TipConnect" />
                 </Link>
