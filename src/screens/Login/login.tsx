@@ -15,16 +15,21 @@ const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const [loading, setLoading] = useState(false);
+
     const [loginRequest, setLoginRequest] = useState<LoginRequest>({
         email: 'operationddd@gmail.com',
         password: 'Mashiro1',
     });
     const { email, password } = loginRequest;
 
+    useEffect(() => {}, []);
+
     const handleSubmit = async () => {
+        setLoading(true);
         if (email && password) {
-            try {
-                const reponse = (await AuthService.Login(loginRequest)) as AuthenticationReponse;
+            const reponse = (await AuthService.Login(loginRequest)) as AuthenticationReponse;
+            if (reponse != undefined) {
                 if (reponse.code == 200) {
                     //localStorage.setItem('currentUser', JSON.stringify(reponse.user));
                     dispatch(loginSuccess(reponse.user));
@@ -33,13 +38,11 @@ const Login = () => {
                     alert(reponse.error_message);
                     dispatch(loginFail());
                 }
-            } catch (error) {
-                alert(error);
-                dispatch(loginFail());
             }
         } else {
             alert('Username and Password is required!!!');
         }
+        setLoading(false);
     };
 
     return (
@@ -54,6 +57,7 @@ const Login = () => {
                         className={cx('input-text')}
                         placeholder="Username"
                         value={email}
+                        disabled={loading}
                         onChange={(e) => {
                             setLoginRequest({
                                 ...loginRequest,
@@ -68,6 +72,8 @@ const Login = () => {
                         className={cx('input-text')}
                         placeholder="Password"
                         value={password}
+                        disabled={loading}
+                        type="password"
                         onChange={(e) => {
                             setLoginRequest({
                                 ...loginRequest,
@@ -77,13 +83,13 @@ const Login = () => {
                     ></input>
                 </div>
                 <div className={cx('box-submit')}>
-                    <Button large primary onClick={handleSubmit}>
-                        Sign In
+                    <Button large primary onClick={handleSubmit} disabled={loading}>
+                        {loading ? 'Loading...' : 'Sign In'}
                     </Button>
                 </div>
                 <div className={cx('box-link')}>
                     <p className={cx('des')}>Don't have an account?</p>
-                    <Link className={cx('link')} to={config.routes.register}>
+                    <Link className={cx('link')} to={loading ? '#' : config.routes.register}>
                         CREATE NEW
                     </Link>
                 </div>

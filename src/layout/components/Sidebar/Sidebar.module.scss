@@ -1,4 +1,31 @@
 .wrapper {
     width: var(--default-layout-width-sidebar);
-    min-height: 1000px;
+    min-height: 100rem;
+    max-height: 120rem;
+}
+
+.header {
+    min-height: 10rem;
+}
+
+.friend_box {
+    overflow-y: overlay;
+    min-height: 90rem;
+    max-height: 90rem;
+    background-color: aqua;
+}
+
+.friend_card {
+    margin: 10px 2px;
+    display: flex;
+    align-items: center;
+
+    img {
+        height: 5rem;
+        border-radius: 50%;
+    }
+
+    p {
+        padding-left: 10px;
+    }
 }

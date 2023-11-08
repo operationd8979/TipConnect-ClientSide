@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface FriendShip {
-    id: bigint;
+    id: string;
     friend: User;
     type: string;
 }

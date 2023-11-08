@@ -15,6 +15,9 @@ const cx = classNames.bind(Styles);
 const Register = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(false);
+
     const [registerRequest, setRegisterRequest] = useState<RegisterRequest>({
         email: 'operationddd@gmail.com',
         firstName: 'Dung',
@@ -27,19 +30,16 @@ const Register = () => {
     const handleSubmit = async () => {
         if (email && firstName && lastName && password) {
             if (password === rePassword) {
-                try {
-                    const reponse = (await AuthService.Register(registerRequest)) as AuthenticationReponse;
-                    if (reponse.code == 200) {
+                const response = (await AuthService.Register(registerRequest)) as AuthenticationReponse;
+                if (response != undefined) {
+                    if (response.code == 200) {
                         //localStorage.setItem('currentUser', JSON.stringify(reponse.user));
-                        dispatch(registerSuccess(reponse.user));
+                        dispatch(registerSuccess(response.user));
                         navigate('/');
                     } else {
-                        alert(reponse.error_message);
+                        alert(response.error_message);
                         dispatch(registerFail());
                     }
-                } catch (error) {
-                    alert(error);
-                    dispatch(registerFail());
                 }
             } else {
                 alert('retype');
@@ -62,6 +62,7 @@ const Register = () => {
                         className={cx('input-text')}
                         placeholder="Email"
                         value={email}
+                        disabled={loading}
                         onChange={(e) => {
                             setRegisterRequest({
                                 ...registerRequest,
@@ -76,6 +77,7 @@ const Register = () => {
                         className={cx('input-text')}
                         placeholder="Fristname"
                         value={firstName}
+                        disabled={loading}
                         onChange={(e) => {
                             setRegisterRequest({
                                 ...registerRequest,
@@ -90,6 +92,7 @@ const Register = () => {
                         className={cx('input-text')}
                         placeholder="Lastname"
                         value={lastName}
+                        disabled={loading}
                         onChange={(e) => {
                             setRegisterRequest({
                                 ...registerRequest,
@@ -105,6 +108,7 @@ const Register = () => {
                         type="password"
                         placeholder="Password"
                         value={password}
+                        disabled={loading}
                         onChange={(e) => {
                             setRegisterRequest({
                                 ...registerRequest,
@@ -120,19 +124,20 @@ const Register = () => {
                         type="password"
                         placeholder="Re-type Password"
                         value={rePassword}
+                        disabled={loading}
                         onChange={(e) => {
                             setRePassword(e.target.value);
                         }}
                     ></input>
                 </div>
                 <div className={cx('box-submit')}>
-                    <Button large primary onClick={handleSubmit}>
-                        Register
+                    <Button large primary onClick={handleSubmit} disabled={loading}>
+                        {loading ? 'Loading...' : 'Register'}
                     </Button>
                 </div>
                 <div className={cx('box-link')}>
                     <p className={cx('des')}>Already have an account!</p>
-                    <Link className={cx('link')} to={config.routes.login}>
+                    <Link className={cx('link')} to={loading ? '#' : config.routes.login}>
                         Login in
                     </Link>
                 </div>

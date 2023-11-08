@@ -1,4 +1,4 @@
-import { Home, Login, Register } from '../screens';
+import { Home, Login, Register, MessageArea } from '../screens';
 import { OnlyHeader } from '../layout';
 import config from '../config';
 
@@ -12,6 +12,7 @@ const publicRoutes: publicRoutes[] = [
     { path: config.routes.home, component: Home },
     { path: config.routes.login, component: Login, layout: OnlyHeader },
     { path: config.routes.register, component: Register, layout: OnlyHeader },
+    { path: config.routes.message, component: MessageArea },
 ];
 
 const privateRoutes = [null];

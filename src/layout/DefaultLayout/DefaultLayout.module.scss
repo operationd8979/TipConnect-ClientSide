@@ -10,7 +10,12 @@
     display: flex;
 }
 
+.sidebar {
+}
+
 .content {
     flex: 1;
     min-height: 1000px;
+    margin-left: 5px;
+    background-color: antiquewhite;
 }

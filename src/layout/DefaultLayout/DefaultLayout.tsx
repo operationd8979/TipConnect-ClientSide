@@ -1,5 +1,4 @@
-import { Header } from '../components';
-import Sidebar from '../components/Sidebar';
+import { Header, Sidebar } from '../components';
 import styles from './DefaultLayout.module.scss';
 import className from 'classnames/bind';
 
@@ -10,7 +9,9 @@ function DefaultLayout({ children }: { children: JSX.Element }) {
         <div className={cx('wrapper')}>
             <Header />
             <div className={cx('container')}>
-                <Sidebar />
+                <div className={cx('sidebar')}>
+                    <Sidebar />
+                </div>
                 <div className={cx('content')}>{children}</div>
             </div>
         </div>

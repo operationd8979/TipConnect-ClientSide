@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { url } from 'inspector';
 
 interface requestType {
     path: string;
