@@ -9,6 +9,7 @@ import { post } from '../../utils/httpRequest';
 import { AuthService } from '../../apiService';
 import { registerSuccess, registerFail } from '../../reducers/userReducer/Action';
 import { useDispatch } from 'react-redux';
+import i18n from '../../i18n/i18n';
 
 const cx = classNames.bind(Styles);
 
@@ -33,7 +34,7 @@ const Register = () => {
                 const response = (await AuthService.Register(registerRequest)) as AuthenticationReponse;
                 if (response != undefined) {
                     if (response.code == 200) {
-                        //localStorage.setItem('currentUser', JSON.stringify(reponse.user));
+                        localStorage.setItem('currentUser', JSON.stringify(response.user));
                         dispatch(registerSuccess(response.user));
                         navigate('/');
                     } else {
@@ -54,13 +55,13 @@ const Register = () => {
             <div className={cx('img-side')}></div>
             <div className={cx('content-side')}>
                 <div className={cx('background-image')} />
-                <div className={cx('header')}>Welcome</div>
-                <div className={cx('title')}>Create an account</div>
+                <div className={cx('header')}>{i18n.t('REGISTER_welcome')}</div>
+                <div className={cx('title')}>{i18n.t('REGISTER_welcome_des')}</div>
                 <div className={cx('box-input')}>
-                    <label className={cx('lable')}>Email</label>
+                    <label className={cx('lable')}>{i18n.t('FINAL_email')}</label>
                     <input
                         className={cx('input-text')}
-                        placeholder="Email"
+                        placeholder={i18n.t('FINAL_email')}
                         value={email}
                         disabled={loading}
                         onChange={(e) => {
@@ -72,10 +73,10 @@ const Register = () => {
                     ></input>
                 </div>
                 <div className={cx('box-input')}>
-                    <label className={cx('lable')}>FristName</label>
+                    <label className={cx('lable')}>{i18n.t('FINAL_fristName')}</label>
                     <input
                         className={cx('input-text')}
-                        placeholder="Fristname"
+                        placeholder={i18n.t('FINAL_fristName')}
                         value={firstName}
                         disabled={loading}
                         onChange={(e) => {
@@ -87,10 +88,10 @@ const Register = () => {
                     ></input>
                 </div>
                 <div className={cx('box-input')}>
-                    <label className={cx('lable')}>LastName</label>
+                    <label className={cx('lable')}>{i18n.t('FINAL_lastName')}</label>
                     <input
                         className={cx('input-text')}
-                        placeholder="Lastname"
+                        placeholder={i18n.t('FINAL_lastName')}
                         value={lastName}
                         disabled={loading}
                         onChange={(e) => {
@@ -102,11 +103,11 @@ const Register = () => {
                     ></input>
                 </div>
                 <div className={cx('box-input')}>
-                    <label className={cx('lable')}>Password</label>
+                    <label className={cx('lable')}>{i18n.t('FINAL_password')}</label>
                     <input
                         className={cx('input-text')}
                         type="password"
-                        placeholder="Password"
+                        placeholder={i18n.t('FINAL_password')}
                         value={password}
                         disabled={loading}
                         onChange={(e) => {
@@ -118,11 +119,11 @@ const Register = () => {
                     ></input>
                 </div>
                 <div className={cx('box-input')}>
-                    <label className={cx('lable')}>Rety-Password</label>
+                    <label className={cx('lable')}>{i18n.t('FINAL_passwordRe')}</label>
                     <input
                         className={cx('input-text')}
                         type="password"
-                        placeholder="Re-type Password"
+                        placeholder={i18n.t('FINAL_passwordRe')}
                         value={rePassword}
                         disabled={loading}
                         onChange={(e) => {
@@ -132,13 +133,13 @@ const Register = () => {
                 </div>
                 <div className={cx('box-submit')}>
                     <Button large primary onClick={handleSubmit} disabled={loading}>
-                        {loading ? 'Loading...' : 'Register'}
+                        {loading ? i18n.t('FINAL_loading') : i18n.t('REGISTER_REGISTER')}
                     </Button>
                 </div>
                 <div className={cx('box-link')}>
-                    <p className={cx('des')}>Already have an account!</p>
+                    <p className={cx('des')}>{i18n.t('REGISTER_login_des')}</p>
                     <Link className={cx('link')} to={loading ? '#' : config.routes.login}>
-                        Login in
+                        {i18n.t('REGISTER_login')}
                     </Link>
                 </div>
             </div>

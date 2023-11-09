@@ -6,7 +6,6 @@ import config from '../../../config';
 import images from '../../../assets/images';
 import { InboxIcon, MessageIcon, UploadIcon } from '../../../components/Icons';
 import Button from '../../../components/Button';
-import Search from '../Search';
 import i18n from '../../../i18n/i18n';
 import { useSelector } from 'react-redux';
 import { State } from '../../../type';
@@ -23,7 +22,6 @@ function Header() {
                 <Link to={config.routes.home} className={cx('logo')}>
                     <img src={images.logo} alt="TipConnect" />
                 </Link>
-                {isLoggedIn && <Search />}
                 <div className={cx('actions')}>
                     {isLoggedIn ? (
                         <>
@@ -52,10 +50,10 @@ function Header() {
                     ) : (
                         <>
                             <Button primary to={config.routes.login}>
-                                {i18n.t('login')}
+                                {i18n.t('HEADER_login')}
                             </Button>
                             <Button outline to={config.routes.register}>
-                                {i18n.t('register')}
+                                {i18n.t('HEADER_register')}
                             </Button>
                         </>
                     )}

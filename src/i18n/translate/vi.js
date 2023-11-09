@@ -1,4 +1,4 @@
-export const en = {
+export const vi = {
     FINAL_email: 'Email',
     FINAL_password: 'Password',
     FINAL_passwordRe: 'Rety-Password',

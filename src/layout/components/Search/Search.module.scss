@@ -1,6 +1,9 @@
 .search {
+    --search-border-radius: 10px;
+    --search-height: 40px;
+
     position: relative;
-    width: 361px;
+    width: 100%;
     display: flex;
     align-items: center;
     height: var(--search-height);
