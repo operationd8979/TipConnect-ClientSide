@@ -1,6 +1,24 @@
-import { get, getStream } from '../../utils/httpRequest';
+import { get, getStream, post } from '../../utils/httpRequest';
 import ERROR from '../../contants/errorMessage';
-import { SearchQuery } from '../../type';
+import { SearchQuery, UpdateInfoRequest } from '../../type';
+
+const getUserInfo = async () => {
+    try {
+        const response = await get({ path: `user/getUserInfo` });
+        return response;
+    } catch (error) {
+        alert(ERROR.ERR_NETWORK.message);
+    }
+};
+
+const updateUserInfo = async (updateInfoRequest: UpdateInfoRequest) => {
+    try {
+        const response = await post({ path: `user/updateUserInfo`, options: updateInfoRequest });
+        return response;
+    } catch (error) {
+        alert(ERROR.ERR_NETWORK.message);
+    }
+};
 
 const getListFriend = async () => {
     try {
@@ -23,4 +41,4 @@ const search = async (searchQuery: SearchQuery) => {
     }
 };
 
-export default { getListFriend, search };
+export default { getUserInfo, getListFriend, search, updateUserInfo };

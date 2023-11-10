@@ -16,7 +16,7 @@ function Sidebar() {
     const [friends, setFriends] = useState<FriendShip[]>(listFriend ?? []);
 
     const [query, setQuery] = useState<string>('');
-    const [searchResult, setSearchResult] = useState<SearchResponse>({ tinyUser: null, messages: null });
+    const [searchResult, setSearchResult] = useState<SearchResponse>({ tinyUser: null, messages: [] });
 
     const showList = useCallback(() => {
         return friends.filter((f) => f.friend.fullName.trim().toLowerCase().includes(query.toLowerCase().trim()));
@@ -82,18 +82,22 @@ function Sidebar() {
     return (
         <aside className={cx('wrapper')}>
             <div className={cx('header')}>
+                {isLoggedIn && <Search query={query} setQuery={setQuery} setSearchResult={setSearchResult} />}
                 <button>tat ca</button>
                 <button>|chua doc</button>
-                {isLoggedIn && <Search query={query} setQuery={setQuery} setSearchResult={setSearchResult} />}
             </div>
             <div className={cx('friend_box')}>
                 {searchResult.tinyUser && (
                     <div>
-                        <p>Tìm qua email</p>
+                        <div className={cx('header_search')}>Tìm qua email:</div>
                         <div className={cx('friend_card')} key={searchResult.tinyUser.userId}>
-                            <img src={searchResult.tinyUser.urlAvatar} alt={searchResult.tinyUser.fullName} />
-                            <p>{searchResult.tinyUser.fullName}</p>
-                            <p>{searchResult.tinyUser.role}</p>
+                            <div className={cx('card_img')}>
+                                <img src={searchResult.tinyUser.urlAvatar} alt={searchResult.tinyUser.fullName} />
+                            </div>
+                            <div className={cx('card_info')}>
+                                <div className={cx('card_name')}>{searchResult.tinyUser.fullName}</div>
+                                <div className={cx('card_detail')}>Email:{query}</div>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -104,15 +108,19 @@ function Sidebar() {
                             key={friendShip.id}
                             to={`/message/${friendShip.friend.userId}`}
                         >
-                            <img src={friendShip.friend.urlAvatar} alt={friendShip.friend.fullName} />
-                            <p>{friendShip.friend.fullName}</p>
-                            <p>asdasd</p>
+                            <div className={cx('card_img')}>
+                                <img src={friendShip.friend.urlAvatar} alt={friendShip.friend.fullName} />
+                            </div>
+                            <div className={cx('card_info')}>
+                                <div className={cx('card_name')}>{friendShip.friend.fullName}</div>
+                                <div className={cx('card_detail')}>asdasd</div>
+                            </div>
                         </Link>
                     );
                 })}
-                {searchResult.messages && (
+                {searchResult.messages.length > 0 && (
                     <div>
-                        <p>Tin nhắn</p>
+                        <div>Tin nhắn</div>
                         {/* <div className={cx('friend_card')} key={searchResult.tinyUser.userId}>
                             <img src={searchResult.tinyUser.urlAvatar} alt={searchResult.tinyUser.fullName} />
                             <p>{searchResult.tinyUser.fullName}</p>

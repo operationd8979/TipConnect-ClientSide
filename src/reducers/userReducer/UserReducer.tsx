@@ -22,8 +22,10 @@ const UserReducer = (state: State = initalState, action: Action) => {
             return { ...state, isLoggedIn: true, user: payload };
         case actionTypes.REGISTER_FAIL:
             return { ...state, isLoggedIn: false };
+        case actionTypes.UPDATE_USER_INFO:
+            return { ...state, user: payload };
         case actionTypes.GET_LIST_FRIEND_SUCCESS:
-            return { ...state, listFriend: payload};
+            return { ...state, listFriend: payload };
         case actionTypes.GET_LIST_FRIEND_FAIL:
             return state;
         case actionTypes.LOGOUT:

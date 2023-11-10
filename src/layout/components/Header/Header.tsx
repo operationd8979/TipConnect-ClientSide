@@ -41,10 +41,12 @@ function Header() {
                                     <span className={cx('badge')}>12</span>
                                 </button>
                             </Tippy>
-                            <Tippy delay={[0, 50]} content="UserAvatar" placement="bottom">
-                                <button className={cx('action-btn')}>
-                                    <img src={user?.urlAvatar} alt="user" className={cx('avatar_user')} />
-                                </button>
+                            <Tippy delay={[0, 50]} content="User profile" placement="bottom">
+                                <Link to="/profile">
+                                    <button className={cx('action-btn')}>
+                                        <img src={user?.urlAvatar} alt="user" className={cx('avatar_user')} />
+                                    </button>
+                                </Link>
                             </Tippy>
                         </>
                     ) : (

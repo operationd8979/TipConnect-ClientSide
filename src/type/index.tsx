@@ -1,9 +1,19 @@
 export interface User {
     userId: string;
+    email?: string;
     fullName: string;
     role: string;
     urlAvatar: string;
     enable: boolean;
+    firstName: string;
+    lastName: string;
+}
+
+export interface UpdateInfoRequest {
+    firstName: string;
+    lastName: string;
+    newPassword: string;
+    password: string;
 }
 
 export interface FriendShip {

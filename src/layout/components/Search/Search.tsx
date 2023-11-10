@@ -28,7 +28,7 @@ const Search = ({
     useEffect(() => {
         if (!debouncedValue.trim()) {
             setResult([]);
-            setSearchResult({ tinyUser: null, messages: null });
+            setSearchResult({ tinyUser: null, messages: [] });
             return;
         }
         const handleSearchRequest = async () => {
@@ -55,7 +55,7 @@ const Search = ({
             <input
                 value={query}
                 onChange={(e) => {
-                    if (e.target.value == '') setSearchResult({ tinyUser: null, messages: null });
+                    if (e.target.value == '') setSearchResult({ tinyUser: null, messages: [] });
                     setQuery(e.target.value);
                 }}
                 placeholder={i18n.t('HEADER_search_placeholder')}

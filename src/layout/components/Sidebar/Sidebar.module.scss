@@ -1,11 +1,12 @@
 .wrapper {
-    width: var(--default-layout-width-sidebar);
+    width: var(--default-layout-width-sidebar); //356px
     min-height: 100rem;
     max-height: 120rem;
 }
 
 .header {
-    min-height: 10rem;
+    margin: 10px 0px;
+    min-height: 5rem;
 }
 
 .friend_box {
@@ -15,17 +16,39 @@
     background-color: aqua;
 }
 
+.header_search {
+    margin-left: 4px;
+    padding: 4px;
+    font-size: small;
+    font-weight: bold;
+}
+
 .friend_card {
     margin: 10px 2px;
     display: flex;
     align-items: center;
+}
 
+.card_img {
+    margin-left: 8px;
+    width: 52px;
     img {
         height: 5rem;
         border-radius: 50%;
     }
+}
 
-    p {
-        padding-left: 10px;
-    }
+.card_info {
+    width: 280px;
+    margin-left: 8px;
+}
+
+.card_name {
+    width: 100%;
+    font-size: large;
+}
+
+.card_detail {
+    width: 100%;
+    font-size: small;
 }

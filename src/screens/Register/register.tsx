@@ -3,12 +3,11 @@ import Styles from './Register.module.scss';
 import Button from '../../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
-import { RegisterRequest, AuthenticationReponse } from '../../type';
-import { useState } from 'react';
-import { post } from '../../utils/httpRequest';
+import { RegisterRequest, AuthenticationReponse, State } from '../../type';
+import { useEffect, useState } from 'react';
 import { AuthService } from '../../apiService';
 import { registerSuccess, registerFail } from '../../reducers/userReducer/Action';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import i18n from '../../i18n/i18n';
 
 const cx = classNames.bind(Styles);
@@ -16,6 +15,9 @@ const cx = classNames.bind(Styles);
 const Register = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const currentUser = useSelector<any>((state) => state.UserReducer) as State;
+    const { isLoggedIn, user, listFriend } = currentUser;
 
     const [loading, setLoading] = useState(false);
 
@@ -27,6 +29,12 @@ const Register = () => {
     });
     const [rePassword, setRePassword] = useState<string>('Mashiro1');
     const { email, firstName, lastName, password } = registerRequest;
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate('/');
+        }
+    }, []);
 
     const handleSubmit = async () => {
         if (email && firstName && lastName && password) {

@@ -1,0 +1,155 @@
+.wrapper {
+    display: flex;
+    height: 100%;
+    //background-color: aqua;
+}
+
+.sidebar {
+    padding: 20px 10px;
+    width: 40rem;
+    //background-color: red;
+}
+
+.user_avatar {
+    display: flex;
+    justify-content: center;
+    img {
+        width: 16rem;
+        border-radius: 90px;
+    }
+}
+
+.user_name {
+    margin: 10px 10px;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+.active_button_avatar {
+    margin: 10px 10px;
+}
+
+.content {
+    padding: 20px 20px;
+    width: 100%;
+    //background-color: blue;
+}
+
+.header_content {
+    font-size: xx-large;
+}
+
+.info_area {
+    margin: 20px 20px;
+}
+
+.info_pack {
+}
+
+.lable {
+    width: 100%;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    margin: 2px 0px;
+    height: 40px;
+    width: 70%;
+    border: solid rgba(29, 30, 36, 0.3) 1px;
+    border-radius: 10px;
+    input {
+        padding-left: 20px;
+        height: 100%;
+        flex: 6;
+        background-color: transparent;
+        font-size: 1.5rem;
+        color: var(--black);
+    }
+
+    &:focus-within {
+        border-color: rgba(29, 30, 36, 0.8);
+    }
+}
+
+.disabled {
+    background-color: rgba(29, 30, 36, 0.2);
+}
+
+.old_property {
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+    flex: 4;
+    background-color: transparent;
+    font-size: 1.3rem;
+    color: rgba(29, 30, 36, 0.8);
+
+    input {
+        padding: 0px 10px;
+        flex: 8;
+    }
+}
+
+.icon_check {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    svg {
+        width: 2.8rem;
+    }
+}
+
+.active_area {
+    display: flex;
+    justify-content: flex-end;
+    width: 70%;
+    padding: 0px 20px;
+}
+
+.flex_input {
+    display: flex;
+    align-items: center;
+}
+
+.lable_password {
+    width: 100%;
+    font-size: 1.3rem;
+    font-weight: 450;
+    color: red;
+}
+
+.input_password {
+    display: flex;
+    align-items: center;
+    margin: 0px 10px;
+    height: 40px;
+    width: 70%;
+    border: solid rgba(29, 30, 36, 0.3) 1px;
+    border-radius: 10px;
+    input {
+        padding-left: 20px;
+        height: 100%;
+        flex: 6;
+        background-color: transparent;
+        font-size: 1.5rem;
+        color: var(--black);
+    }
+
+    &:focus-within {
+        border-color: rgba(29, 30, 36, 0.8);
+    }
+}
+
+.active_button {
+    width: 20%;
+}
+
+.change_password {
+    border-width: 2px;
+    border-color: rgba(253, 0, 0, 0.992);
+}

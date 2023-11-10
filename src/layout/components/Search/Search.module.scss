@@ -9,7 +9,7 @@
     height: var(--search-height);
     padding: 0 16px;
     display: flex;
-    background-color: rgba(22, 24, 35, 0.06);
+    background-color: rgba(22, 24, 35, 0.15);
     border: 1.5px solid transparent;
     border-radius: var(--search-border-radius);
 
@@ -24,7 +24,7 @@
     }
 
     &:focus-within {
-        border-color: rgba(22, 24, 35, 0.2);
+        border-color: rgba(29, 30, 36, 0.8);
     }
 }
 

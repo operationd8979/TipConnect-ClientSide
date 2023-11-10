@@ -12,6 +12,7 @@ interface ButtonInterface {
     disabled?: boolean;
     small?: boolean;
     large?: boolean;
+    warning?: boolean;
     children?: React.ReactNode;
     onClick?: (() => void) | null;
 }
@@ -24,13 +25,14 @@ const Button = ({
     disabled = false,
     small = false,
     large = false,
+    warning = false,
     children = null,
     onClick = null,
     ...remainProps
 }: ButtonInterface) => {
     const props: any = { onClick, ...remainProps };
     let Comp: any = 'button';
-    const Classes = cx('wrapper', { primary, outline, disabled, small, large });
+    const Classes = cx('wrapper', { primary, outline, disabled, small, large, warning });
     if (to) {
         props.to = to;
         Comp = Link;

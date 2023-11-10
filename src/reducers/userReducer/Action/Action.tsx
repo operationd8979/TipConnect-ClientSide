@@ -27,6 +27,13 @@ export const registerFail = () => {
     };
 };
 
+export const updateUserInfo = (payload: User) => {
+    return {
+        type: userReducerAction.UPDATE_USER_INFO,
+        payload: payload,
+    };
+};
+
 export const getListFriendSucess = (payload: FriendShip[]) => {
     return {
         type: userReducerAction.GET_LIST_FRIEND_SUCCESS,

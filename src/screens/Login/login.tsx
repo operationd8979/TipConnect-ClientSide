@@ -3,12 +3,11 @@ import Styles from './Login.module.scss';
 import Button from '../../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
-import { AuthenticationReponse, LoginRequest } from '../../type';
+import { AuthenticationReponse, LoginRequest, State } from '../../type';
 import { useEffect, useState } from 'react';
 import { AuthService } from '../../apiService';
 import { loginSuccess, loginFail } from '../../reducers/userReducer/Action';
-import { useDispatch } from 'react-redux';
-import { I18n } from 'i18n-js';
+import { useDispatch, useSelector } from 'react-redux';
 import i18n from '../../i18n/i18n';
 
 const cx = classNames.bind(Styles);
@@ -16,6 +15,9 @@ const cx = classNames.bind(Styles);
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const currentUser = useSelector<any>((state) => state.UserReducer) as State;
+    const { isLoggedIn, user, listFriend } = currentUser;
 
     const [loading, setLoading] = useState(false);
 
@@ -25,19 +27,23 @@ const Login = () => {
     });
     const { email, password } = loginRequest;
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate('/');
+        }
+    }, []);
 
     const handleSubmit = async () => {
         setLoading(true);
         if (email && password) {
-            const reponse = (await AuthService.Login(loginRequest)) as AuthenticationReponse;
-            if (reponse != undefined) {
-                if (reponse.code == 200) {
-                    localStorage.setItem('currentUser', JSON.stringify(reponse.user));
-                    dispatch(loginSuccess(reponse.user));
+            const response = (await AuthService.Login(loginRequest)) as AuthenticationReponse;
+            if (response != undefined) {
+                if (response.code == 200) {
+                    localStorage.setItem('currentUser', JSON.stringify(response.user));
+                    dispatch(loginSuccess(response.user));
                     navigate('/');
                 } else {
-                    alert(reponse.error_message);
+                    alert(response.error_message);
                     dispatch(loginFail());
                 }
             }

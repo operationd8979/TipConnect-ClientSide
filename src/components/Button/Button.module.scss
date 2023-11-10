@@ -42,6 +42,17 @@
     }
 }
 
+.warning {
+    color: var(--white);
+    background-color: #f0ad4e;
+    border-color: orange;
+
+    &:hover {
+        border-color: var(--black);
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)), rgb(217, 4, 29);
+    }
+}
+
 .outline {
     color: var(--primary);
     border-color: currentColor;

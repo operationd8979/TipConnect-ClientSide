@@ -6,7 +6,7 @@
 
 .container {
     width: var(--default-layout-width);
-    min-height: 1000px;
+    min-height: var(--default-content-height);
     display: flex;
     background-color: aliceblue;
     box-shadow: 1px 1px 1px rgb(0 0 0/12%);
