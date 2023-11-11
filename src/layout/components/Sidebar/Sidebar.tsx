@@ -57,11 +57,7 @@ function Sidebar() {
                             }
                         }
                     } else {
-                        if (response === undefined) {
-                            localStorage.removeItem('currentUser');
-                            dispatch(logout());
-                            navigate('/login');
-                        } else if (response?.status == 403) {
+                        if (response === null || response?.status == 403) {
                             localStorage.removeItem('currentUser');
                             dispatch(logout());
                             navigate('/login');

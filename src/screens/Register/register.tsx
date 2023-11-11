@@ -40,8 +40,8 @@ const Register = () => {
         if (email && firstName && lastName && password) {
             if (password === rePassword) {
                 const response = (await AuthService.Register(registerRequest)) as AuthenticationReponse;
-                if (response != undefined) {
-                    if (response.code == 200) {
+                if (response) {
+                    if (response.code === 200) {
                         localStorage.setItem('currentUser', JSON.stringify(response.user));
                         dispatch(registerSuccess(response.user));
                         navigate('/');

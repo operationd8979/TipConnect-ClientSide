@@ -37,7 +37,7 @@ const Login = () => {
         setLoading(true);
         if (email && password) {
             const response = (await AuthService.Login(loginRequest)) as AuthenticationReponse;
-            if (response != undefined) {
+            if (response) {
                 if (response.code == 200) {
                     localStorage.setItem('currentUser', JSON.stringify(response.user));
                     dispatch(loginSuccess(response.user));

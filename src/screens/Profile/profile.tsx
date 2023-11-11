@@ -10,6 +10,9 @@ import Button from '../../components/Button';
 import { CheckIcon } from '../../components/Icons';
 import config from '../../config';
 import routes from '../../config/routes';
+import Cropper, { Area } from 'react-easy-crop';
+import getCroppedImg, { blobUrlToFile } from '../../utils/imageUtil';
+import Crop from '../../components/Crop';
 
 const cx = classNames.bind(Styles);
 const examplePassword = '';
@@ -31,10 +34,9 @@ const Profile = () => {
     const [rePassword, setRePassword] = useState('');
 
     const [newAvatar, setNewAvatar] = useState<File | null>(null);
-    const [urlAvatar, setUrlAvatar] = useState<string>('');
+    const [urlAvatar, setUrlAvatar] = useState<any>('');
 
-    // const [update, setUpdate] = useState(false);
-    // const [password, setPassword] = useState('');
+    const [showCrop, setShowCrop] = useState(false);
 
     const { firstName, lastName, newPassword, password } = infoUser;
 
@@ -50,7 +52,7 @@ const Profile = () => {
             const getUserData = async () => {
                 console.log('Call API get UserInfo');
                 const response = await UserService.getUserInfo();
-                if (response !== undefined) {
+                if (response) {
                     const data = response.data as AuthenticationReponse;
                     if (data.code === 200) {
                         const newUser = data.user;
@@ -71,7 +73,7 @@ const Profile = () => {
 
     const handleUpdateInfo = async () => {
         const response = await UserService.updateUserInfo(infoUser);
-        if (response !== undefined) {
+        if (response) {
             console.log(response);
             const data = response.data as AuthenticationReponse;
             if (data.code === 200) {
@@ -94,27 +96,43 @@ const Profile = () => {
 
     useEffect(() => {
         return () => {
-            newAvatar && URL.revokeObjectURL(urlAvatar);
+            urlAvatar && URL.revokeObjectURL(urlAvatar);
         };
-    }, [newAvatar]);
+    }, [urlAvatar]);
 
-    const handleOnChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            console.log('change file');
+    const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
             const file: File = event.target.files[0];
-            if (file) {
-                setNewAvatar(file);
-                setUrlAvatar(URL.createObjectURL(file));
-            }
+            setShowCrop(true);
+            setUrlAvatar(URL.createObjectURL(file));
         }
+    };
+
+    const handleCropImage = async (previewUrl: string) => {
+        setUrlAvatar(previewUrl);
+
+        const file = await blobUrlToFile(previewUrl);
+        console.log(file);
+        let formData = new FormData();
+        formData.append('file', file, file.name);
+        UserService.updateAvatar(formData).then((response) => {
+            if (response) {
+                console.log(response);
+            } else {
+                alert('logout');
+            }
+        });
+
+        setShowCrop(false);
     };
 
     return (
         <div className={cx('wrapper')}>
+            {showCrop && <Crop urlAvatar={urlAvatar} handleCropImage={handleCropImage} />}
             <div className={cx('sidebar')}>
                 {user?.urlAvatar && (
                     <div className={cx('user_avatar')}>
-                        <img src={newAvatar ? urlAvatar : user.urlAvatar} alt={user?.fullName} />
+                        <img src={urlAvatar ? urlAvatar : user.urlAvatar} alt={user?.fullName} />
                     </div>
                 )}
                 <div className={cx('user_name')}>
@@ -129,7 +147,7 @@ const Profile = () => {
                         ref={inputFile}
                         style={{ display: 'none' }}
                         accept="image/png, image/jpeg"
-                        onChange={(e) => handleOnChangeFile(e)}
+                        onChange={(e) => onChangeFile(e)}
                     />
                     <Button outline large onClick={() => handleOpenFile()}>
                         Change Avatar
@@ -239,9 +257,10 @@ const Profile = () => {
                             warning={update()}
                             disabled={
                                 !(
-                                    update() &&
-                                    password !== '' &&
-                                    (newPassword === examplePassword || newPassword === rePassword)
+                                    (update() &&
+                                        password !== '' &&
+                                        (newPassword === examplePassword || newPassword === rePassword)) ||
+                                    showCrop
                                 )
                             }
                             outline={!update()}

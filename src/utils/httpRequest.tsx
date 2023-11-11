@@ -20,6 +20,15 @@ export const post = async ({ path, options = {} }: requestType) => {
     return response;
 };
 
+export const postMultipart = async ({ path, options = {} }: requestType) => {
+    const response = await httpRequest.post(path, options, {
+        headers: {
+            'Content-Type': `multipart/form-data`,
+        },
+    });
+    return response;
+};
+
 export const getStream = async ({ path, options = {} }: requestType) => {
     const response = await fetch(`http://localhost:8080/api/${path}`, {
         method: 'GET',
