@@ -42,9 +42,9 @@ function Header() {
                                 </button>
                             </Tippy>
                             <Tippy delay={[0, 50]} content="User profile" placement="bottom">
-                                <Link to="/profile">
+                                <Link to="/profile" className={cx('avatar_user')}>
                                     <button className={cx('action-btn')}>
-                                        <img src={user?.urlAvatar} alt="user" className={cx('avatar_user')} />
+                                        <img src={user?.urlAvatar} alt="user" />
                                     </button>
                                 </Link>
                             </Tippy>

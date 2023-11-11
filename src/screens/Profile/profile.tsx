@@ -30,6 +30,9 @@ const Profile = () => {
     });
     const [rePassword, setRePassword] = useState('');
 
+    const [newAvatar, setNewAvatar] = useState<File | null>(null);
+    const [urlAvatar, setUrlAvatar] = useState<string>('');
+
     // const [update, setUpdate] = useState(false);
     // const [password, setPassword] = useState('');
 
@@ -79,9 +82,9 @@ const Profile = () => {
                 alert(data.error_message);
             }
         } else {
-            // localStorage.removeItem('currentUser');
-            // dispatch(logout());
-            // navigate('/login');
+            localStorage.removeItem('currentUser');
+            dispatch(logout());
+            navigate('/login');
         }
     };
 
@@ -89,12 +92,31 @@ const Profile = () => {
         inputFile?.current?.click();
     };
 
+    useEffect(() => {
+        return () => {
+            newAvatar && URL.revokeObjectURL(urlAvatar);
+        };
+    }, [newAvatar]);
+
+    const handleOnChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            console.log('change file');
+            const file: File = event.target.files[0];
+            if (file) {
+                setNewAvatar(file);
+                setUrlAvatar(URL.createObjectURL(file));
+            }
+        }
+    };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('sidebar')}>
-                <div className={cx('user_avatar')}>
-                    <img src={user?.urlAvatar} alt={user?.fullName} />
-                </div>
+                {user?.urlAvatar && (
+                    <div className={cx('user_avatar')}>
+                        <img src={newAvatar ? urlAvatar : user.urlAvatar} alt={user?.fullName} />
+                    </div>
+                )}
                 <div className={cx('user_name')}>
                     {firstName !== user?.firstName || lastName !== user.lastName
                         ? firstName + ' ' + lastName
@@ -102,11 +124,12 @@ const Profile = () => {
                 </div>
                 <div className={cx('active_button_avatar')}>
                     <input
-                        type="image_uploads"
+                        type="file"
                         id="image_uploads"
                         ref={inputFile}
                         style={{ display: 'none' }}
                         accept="image/png, image/jpeg"
+                        onChange={(e) => handleOnChangeFile(e)}
                     />
                     <Button outline large onClick={() => handleOpenFile()}>
                         Change Avatar

@@ -57,7 +57,11 @@ function Sidebar() {
                             }
                         }
                     } else {
-                        if (response?.status == 403) {
+                        if (response === undefined) {
+                            localStorage.removeItem('currentUser');
+                            dispatch(logout());
+                            navigate('/login');
+                        } else if (response?.status == 403) {
                             localStorage.removeItem('currentUser');
                             dispatch(logout());
                             navigate('/login');
@@ -90,7 +94,7 @@ function Sidebar() {
                 {searchResult.tinyUser && (
                     <div>
                         <div className={cx('header_search')}>Tìm qua email:</div>
-                        <div className={cx('friend_card')} key={searchResult.tinyUser.userId}>
+                        <div className={cx('friend_card')} key={searchResult.tinyUser.userID}>
                             <div className={cx('card_img')}>
                                 <img src={searchResult.tinyUser.urlAvatar} alt={searchResult.tinyUser.fullName} />
                             </div>
@@ -106,14 +110,14 @@ function Sidebar() {
                         <Link
                             className={cx('friend_card')}
                             key={friendShip.id}
-                            to={`/message/${friendShip.friend.userId}`}
+                            to={`/message/${friendShip.friend.userID}`}
                         >
                             <div className={cx('card_img')}>
                                 <img src={friendShip.friend.urlAvatar} alt={friendShip.friend.fullName} />
                             </div>
                             <div className={cx('card_info')}>
                                 <div className={cx('card_name')}>{friendShip.friend.fullName}</div>
-                                <div className={cx('card_detail')}>asdasd</div>
+                                <div className={cx('card_detail')}>message</div>
                             </div>
                         </Link>
                     );

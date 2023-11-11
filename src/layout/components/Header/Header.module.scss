@@ -1,6 +1,6 @@
 .wrapper {
     width: 100%;
-    height: var(--default-layout-header-heigh, 60px);
+    height: var(--default-layout-header-heigh);
     box-shadow: 0px 1px 1px rgb(0 0 0/12%);
     display: flex;
     justify-content: center;
@@ -16,13 +16,15 @@
 
 .logo {
     img {
-        height: 12rem;
+        height: var(--default-layout-header-heigh);
     }
 }
 
 .avatar_user {
-    height: 6rem;
-    border-radius: 50%;
+    img {
+        height: calc(var(--default-layout-header-heigh) / 3 * 2);
+        border-radius: 50%;
+    }
 }
 
 .actions {
