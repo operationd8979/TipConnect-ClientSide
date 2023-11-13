@@ -1,18 +1,24 @@
 import Styles from './Profile.module.scss';
 import classNames from 'classnames/bind';
 import { useSelector, useDispatch } from 'react-redux';
-import { AuthenticationReponse, UpdateInfoRequest, State } from '../../type';
+import { AuthenticationReponse, UpdateInfoRequest, State, UpdateAvatarRequest } from '../../type';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserService } from '../../apiService';
-import { updateUserInfo, logout } from '../../reducers/userReducer/Action';
+import {
+    updateUserInfoSuccess,
+    updateUserInfoFail,
+    uploadAvatarSuccess,
+    uploadAvatarFail,
+} from '../../reducers/userReducer/Action';
 import Button from '../../components/Button';
-import { CheckIcon } from '../../components/Icons';
+import { CheckIcon, UncheckIcon } from '../../components/Icons';
 import config from '../../config';
 import routes from '../../config/routes';
 import Cropper, { Area } from 'react-easy-crop';
 import getCroppedImg, { blobUrlToFile } from '../../utils/imageUtil';
 import Crop from '../../components/Crop';
+import { uploadBytes, getDownloadURL, storageRef, storage } from '../../firebase';
 
 const cx = classNames.bind(Styles);
 const examplePassword = '';
@@ -58,12 +64,11 @@ const Profile = () => {
                         const newUser = data.user;
                         if (JSON.stringify(user) !== JSON.stringify(newUser)) {
                             localStorage.setItem('currentUser', JSON.stringify(newUser));
-                            dispatch(updateUserInfo(newUser));
+                            dispatch(updateUserInfoSuccess(newUser));
                         }
                     }
                 } else {
-                    localStorage.removeItem('currentUser');
-                    dispatch(logout());
+                    dispatch(updateUserInfoFail());
                     navigate('/login');
                 }
             };
@@ -74,18 +79,16 @@ const Profile = () => {
     const handleUpdateInfo = async () => {
         const response = await UserService.updateUserInfo(infoUser);
         if (response) {
-            console.log(response);
             const data = response.data as AuthenticationReponse;
             if (data.code === 200) {
                 localStorage.setItem('currentUser', JSON.stringify(data.user));
-                dispatch(updateUserInfo(data.user));
+                dispatch(updateUserInfoSuccess(data.user));
                 window.location.reload();
             } else {
                 alert(data.error_message);
             }
         } else {
-            localStorage.removeItem('currentUser');
-            dispatch(logout());
+            dispatch(updateUserInfoFail());
             navigate('/login');
         }
     };
@@ -105,34 +108,60 @@ const Profile = () => {
             const file: File = event.target.files[0];
             setShowCrop(true);
             setUrlAvatar(URL.createObjectURL(file));
+            event.target.value = '';
         }
     };
 
     const handleCropImage = async (previewUrl: string) => {
-        setUrlAvatar(previewUrl);
-
-        const file = await blobUrlToFile(previewUrl);
-        console.log(file);
-        let formData = new FormData();
-        formData.append('file', file, file.name);
-        UserService.updateAvatar(formData).then((response) => {
-            if (response) {
-                console.log(response);
-            } else {
-                alert('logout');
-            }
-        });
-
+        const url = await uploadImage(previewUrl);
+        if (url) {
+            const request: UpdateAvatarRequest = {
+                urlAvatar: url,
+            };
+            UserService.updateAvatar(request).then((response) => {
+                if (response) {
+                    const data = response.data as AuthenticationReponse;
+                    if (data.code == 200) {
+                        console.log(data.message);
+                        dispatch(uploadAvatarSuccess(url));
+                    } else {
+                        console.log(data.error_message);
+                    }
+                } else {
+                    dispatch(uploadAvatarFail());
+                }
+            });
+        }
+        setUrlAvatar(null);
         setShowCrop(false);
+    };
+
+    const uploadImage = async (previewUrl: string) => {
+        try {
+            const ref = storageRef(storage, `UserArea/${user?.email}/avatar/${user?.fullName}.jpeg`);
+            const fileData = await fetch(previewUrl);
+            const bytes = await fileData.blob();
+            const snapshot = await uploadBytes(ref, bytes, { contentType: 'image/jpeg' });
+            const url = await getDownloadURL(snapshot.ref);
+            return url;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    };
+
+    const onCancel = () => {
+        setShowCrop(false);
+        setUrlAvatar(null);
     };
 
     return (
         <div className={cx('wrapper')}>
-            {showCrop && <Crop urlAvatar={urlAvatar} handleCropImage={handleCropImage} />}
+            {showCrop && <Crop urlAvatar={urlAvatar} handleCropImage={handleCropImage} onCancel={onCancel} />}
             <div className={cx('sidebar')}>
                 {user?.urlAvatar && (
                     <div className={cx('user_avatar')}>
-                        <img src={urlAvatar ? urlAvatar : user.urlAvatar} alt={user?.fullName} />
+                        <img src={user.urlAvatar} alt={user?.fullName} />
                     </div>
                 )}
                 <div className={cx('user_name')}>
@@ -227,11 +256,13 @@ const Profile = () => {
                                             setRePassword(e.target.value);
                                         }}
                                     ></input>
-                                    {newPassword === rePassword && newPassword != '' && (
-                                        <div className={cx('icon_check')}>
+                                    <div className={cx('icon_check')}>
+                                        {newPassword === rePassword && newPassword != '' ? (
                                             <CheckIcon></CheckIcon>
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <UncheckIcon></UncheckIcon>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>

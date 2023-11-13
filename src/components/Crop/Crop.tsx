@@ -3,16 +3,24 @@ import classNames from 'classnames/bind';
 import Styles from './Crop.module.scss';
 import Cropper, { Area } from 'react-easy-crop';
 import getCroppedImg from '../../utils/imageUtil';
+import Button from '../Button';
 
 const cx = classNames.bind(Styles);
 
-const Crop = ({ urlAvatar, handleCropImage }: { urlAvatar: any; handleCropImage: (previewUrl: string) => void }) => {
+const Crop = ({
+    urlAvatar,
+    handleCropImage,
+    onCancel,
+}: {
+    urlAvatar: any;
+    handleCropImage: (previewUrl: string) => void;
+    onCancel: () => void;
+}) => {
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
 
     const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
-        console.log(croppedAreaPixels);
         setCroppedAreaPixels(croppedAreaPixels);
     };
 
@@ -31,7 +39,7 @@ const Crop = ({ urlAvatar, handleCropImage }: { urlAvatar: any; handleCropImage:
     };
 
     return (
-        <div>
+        <div className={cx('wrraper')}>
             <div className={cx('crop_container')}>
                 <Cropper
                     image={urlAvatar}
@@ -44,8 +52,15 @@ const Crop = ({ urlAvatar, handleCropImage }: { urlAvatar: any; handleCropImage:
                 ></Cropper>
             </div>
             <div className={cx('controls')}>
-                <div className={cx('button_area')}>
-                    <button onClick={onCrop}>Crop</button>
+                <div className={cx('button_area_crop')}>
+                    <Button onClick={onCrop} primary>
+                        Crop
+                    </Button>
+                </div>
+                <div className={cx('button_area_cancel')}>
+                    <Button onClick={onCancel} primary>
+                        Canncel
+                    </Button>
                 </div>
             </div>
         </div>

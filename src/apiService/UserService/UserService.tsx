@@ -1,6 +1,6 @@
 import { get, getStream, post, postMultipart } from '../../utils/httpRequest';
 import ERROR from '../../contants/errorMessage';
-import { SearchQuery, UpdateInfoRequest } from '../../type';
+import { SearchQuery, UpdateInfoRequest, UpdateAvatarRequest } from '../../type';
 
 const getUserInfo = async () => {
     try {
@@ -22,9 +22,9 @@ const updateUserInfo = async (updateInfoRequest: UpdateInfoRequest) => {
     }
 };
 
-const updateAvatar = async (fromData: any) => {
+const updateAvatar = async (request: UpdateAvatarRequest) => {
     try {
-        const response = await postMultipart({ path: `user/updateAvatar`, options: fromData });
+        const response = await post({ path: `user/updateAvatar`, options: request });
         return response;
     } catch (error) {
         alert(ERROR.ERR_NETWORK.message);

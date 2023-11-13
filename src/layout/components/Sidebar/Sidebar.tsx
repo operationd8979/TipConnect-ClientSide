@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import styles from './Sidebar.module.scss';
 import className from 'classnames/bind';
 import { useSelector, useDispatch } from 'react-redux';
-import { getListFriendSucess, getListFriendFail, logout } from '../../../reducers/userReducer/Action/Action';
+import { getListFriendSuccess, getListFriendFail, logout } from '../../../reducers/userReducer/Action/Action';
 import { State, FriendShip, SearchResponse } from '../../../type';
 import UserService from '../../../apiService/UserService';
 import { Link, useNavigate } from 'react-router-dom';
@@ -58,8 +58,7 @@ function Sidebar() {
                         }
                     } else {
                         if (response === null || response?.status == 403) {
-                            localStorage.removeItem('currentUser');
-                            dispatch(logout());
+                            dispatch(getListFriendFail());
                             navigate('/login');
                         }
                     }
@@ -75,7 +74,7 @@ function Sidebar() {
 
     useEffect(() => {
         if (friends.length != 0) {
-            dispatch(getListFriendSucess(friends));
+            dispatch(getListFriendSuccess(friends));
         }
     }, [listFriend]);
 

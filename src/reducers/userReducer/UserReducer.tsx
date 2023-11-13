@@ -13,23 +13,30 @@ const initalState: State = user
 
 const UserReducer = (state: State = initalState, action: Action) => {
     const { type, payload } = action;
+    console.log('action: ' + type + ' payload: ' + payload || null);
     switch (type) {
         case actionTypes.REGISTER_SUCCESS:
             return { ...state, isLoggedIn: true, user: payload };
-        case actionTypes.REGISTER_FAIL:
-            return { ...state, isLoggedIn: false };
         case actionTypes.LOGIN_SUCCESS:
             return { ...state, isLoggedIn: true, user: payload };
-        case actionTypes.REGISTER_FAIL:
-            return { ...state, isLoggedIn: false };
-        case actionTypes.UPDATE_USER_INFO:
-            return { ...state, user: payload };
         case actionTypes.GET_LIST_FRIEND_SUCCESS:
             return { ...state, listFriend: payload };
+        case actionTypes.UPDATE_USER_SUCCESS:
+            return { ...state, user: payload };
+        case actionTypes.UPLOAD_AVATAR_SUCCESS:
+            return { ...state, user: { ...state.user, urlAvatar: payload } };
+
+        case actionTypes.REGISTER_FAIL:
+        case actionTypes.LOGIN_FAIL:
+            return { ...state, isLoggedIn: false };
+
         case actionTypes.GET_LIST_FRIEND_FAIL:
-            return state;
+        case actionTypes.UPDATE_USER_FAIL:
+        case actionTypes.UPLOAD_AVATAR_FAIL:
         case actionTypes.LOGOUT:
+            localStorage.removeItem('currentUser');
             return { ...state, isLoggedIn: false, user: null };
+
         default:
             return state;
     }

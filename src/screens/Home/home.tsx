@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { State } from '../../type';
+import firebase from '../../firebase';
 
 const Home = () => {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;

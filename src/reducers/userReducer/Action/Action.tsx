@@ -27,14 +27,33 @@ export const registerFail = () => {
     };
 };
 
-export const updateUserInfo = (payload: User) => {
+export const updateUserInfoSuccess = (payload: User) => {
     return {
-        type: userReducerAction.UPDATE_USER_INFO,
+        type: userReducerAction.UPDATE_USER_SUCCESS,
         payload: payload,
     };
 };
 
-export const getListFriendSucess = (payload: FriendShip[]) => {
+export const updateUserInfoFail = () => {
+    return {
+        type: userReducerAction.UPDATE_USER_FAIL,
+    };
+};
+
+export const uploadAvatarSuccess = (payload: string) => {
+    return {
+        type: userReducerAction.UPLOAD_AVATAR_SUCCESS,
+        payload: payload,
+    };
+};
+
+export const uploadAvatarFail = () => {
+    return {
+        type: userReducerAction.UPLOAD_AVATAR_SUCCESS,
+    };
+};
+
+export const getListFriendSuccess = (payload: FriendShip[]) => {
     return {
         type: userReducerAction.GET_LIST_FRIEND_SUCCESS,
         payload: payload,

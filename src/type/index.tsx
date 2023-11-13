@@ -16,6 +16,10 @@ export interface UpdateInfoRequest {
     password: string;
 }
 
+export interface UpdateAvatarRequest {
+    urlAvatar: string;
+}
+
 export interface FriendShip {
     id: string;
     friend: User;

@@ -25,7 +25,7 @@ function Header() {
                 <div className={cx('actions')}>
                     {isLoggedIn ? (
                         <>
-                            <Tippy delay={[0, 50]} content="Upload video" placement="bottom">
+                            {/* <Tippy delay={[0, 50]} content="Upload video" placement="bottom">
                                 <button className={cx('action-btn')}>
                                     <UploadIcon />
                                 </button>
@@ -40,7 +40,7 @@ function Header() {
                                     <InboxIcon />
                                     <span className={cx('badge')}>12</span>
                                 </button>
-                            </Tippy>
+                            </Tippy> */}
                             <Tippy delay={[0, 50]} content="User profile" placement="bottom">
                                 <Link to="/profile" className={cx('avatar_user')}>
                                     <button className={cx('action-btn')}>

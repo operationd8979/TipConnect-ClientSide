@@ -1,28 +1,40 @@
+.wrraper {
+}
+
 .crop_container {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 80px;
-    background-color: black;
+    bottom: 0;
+    background-color: transparent;
 }
 
 .controls {
-    position: fixed;
-    bottom: 0px;
-    width: 100%;
-    height: 80px;
 }
 
-.button_area {
-    text-align: center;
+.button_area_crop {
+    position: fixed;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     margin-top: 20px;
+    width: 20%;
     button {
-        margin-left: 10px;
-        margin-right: 10px;
-        background-color: black;
-        color: white;
-        border: 1px solid yellow;
+        font-size: 20px;
+    }
+}
+
+.button_area_cancel {
+    position: fixed;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-top: 20px;
+    width: 20%;
+    button {
+        background-color: var(--white);
+        color: var(--black);
         font-size: 20px;
     }
 }

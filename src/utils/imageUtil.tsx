@@ -57,8 +57,6 @@ export default async function getCroppedImg(imageSrc: string, pixelCrop: any, ro
         0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y,
     );
 
-    console.log(canvas);
-
     // As Base64 string
     // return canvas.toDataURL("image/jpeg");
     return canvas;
