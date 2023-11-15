@@ -13,7 +13,6 @@ const initalState: State = user
 
 const UserReducer = (state: State = initalState, action: Action) => {
     const { type, payload } = action;
-    console.log('action: ' + type + ' payload: ' + payload || null);
     switch (type) {
         case actionTypes.REGISTER_SUCCESS:
             return { ...state, isLoggedIn: true, user: payload };

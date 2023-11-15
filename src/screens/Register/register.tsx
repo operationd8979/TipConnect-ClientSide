@@ -4,9 +4,10 @@ import Button from '../../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
 import { RegisterRequest, AuthenticationReponse, State } from '../../type';
+import Stomp, { Frame, VERSIONS, client, over, Client } from 'webstomp-client';
 import { useEffect, useState } from 'react';
-import { AuthService } from '../../apiService';
-import { registerSuccess, registerFail } from '../../reducers/userReducer/Action';
+import { AuthService, SocketService } from '../../apiService';
+import { registerSuccess, registerFail, connectFail, connectSuccess } from '../../reducers';
 import { useDispatch, useSelector } from 'react-redux';
 import i18n from '../../i18n/i18n';
 
@@ -17,6 +18,8 @@ const Register = () => {
     const navigate = useNavigate();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
+    const currentStomp = useSelector<any>((state) => state.StompReducer) as Client;
+
     const { isLoggedIn, user, listFriend } = currentUser;
 
     const [loading, setLoading] = useState(false);
@@ -44,6 +47,13 @@ const Register = () => {
                     if (response.code === 200) {
                         localStorage.setItem('currentUser', JSON.stringify(response.user));
                         dispatch(registerSuccess(response.user));
+                        const newStomp: Client = await SocketService.connectStomp(currentStomp, response.user.userID);
+                        console.log(newStomp);
+                        if (newStomp) {
+                            dispatch(connectSuccess(newStomp));
+                        } else {
+                            dispatch(connectFail(currentStomp));
+                        }
                         navigate('/');
                     } else {
                         alert(response.error_message);

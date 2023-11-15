@@ -2,9 +2,19 @@ import { useCallback, useEffect, useState } from 'react';
 import styles from './Sidebar.module.scss';
 import className from 'classnames/bind';
 import { useSelector, useDispatch } from 'react-redux';
-import { getListFriendSuccess, getListFriendFail, logout } from '../../../reducers/userReducer/Action/Action';
-import { State, FriendShip, SearchResponse } from '../../../type';
-import UserService from '../../../apiService/UserService';
+import {
+    getListFriendSuccess,
+    getListFriendFail,
+    logout,
+    connectSuccess,
+    connectFail,
+    disconnect,
+    updateUserInfoSuccess,
+    updateUserInfoFail,
+} from '../../../reducers';
+import { State, FriendShip, SearchResponse, AuthenticationReponse } from '../../../type';
+import { Client } from 'webstomp-client';
+import { UserService, SocketService } from '../../../apiService/';
 import { Link, useNavigate } from 'react-router-dom';
 import Search from '../Search';
 
@@ -12,8 +22,12 @@ const cx = className.bind(styles);
 
 function Sidebar() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
+    const currentStomp = useSelector<any>((state) => state.StompReducer) as Client;
+
     const { isLoggedIn, user, listFriend } = currentUser;
     const [friends, setFriends] = useState<FriendShip[]>(listFriend ?? []);
+
+    const [reload, setReload] = useState(false);
 
     const [query, setQuery] = useState<string>('');
     const [searchResult, setSearchResult] = useState<SearchResponse>({ tinyUser: null, messages: [] });
@@ -25,58 +39,96 @@ function Sidebar() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (currentUser.user) {
-            console.log('Call api get listFriend');
-            const callApiGetFriend = async () => {
-                try {
-                    const response = await UserService.getListFriend();
-                    if (response?.ok) {
-                        const reader = response.body?.getReader();
-                        if (reader) {
-                            const decoder = new TextDecoder();
-                            while (true) {
-                                const { done, value }: any = await reader.read();
-                                if (done) {
-                                    console.log('Streaming data ended!');
-                                    break;
-                                }
-                                let jsonString = decoder.decode(value, { stream: true });
-                                const jsonArray = jsonString.split(']');
+    // stomp.subscribe('/users/private', function (message) {
+    //     console.log('nhận tin nhắn private:' + message.body);
+    // });
+    // stomp.subscribe('/all/messages', function (message) {
+    //     console.log('nhận tin nhắn all:' + message.body);
+    // });
 
-                                jsonArray.forEach((jsonData) => {
-                                    try {
-                                        const json: FriendShip[] = JSON.parse(jsonData + ']') as FriendShip[];
-                                        setFriends((prevList) => [...prevList, ...json]);
-                                    } catch (error) {
-                                        jsonData = jsonData.substring(1);
-                                        const json: FriendShip[] = JSON.parse('[' + jsonData + ']') as FriendShip[];
-                                        setFriends((prevList) => [...prevList, ...json]);
+    useEffect(() => {
+        if (currentStomp.connected) {
+            console.log('<<<<<<<<<<<<<<<<1>>>>>>>>>>>>>>>>');
+            if (user) {
+                const callApiGetFriend = async () => {
+                    try {
+                        const response = await UserService.getListFriend();
+                        if (response?.ok) {
+                            const reader = response.body?.getReader();
+                            if (reader) {
+                                const decoder = new TextDecoder();
+                                while (true) {
+                                    const { done, value }: any = await reader.read();
+                                    if (done) {
+                                        console.log('Streaming data ended!');
+                                        break;
                                     }
-                                });
+                                    let jsonString = decoder.decode(value, { stream: true });
+                                    const jsonArray = jsonString.split(']');
+
+                                    jsonArray.forEach((jsonData) => {
+                                        try {
+                                            const json: FriendShip[] = JSON.parse(jsonData + ']') as FriendShip[];
+                                            setFriends((prevList) => [...prevList, ...json]);
+                                        } catch (error) {
+                                            jsonData = jsonData.substring(1);
+                                            const json: FriendShip[] = JSON.parse('[' + jsonData + ']') as FriendShip[];
+                                            setFriends((prevList) => [...prevList, ...json]);
+                                        }
+                                    });
+                                }
+                            }
+                        } else {
+                            if (response === null || response?.status == 403) {
+                                dispatch(getListFriendFail());
+                                navigate('/login');
                             }
                         }
-                    } else {
-                        if (response === null || response?.status == 403) {
-                            dispatch(getListFriendFail());
-                            navigate('/login');
+                    } catch (error) {
+                        alert(error);
+                        console.log(error);
+                        dispatch(getListFriendFail());
+                    }
+                };
+                if (friends.length == 0) {
+                    console.log('Call api get listFriend');
+                    callApiGetFriend();
+                }
+            }
+        } else {
+            console.log('<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>');
+            const getUserData = async () => {
+                console.log('Call API get UserInfo');
+                const response = await UserService.getUserInfo();
+                if (response) {
+                    const data = response.data as AuthenticationReponse;
+                    if (data.code === 200) {
+                        const newUser = data.user;
+                        if (JSON.stringify(user) !== JSON.stringify(newUser)) {
+                            localStorage.setItem('currentUser', JSON.stringify(newUser));
+                            dispatch(updateUserInfoSuccess(newUser));
+                        }
+                        const newStomp: Client = await SocketService.connectStomp(currentStomp, newUser.userID);
+                        if (newStomp) {
+                            dispatch(connectSuccess(newStomp));
+                        } else {
+                            dispatch(connectFail(currentStomp));
                         }
                     }
-                } catch (error) {
-                    alert(error);
-                    console.log(error);
-                    dispatch(getListFriendFail());
+                } else {
+                    dispatch(updateUserInfoFail());
+                    navigate('/login');
                 }
             };
-            if (friends.length == 0) callApiGetFriend();
+            getUserData();
         }
-    }, []);
+    }, [currentStomp]);
 
     useEffect(() => {
-        if (friends.length != 0) {
+        if (friends.length != listFriend?.length) {
             dispatch(getListFriendSuccess(friends));
         }
-    }, [listFriend]);
+    }, [friends]);
 
     return (
         <aside className={cx('wrapper')}>

@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Search.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faSpinner, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import i18n from '../../../i18n/i18n';
 import { useDebounce } from '../../../hooks';
 import { UserService } from '../../../apiService';
 import { SearchQuery, SearchResponse } from '../../../type';
+import { UncheckIcon, Spinner } from '../../../components/Icons';
 
 const cx = classNames.bind(styles);
 
@@ -22,12 +21,12 @@ const Search = ({
     const [loading, setLoading] = useState(false);
 
     // const [query, setQuery] = useState<string>('');
-    const [result, setResult] = useState([]);
+    const [result, setResult] = useState(false);
     const debouncedValue = useDebounce({ value: query, delay: 500 });
 
     useEffect(() => {
         if (!debouncedValue.trim()) {
-            setResult([]);
+            setResult(false);
             setSearchResult({ tinyUser: null, messages: [] });
             return;
         }
@@ -42,6 +41,9 @@ const Search = ({
                     console.log(user_aim);
                     console.log(messages);
                     setSearchResult({ tinyUser: user_aim, messages: messages });
+                    if (user_aim) {
+                        setResult(true);
+                    }
                 }
             }
             setLoading(false);
@@ -49,6 +51,12 @@ const Search = ({
 
         handleSearchRequest();
     }, [debouncedValue]);
+
+    const handleClearResult = () => {
+        setResult(false);
+        setQuery('');
+        setSearchResult({ tinyUser: null, messages: [] });
+    };
 
     return (
         <div className={cx('search')}>
@@ -61,12 +69,16 @@ const Search = ({
                 placeholder={i18n.t('HEADER_search_placeholder')}
                 spellCheck={false}
             />
-            {result.length > 0 && !loading && (
-                <button className={cx('clear')}>
-                    <FontAwesomeIcon icon={faCircleXmark} />
+            {result && !loading && (
+                <button className={cx('clear')} onClick={handleClearResult}>
+                    <UncheckIcon />
                 </button>
             )}
-            {loading && <FontAwesomeIcon className={cx('loading')} icon={faSpinner} />}
+            {loading && (
+                <div className={cx('loading')}>
+                    <Spinner />
+                </div>
+            )}
         </div>
     );
 };

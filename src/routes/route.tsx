@@ -1,6 +1,7 @@
 import { Home, Login, Register, MessageArea, Profile } from '../screens';
 import { OnlyHeader } from '../layout';
 import config from '../config';
+import StompProvider from '../websocket/Websocket';
 
 interface publicRoutes {
     path: string;

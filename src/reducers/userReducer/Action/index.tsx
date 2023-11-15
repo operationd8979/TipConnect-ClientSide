@@ -4,6 +4,8 @@ export {
     loginFail,
     registerSuccess,
     registerFail,
+    getListFriendSuccess,
+    getListFriendFail,
     updateUserInfoSuccess,
     updateUserInfoFail,
     uploadAvatarSuccess,

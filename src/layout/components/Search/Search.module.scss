@@ -34,8 +34,19 @@
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.8rem;
     color: rgba(22, 24, 35, 0.38);
+    background-color: transparent;
+    svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+.clear {
+    color: red;
+    :hover {
+        color: white;
+    }
 }
 
 .loading {

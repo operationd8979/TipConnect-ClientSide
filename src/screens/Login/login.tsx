@@ -4,11 +4,13 @@ import Button from '../../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
 import { AuthenticationReponse, LoginRequest, State } from '../../type';
+import Stomp, { Frame, VERSIONS, client, over, Client } from 'webstomp-client';
 import { useEffect, useState } from 'react';
-import { AuthService } from '../../apiService';
-import { loginSuccess, loginFail } from '../../reducers/userReducer/Action';
+import { AuthService, SocketService } from '../../apiService';
+import { loginSuccess, loginFail, connectSuccess, connectFail } from '../../reducers';
 import { useDispatch, useSelector } from 'react-redux';
 import i18n from '../../i18n/i18n';
+import SockJS from 'sockjs-client';
 
 const cx = classNames.bind(Styles);
 
@@ -17,6 +19,8 @@ const Login = () => {
     const dispatch = useDispatch();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
+    const currentStomp = useSelector<any>((state) => state.StompReducer) as Client;
+
     const { isLoggedIn, user, listFriend } = currentUser;
 
     const [loading, setLoading] = useState(false);
@@ -31,6 +35,9 @@ const Login = () => {
         if (isLoggedIn) {
             navigate('/');
         }
+        if (currentStomp.connected) {
+            SocketService.disconnectStomp(currentStomp);
+        }
     }, []);
 
     const handleSubmit = async () => {
@@ -41,6 +48,12 @@ const Login = () => {
                 if (response.code == 200) {
                     localStorage.setItem('currentUser', JSON.stringify(response.user));
                     dispatch(loginSuccess(response.user));
+                    const newStomp: Client = await SocketService.connectStomp(currentStomp, response.user.userID);
+                    if (newStomp) {
+                        dispatch(connectSuccess(newStomp));
+                    } else {
+                        dispatch(connectFail(currentStomp));
+                    }
                     navigate('/');
                 } else {
                     alert(response.error_message);

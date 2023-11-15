@@ -9,9 +9,7 @@ const cx = classNames.bind(Styles);
 const MessageArea = () => {
     const { friendId } = useParams();
 
-    useEffect(() => {
-        console.log(friendId);
-    }, [friendId]);
+    useEffect(() => {}, [friendId]);
 
     return <div>Message from {friendId}</div>;
 };

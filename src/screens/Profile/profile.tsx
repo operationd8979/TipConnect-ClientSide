@@ -51,7 +51,6 @@ const Profile = () => {
     }, [firstName, lastName, newPassword]);
 
     useEffect(() => {
-        console.log('init');
         if (!isLoggedIn) {
             navigate('/login');
         } else {
