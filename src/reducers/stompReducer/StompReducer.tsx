@@ -13,13 +13,17 @@ interface STOMP {
 const socket = new SockJS('http://localhost:8080/ws');
 const initalStomp: Client = Stomp.over(socket);
 
-const StompReducer = (state: Client = initalStomp, action: Action) => {
+const StompReducer = (
+    state: { socket: WebSocket; stompClient: Client } = { socket, stompClient: initalStomp },
+    action: Action,
+) => {
     const { type, payload } = action;
     switch (type) {
         case actionTypes.CONNECT_SUCCESS:
+            return payload;
         case actionTypes.CONNECT_FAIL:
         case actionTypes.DISCONNECT:
-            return payload;
+            return { ...state, stompClient: payload };
         default:
             return state;
     }

@@ -55,4 +55,14 @@ const search = async (searchQuery: SearchQuery) => {
     }
 };
 
-export default { getUserInfo, getListFriend, search, updateUserInfo, updateAvatar };
+const addFriend = async (friendID: string) => {
+    try {
+        const response = await get({ path: `user/add/${friendID}` });
+        return response;
+    } catch (error) {
+        alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
+export default { getUserInfo, getListFriend, search, updateUserInfo, updateAvatar, addFriend };

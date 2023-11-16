@@ -55,7 +55,6 @@ const Profile = () => {
             navigate('/login');
         } else {
             const getUserData = async () => {
-                console.log('Call API get UserInfo');
                 const response = await UserService.getUserInfo();
                 if (response) {
                     const data = response.data as AuthenticationReponse;

@@ -11,16 +11,19 @@ const httpRequest = axios.create({
 });
 
 export const get = async ({ path, options = {} }: requestType) => {
+    console.log('>>>>>>>API call: [medthod]:get  [path]:' + path + '  [option]:' + options);
     const response = await httpRequest.get(path, options);
     return response;
 };
 
 export const post = async ({ path, options = {} }: requestType) => {
+    console.log('>>>>>>>API call: [medthod]:post  [path]:' + path + '  [option]:' + options);
     const response = await httpRequest.post(path, options);
     return response;
 };
 
 export const postMultipart = async ({ path, options = {} }: requestType) => {
+    console.log('>>>>>>>API call: [medthod]:post  [path]:' + path + '  [option]:' + options);
     const response = await httpRequest.post(path, options, {
         headers: {
             'Content-Type': `multipart/form-data`,
@@ -30,6 +33,7 @@ export const postMultipart = async ({ path, options = {} }: requestType) => {
 };
 
 export const getStream = async ({ path, options = {} }: requestType) => {
+    console.log('>>>>>>>API call: [medthod]:getStream  [path]:' + path + '  [option]:' + options);
     const response = await fetch(`http://localhost:8080/api/${path}`, {
         method: 'GET',
         headers: {

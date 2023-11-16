@@ -1,7 +1,7 @@
 import stompReducerAction from './stompReducerAction';
 import { Client } from 'webstomp-client';
 
-export const connectSuccess = (payload: Client) => {
+export const connectSuccess = (payload: { socket: WebSocket; stompClient: Client }) => {
     return {
         type: stompReducerAction.CONNECT_SUCCESS,
         payload,

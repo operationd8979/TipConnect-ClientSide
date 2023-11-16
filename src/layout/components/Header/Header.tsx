@@ -1,20 +1,28 @@
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
+import HeadlessTippy from '@tippyjs/react/headless';
 import styles from './Header.module.scss';
 import config from '../../../config';
 import images from '../../../assets/images';
-import { InboxIcon, MessageIcon, UploadIcon } from '../../../components/Icons';
+import { InboxIcon, MessageIcon, UploadIcon, CheckIcon, UncheckIcon, Close } from '../../../components/Icons';
 import Button from '../../../components/Button';
 import i18n from '../../../i18n/i18n';
 import { useSelector } from 'react-redux';
 import { State } from '../../../type';
+import { useState } from 'react';
+import { Wrapper as PopperWrapper } from '../../../components/Popper';
 
 const cx = classNames.bind(styles);
 
 function Header() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const { isLoggedIn, user } = currentUser;
+    const [showNotification, setShowNotification] = useState(false);
+
+    const handleHideNotification = () => {
+        setShowNotification(false);
+    };
 
     return (
         <header className={cx('wrapper')}>
@@ -34,13 +42,60 @@ function Header() {
                                 <button className={cx('action-btn')}>
                                     <MessageIcon />
                                 </button>
-                            </Tippy>
-                            <Tippy delay={[0, 50]} content="Inbox" placement="bottom">
-                                <button className={cx('action-btn')}>
-                                    <InboxIcon />
-                                    <span className={cx('badge')}>12</span>
-                                </button>
                             </Tippy> */}
+                            <div>
+                                <HeadlessTippy
+                                    interactive
+                                    visible={showNotification}
+                                    render={(attrs) => (
+                                        <div className={cx('notification-area')} tabIndex={-1} {...attrs}>
+                                            <PopperWrapper>
+                                                <h4 className={cx('notification-title')}>Yêu cầu kết bạn</h4>
+                                                <div className={cx('notification-item')} key={user?.userID}>
+                                                    <div className={cx('notification-image')}>
+                                                        <img src={user?.urlAvatar} alt={user?.fullName} />
+                                                    </div>
+                                                    <div className={cx('notification-info')}>
+                                                        <div className={cx('notification-name')}>{user?.fullName}</div>
+                                                        <div className={cx('notification-content')}>
+                                                            Email:{user?.email}
+                                                        </div>
+                                                    </div>
+                                                    <div className={cx('notification-action-area')}>
+                                                        <button
+                                                            className={cx('plus_button')}
+                                                            onClick={() => {
+                                                                alert('press');
+                                                            }}
+                                                        >
+                                                            <CheckIcon />
+                                                        </button>
+                                                        <button
+                                                            className={cx('cancel_button')}
+                                                            onClick={() => {
+                                                                alert('press');
+                                                            }}
+                                                        >
+                                                            <Close />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </PopperWrapper>
+                                        </div>
+                                    )}
+                                    onClickOutside={handleHideNotification}
+                                >
+                                    <button
+                                        className={cx('action-btn')}
+                                        onClick={() => {
+                                            setShowNotification(true);
+                                        }}
+                                    >
+                                        <InboxIcon />
+                                        <span className={cx('badge')}>12</span>
+                                    </button>
+                                </HeadlessTippy>
+                            </div>
                             <Tippy delay={[0, 50]} content="User profile" placement="bottom">
                                 <Link to="/profile" className={cx('avatar_user')}>
                                     <button className={cx('action-btn')}>

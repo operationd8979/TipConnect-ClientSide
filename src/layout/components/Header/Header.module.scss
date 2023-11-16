@@ -42,6 +42,71 @@
     cursor: pointer;
 }
 
+.notification-area {
+    width: 36rem;
+}
+
+.notification-title {
+    padding: 5px 12px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: rgba(22, 24, 35, 0.5);
+}
+
+.notification-item {
+    display: flex;
+}
+
+.notification-image {
+    margin-left: 8px;
+    width: 52px;
+    img {
+        height: 5rem;
+        border-radius: 50%;
+    }
+}
+
+.notification-info {
+    width: 280px;
+    margin-left: 8px;
+}
+
+.notification-name {
+    width: 100%;
+    font-size: large;
+}
+
+.notification-content {
+    width: 100%;
+    font-size: small;
+}
+
+.notification-action-area {
+    display: flex;
+    margin: 0px 10px;
+    button {
+        background-color: transparent;
+        + button {
+            margin-left: 10px;
+        }
+        svg {
+            width: 22px;
+            height: 22px;
+        }
+        :hover {
+            color: white;
+        }
+    }
+}
+
+.plus_button {
+    color: green;
+}
+
+.cancel_button {
+    color: red;
+}
+
 .badge {
     position: absolute;
     top: -3px;

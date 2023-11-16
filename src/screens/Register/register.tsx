@@ -18,7 +18,9 @@ const Register = () => {
     const navigate = useNavigate();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const currentStomp = useSelector<any>((state) => state.StompReducer) as Client;
+    const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
+
+    const { socket, stompClient } = currentStomp;
 
     const { isLoggedIn, user, listFriend } = currentUser;
 
@@ -37,6 +39,9 @@ const Register = () => {
         if (isLoggedIn) {
             navigate('/');
         }
+        if (stompClient.connected) {
+            SocketService.disconnectStomp(stompClient);
+        }
     }, []);
 
     const handleSubmit = async () => {
@@ -47,13 +52,6 @@ const Register = () => {
                     if (response.code === 200) {
                         localStorage.setItem('currentUser', JSON.stringify(response.user));
                         dispatch(registerSuccess(response.user));
-                        const newStomp: Client = await SocketService.connectStomp(currentStomp, response.user.userID);
-                        console.log(newStomp);
-                        if (newStomp) {
-                            dispatch(connectSuccess(newStomp));
-                        } else {
-                            dispatch(connectFail(currentStomp));
-                        }
                         navigate('/');
                     } else {
                         alert(response.error_message);

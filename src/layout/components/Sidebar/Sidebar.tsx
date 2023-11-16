@@ -12,22 +12,23 @@ import {
     updateUserInfoSuccess,
     updateUserInfoFail,
 } from '../../../reducers';
-import { State, FriendShip, SearchResponse, AuthenticationReponse } from '../../../type';
+import { State, FriendShip, SearchResponse, AuthenticationReponse, Response } from '../../../type';
 import { Client } from 'webstomp-client';
 import { UserService, SocketService } from '../../../apiService/';
 import { Link, useNavigate } from 'react-router-dom';
 import Search from '../Search';
+import { PlusFriend } from '../../../components/Icons';
 
 const cx = className.bind(styles);
 
 function Sidebar() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const currentStomp = useSelector<any>((state) => state.StompReducer) as Client;
+    const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
+
+    const { socket, stompClient } = currentStomp;
 
     const { isLoggedIn, user, listFriend } = currentUser;
     const [friends, setFriends] = useState<FriendShip[]>(listFriend ?? []);
-
-    const [reload, setReload] = useState(false);
 
     const [query, setQuery] = useState<string>('');
     const [searchResult, setSearchResult] = useState<SearchResponse>({ tinyUser: null, messages: [] });
@@ -47,7 +48,15 @@ function Sidebar() {
     // });
 
     useEffect(() => {
-        if (currentStomp.connected) {
+        return () => {
+            if (stompClient.connected) {
+                SocketService.disconnectStomp(stompClient);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (stompClient.connected) {
             console.log('<<<<<<<<<<<<<<<<1>>>>>>>>>>>>>>>>');
             if (user) {
                 const callApiGetFriend = async () => {
@@ -60,7 +69,7 @@ function Sidebar() {
                                 while (true) {
                                     const { done, value }: any = await reader.read();
                                     if (done) {
-                                        console.log('Streaming data ended!');
+                                        console.log('Streaming data friends ended!');
                                         break;
                                     }
                                     let jsonString = decoder.decode(value, { stream: true });
@@ -91,14 +100,12 @@ function Sidebar() {
                     }
                 };
                 if (friends.length == 0) {
-                    console.log('Call api get listFriend');
                     callApiGetFriend();
                 }
             }
         } else {
             console.log('<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>');
             const getUserData = async () => {
-                console.log('Call API get UserInfo');
                 const response = await UserService.getUserInfo();
                 if (response) {
                     const data = response.data as AuthenticationReponse;
@@ -108,12 +115,18 @@ function Sidebar() {
                             localStorage.setItem('currentUser', JSON.stringify(newUser));
                             dispatch(updateUserInfoSuccess(newUser));
                         }
-                        const newStomp: Client = await SocketService.connectStomp(currentStomp, newUser.userID);
-                        if (newStomp) {
-                            dispatch(connectSuccess(newStomp));
-                        } else {
-                            dispatch(connectFail(currentStomp));
-                        }
+                        SocketService.connectStomp(socket, stompClient, newUser.userID).then((response) => {
+                            const { socket, stompClient } = response;
+                            stompClient.subscribe('/users/private', function (message) {
+                                console.log('nhận tin nhắn private:' + message.body);
+                                console.log(message);
+                            });
+                            stompClient.subscribe('/all/messages', function (message) {
+                                console.log('nhận tin nhắn all:' + message.body);
+                                console.log(message);
+                            });
+                            dispatch(connectSuccess({ socket, stompClient }));
+                        });
                     }
                 } else {
                     dispatch(updateUserInfoFail());
@@ -130,8 +143,35 @@ function Sidebar() {
         }
     }, [friends]);
 
+    const handleAddFriend = async () => {
+        if (searchResult.tinyUser) {
+            const userID = searchResult.tinyUser.userID;
+            const response = await UserService.addFriend(userID);
+            if (response) {
+                const res = response.data as Response;
+                if (res.code === 200) {
+                    setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'ONWAIT' } });
+                }
+            }
+        }
+    };
+
+    function sendMessageAll() {
+        if (stompClient) {
+            stompClient.send(
+                '/app/all',
+                JSON.stringify({
+                    from: 'ChipChip',
+                    body: 'hello world',
+                }),
+            );
+            console.log('đã gửi tin nhắn');
+        }
+    }
+
     return (
         <aside className={cx('wrapper')}>
+            <button onClick={sendMessageAll}>send</button>
             <div className={cx('header')}>
                 {isLoggedIn && <Search query={query} setQuery={setQuery} setSearchResult={setSearchResult} />}
                 <button>tat ca</button>
@@ -149,6 +189,11 @@ function Sidebar() {
                                 <div className={cx('card_name')}>{searchResult.tinyUser.fullName}</div>
                                 <div className={cx('card_detail')}>Email:{query}</div>
                             </div>
+                            {searchResult.tinyUser.state == 'AVAIBLE' && (
+                                <button className={cx('plus_button')} onClick={handleAddFriend}>
+                                    <PlusFriend />
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}

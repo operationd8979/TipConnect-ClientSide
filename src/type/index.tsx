@@ -7,6 +7,7 @@ export interface User {
     enable: boolean;
     firstName: string;
     lastName: string;
+    state: string;
 }
 
 export interface UpdateInfoRequest {
@@ -59,6 +60,11 @@ export interface AuthenticationReponse {
 export interface SearchResponse {
     tinyUser: User | null;
     messages: any;
+}
+
+export interface Response {
+    code: number;
+    message: string;
 }
 
 export interface State {

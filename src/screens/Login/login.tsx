@@ -19,7 +19,9 @@ const Login = () => {
     const dispatch = useDispatch();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const currentStomp = useSelector<any>((state) => state.StompReducer) as Client;
+    const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
+
+    const { socket, stompClient } = currentStomp;
 
     const { isLoggedIn, user, listFriend } = currentUser;
 
@@ -35,8 +37,8 @@ const Login = () => {
         if (isLoggedIn) {
             navigate('/');
         }
-        if (currentStomp.connected) {
-            SocketService.disconnectStomp(currentStomp);
+        if (stompClient.connected) {
+            SocketService.disconnectStomp(stompClient);
         }
     }, []);
 
@@ -48,12 +50,6 @@ const Login = () => {
                 if (response.code == 200) {
                     localStorage.setItem('currentUser', JSON.stringify(response.user));
                     dispatch(loginSuccess(response.user));
-                    const newStomp: Client = await SocketService.connectStomp(currentStomp, response.user.userID);
-                    if (newStomp) {
-                        dispatch(connectSuccess(newStomp));
-                    } else {
-                        dispatch(connectFail(currentStomp));
-                    }
                     navigate('/');
                 } else {
                     alert(response.error_message);
