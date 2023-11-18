@@ -65,4 +65,14 @@ const addFriend = async (friendID: string) => {
     }
 };
 
-export default { getUserInfo, getListFriend, search, updateUserInfo, updateAvatar, addFriend };
+const getFriendRequests = async () => {
+    try {
+        const response = await getStream({ path: `user/getFriendRequests` });
+        return response;
+    } catch (error) {
+        alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
+export default { getUserInfo, getListFriend, search, updateUserInfo, updateAvatar, addFriend, getFriendRequests };

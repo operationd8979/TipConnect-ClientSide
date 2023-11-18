@@ -1,5 +1,5 @@
 import classNames from 'classnames/bind';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import HeadlessTippy from '@tippyjs/react/headless';
 import styles from './Header.module.scss';
@@ -8,10 +8,12 @@ import images from '../../../assets/images';
 import { InboxIcon, MessageIcon, UploadIcon, CheckIcon, UncheckIcon, Close } from '../../../components/Icons';
 import Button from '../../../components/Button';
 import i18n from '../../../i18n/i18n';
-import { useSelector } from 'react-redux';
-import { State } from '../../../type';
-import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { State, FriendRequestResponse } from '../../../type';
+import { useEffect, useState } from 'react';
 import { Wrapper as PopperWrapper } from '../../../components/Popper';
+import { UserService } from '../../../apiService';
+import { getListFriendFail } from '../../../reducers';
 
 const cx = classNames.bind(styles);
 
@@ -19,6 +21,40 @@ function Header() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const { isLoggedIn, user } = currentUser;
     const [showNotification, setShowNotification] = useState(false);
+
+    const [friendRequests, setFriendRequests] = useState<FriendRequestResponse[]>([]);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log(friendRequests.length);
+        if (user) {
+            const callApiGetFriendRequests = async () => {
+                try {
+                    const response = await UserService.getFriendRequests();
+                    if (response?.ok) {
+                        response.json().then((data) => {
+                            setFriendRequests(data);
+                        });
+                    } else {
+                        if (response === null || response?.status == 403) {
+                            //dispatch(getListFriendFail());
+                            navigate('/login');
+                        }
+                    }
+                } catch (error) {
+                    alert(error);
+                    console.log(error);
+                    //dispatch(getListFriendFail());
+                    navigate('/login');
+                }
+            };
+            if (friendRequests.length == 0) {
+                callApiGetFriendRequests();
+            }
+        }
+    }, []);
 
     const handleHideNotification = () => {
         setShowNotification(false);
@@ -51,35 +87,42 @@ function Header() {
                                         <div className={cx('notification-area')} tabIndex={-1} {...attrs}>
                                             <PopperWrapper>
                                                 <h4 className={cx('notification-title')}>Yêu cầu kết bạn</h4>
-                                                <div className={cx('notification-item')} key={user?.userID}>
-                                                    <div className={cx('notification-image')}>
-                                                        <img src={user?.urlAvatar} alt={user?.fullName} />
-                                                    </div>
-                                                    <div className={cx('notification-info')}>
-                                                        <div className={cx('notification-name')}>{user?.fullName}</div>
-                                                        <div className={cx('notification-content')}>
-                                                            Email:{user?.email}
+                                                {friendRequests.map((friendRequest) => {
+                                                    const { id, sender, time_stamp } = friendRequest;
+                                                    return (
+                                                        <div className={cx('notification-item')} key={id}>
+                                                            <div className={cx('notification-image')}>
+                                                                <img src={sender.urlAvatar} alt={sender.fullName} />
+                                                            </div>
+                                                            <div className={cx('notification-info')}>
+                                                                <div className={cx('notification-name')}>
+                                                                    {sender.fullName}
+                                                                </div>
+                                                                <div className={cx('notification-content')}>
+                                                                    Email:{sender.email}
+                                                                </div>
+                                                            </div>
+                                                            <div className={cx('notification-action-area')}>
+                                                                <button
+                                                                    className={cx('plus_button')}
+                                                                    onClick={() => {
+                                                                        alert('press');
+                                                                    }}
+                                                                >
+                                                                    <CheckIcon />
+                                                                </button>
+                                                                <button
+                                                                    className={cx('cancel_button')}
+                                                                    onClick={() => {
+                                                                        alert('press');
+                                                                    }}
+                                                                >
+                                                                    <Close />
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className={cx('notification-action-area')}>
-                                                        <button
-                                                            className={cx('plus_button')}
-                                                            onClick={() => {
-                                                                alert('press');
-                                                            }}
-                                                        >
-                                                            <CheckIcon />
-                                                        </button>
-                                                        <button
-                                                            className={cx('cancel_button')}
-                                                            onClick={() => {
-                                                                alert('press');
-                                                            }}
-                                                        >
-                                                            <Close />
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                    );
+                                                })}
                                             </PopperWrapper>
                                         </div>
                                     )}

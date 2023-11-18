@@ -5,17 +5,23 @@
 }
 
 .container {
+    margin-top: 5px;
     width: var(--default-layout-width);
     min-height: var(--default-content-height);
     display: flex;
 }
 
 .sidebar {
+    width: var(--default-layout-width-sidebar); //356px
+    min-height: 100rem;
+    max-height: var(--default-content-height);
+    //background-color: antiquewhite;
 }
 
 .content {
     flex: 1;
-    min-height: 1000px;
+    min-height: 100rem;
+    max-height: var(--default-content-height);
     margin-left: 5px;
-    background-color: antiquewhite;
+    //background-color: antiquewhite;
 }

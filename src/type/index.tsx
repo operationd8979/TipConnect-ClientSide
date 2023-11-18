@@ -67,6 +67,12 @@ export interface Response {
     message: string;
 }
 
+export interface FriendRequestResponse {
+    id: bigint;
+    sender: User;
+    time_stamp: bigint;
+}
+
 export interface State {
     isLoggedIn: boolean;
     user: User | null;

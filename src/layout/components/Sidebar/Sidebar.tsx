@@ -17,7 +17,7 @@ import { Client } from 'webstomp-client';
 import { UserService, SocketService } from '../../../apiService/';
 import { Link, useNavigate } from 'react-router-dom';
 import Search from '../Search';
-import { PlusFriend } from '../../../components/Icons';
+import { PlusFriend, OnWait, Close } from '../../../components/Icons';
 
 const cx = className.bind(styles);
 
@@ -97,6 +97,7 @@ function Sidebar() {
                         alert(error);
                         console.log(error);
                         dispatch(getListFriendFail());
+                        navigate('/login');
                     }
                 };
                 if (friends.length == 0) {
@@ -150,7 +151,7 @@ function Sidebar() {
             if (response) {
                 const res = response.data as Response;
                 if (res.code === 200) {
-                    setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'ONWAIT' } });
+                    setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'ONSEND' } });
                 }
             }
         }
@@ -171,7 +172,7 @@ function Sidebar() {
 
     return (
         <aside className={cx('wrapper')}>
-            <button onClick={sendMessageAll}>send</button>
+            {/* <button onClick={sendMessageAll}>send</button> */}
             <div className={cx('header')}>
                 {isLoggedIn && <Search query={query} setQuery={setQuery} setSearchResult={setSearchResult} />}
                 <button>tat ca</button>
@@ -192,6 +193,12 @@ function Sidebar() {
                             {searchResult.tinyUser.state == 'AVAIBLE' && (
                                 <button className={cx('plus_button')} onClick={handleAddFriend}>
                                     <PlusFriend />
+                                </button>
+                            )}
+                            {searchResult.tinyUser.state == 'ONSEND' && (
+                                <button className={cx('cancel_button')} onClick={handleAddFriend}>
+                                    <OnWait />
+                                    Hủy
                                 </button>
                             )}
                         </div>

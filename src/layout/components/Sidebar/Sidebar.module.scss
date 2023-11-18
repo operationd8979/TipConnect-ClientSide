@@ -1,7 +1,4 @@
 .wrapper {
-    width: var(--default-layout-width-sidebar); //356px
-    min-height: 100rem;
-    max-height: 120rem;
 }
 
 .header {
@@ -10,10 +7,11 @@
 }
 
 .friend_box {
+    border: thick double black;
     overflow-y: overlay;
-    min-height: 90rem;
-    max-height: 90rem;
-    background-color: aqua;
+    min-height: 85rem;
+    max-height: 85rem;
+    //background-color: aqua;
 }
 
 .header_search {
@@ -58,6 +56,22 @@
     padding: 5px;
     // border: solid 1px black;
     // border-radius: 90px;
+    background-color: transparent;
+    color: black;
+    svg {
+        width: 30px;
+        height: 30px;
+    }
+    :hover {
+        color: white;
+    }
+}
+
+.cancel_button {
+    display: flex;
+    align-items: center;
+    margin: 0px 10px;
+    padding: 5px;
     background-color: transparent;
     color: black;
     svg {
