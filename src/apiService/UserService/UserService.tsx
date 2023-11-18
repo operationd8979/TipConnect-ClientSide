@@ -75,4 +75,23 @@ const getFriendRequests = async () => {
     }
 };
 
-export default { getUserInfo, getListFriend, search, updateUserInfo, updateAvatar, addFriend, getFriendRequests };
+const acceptFriendRequest = async (requestID: string) => {
+    try {
+        const response = await get({ path: `user/acceptFriendRequest/${requestID}` });
+        return response;
+    } catch (error) {
+        alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
+export default {
+    getUserInfo,
+    getListFriend,
+    search,
+    updateUserInfo,
+    updateAvatar,
+    addFriend,
+    getFriendRequests,
+    acceptFriendRequest,
+};

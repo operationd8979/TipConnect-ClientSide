@@ -47,96 +47,145 @@ function Sidebar() {
     //     console.log('nhận tin nhắn all:' + message.body);
     // });
 
-    useEffect(() => {
-        return () => {
-            if (stompClient.connected) {
-                SocketService.disconnectStomp(stompClient);
-            }
-        };
-    }, []);
+    // useEffect(() => {
+    //     return () => {
+    //         if (stompClient.connected) {
+    //             SocketService.disconnectStomp(stompClient);
+    //         }
+    //     };
+    // }, []);
+
+    // useEffect(() => {
+    //     if (stompClient.connected) {
+    //         console.log('<<<<<<<<<<<<<<<<1>>>>>>>>>>>>>>>>');
+    //         if (user) {
+    //             const callApiGetFriend = async () => {
+    //                 try {
+    //                     const response = await UserService.getListFriend();
+    //                     if (response?.ok) {
+    //                         const reader = response.body?.getReader();
+    //                         if (reader) {
+    //                             const decoder = new TextDecoder();
+    //                             while (true) {
+    //                                 const { done, value }: any = await reader.read();
+    //                                 if (done) {
+    //                                     console.log('Streaming data friends ended!');
+    //                                     break;
+    //                                 }
+    //                                 let jsonString = decoder.decode(value, { stream: true });
+    //                                 const jsonArray = jsonString.split(']');
+
+    //                                 jsonArray.forEach((jsonData) => {
+    //                                     try {
+    //                                         const json: FriendShip[] = JSON.parse(jsonData + ']') as FriendShip[];
+    //                                         setFriends((prevList) => [...prevList, ...json]);
+    //                                     } catch (error) {
+    //                                         jsonData = jsonData.substring(1);
+    //                                         const json: FriendShip[] = JSON.parse('[' + jsonData + ']') as FriendShip[];
+    //                                         setFriends((prevList) => [...prevList, ...json]);
+    //                                     }
+    //                                 });
+    //                             }
+    //                         }
+    //                     } else {
+    //                         if (response === null || response?.status == 403) {
+    //                             dispatch(getListFriendFail());
+    //                             navigate('/login');
+    //                         }
+    //                     }
+    //                 } catch (error) {
+    //                     alert(error);
+    //                     console.log(error);
+    //                     dispatch(getListFriendFail());
+    //                     navigate('/login');
+    //                 }
+    //             };
+    //             if (friends.length == 0) {
+    //                 callApiGetFriend();
+    //             }
+    //         }
+    //     } else {
+    //         console.log('<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>');
+    //         const getUserData = async () => {
+    //             const response = await UserService.getUserInfo();
+    //             if (response) {
+    //                 const data = response.data as AuthenticationReponse;
+    //                 if (data.code === 200) {
+    //                     const newUser = data.user;
+    //                     if (JSON.stringify(user) !== JSON.stringify(newUser)) {
+    //                         localStorage.setItem('currentUser', JSON.stringify(newUser));
+    //                         dispatch(updateUserInfoSuccess(newUser));
+    //                     }
+    //                     SocketService.connectStomp(socket, stompClient, newUser.userID).then((response) => {
+    //                         const { socket, stompClient } = response;
+    //                         stompClient.subscribe('/users/private', function (message) {
+    //                             console.log('nhận tin nhắn private:' + message.body);
+    //                             console.log(message);
+    //                         });
+    //                         stompClient.subscribe('/all/messages', function (message) {
+    //                             console.log('nhận tin nhắn all:' + message.body);
+    //                             console.log(message);
+    //                         });
+    //                         dispatch(connectSuccess({ socket, stompClient }));
+    //                     });
+    //                 }
+    //             } else {
+    //                 dispatch(updateUserInfoFail());
+    //                 navigate('/login');
+    //             }
+    //         };
+    //         getUserData();
+    //     }
+    // }, [currentStomp]);
 
     useEffect(() => {
-        if (stompClient.connected) {
-            console.log('<<<<<<<<<<<<<<<<1>>>>>>>>>>>>>>>>');
-            if (user) {
-                const callApiGetFriend = async () => {
-                    try {
-                        const response = await UserService.getListFriend();
-                        if (response?.ok) {
-                            const reader = response.body?.getReader();
-                            if (reader) {
-                                const decoder = new TextDecoder();
-                                while (true) {
-                                    const { done, value }: any = await reader.read();
-                                    if (done) {
-                                        console.log('Streaming data friends ended!');
-                                        break;
-                                    }
-                                    let jsonString = decoder.decode(value, { stream: true });
-                                    const jsonArray = jsonString.split(']');
-
-                                    jsonArray.forEach((jsonData) => {
-                                        try {
-                                            const json: FriendShip[] = JSON.parse(jsonData + ']') as FriendShip[];
-                                            setFriends((prevList) => [...prevList, ...json]);
-                                        } catch (error) {
-                                            jsonData = jsonData.substring(1);
-                                            const json: FriendShip[] = JSON.parse('[' + jsonData + ']') as FriendShip[];
-                                            setFriends((prevList) => [...prevList, ...json]);
-                                        }
-                                    });
+        if (user) {
+            const callApiGetFriend = async () => {
+                try {
+                    const response = await UserService.getListFriend();
+                    if (response?.ok) {
+                        const reader = response.body?.getReader();
+                        if (reader) {
+                            const decoder = new TextDecoder();
+                            while (true) {
+                                const { done, value }: any = await reader.read();
+                                if (done) {
+                                    console.log('Streaming data friends ended!');
+                                    break;
                                 }
-                            }
-                        } else {
-                            if (response === null || response?.status == 403) {
-                                dispatch(getListFriendFail());
-                                navigate('/login');
+                                let jsonString = decoder.decode(value, { stream: true });
+                                const jsonArray = jsonString.split(']');
+
+                                jsonArray.forEach((jsonData) => {
+                                    try {
+                                        const json: FriendShip[] = JSON.parse(jsonData + ']') as FriendShip[];
+                                        setFriends((prevList) => [...prevList, ...json]);
+                                    } catch (error) {
+                                        jsonData = jsonData.substring(1);
+                                        const json: FriendShip[] = JSON.parse('[' + jsonData + ']') as FriendShip[];
+                                        setFriends((prevList) => [...prevList, ...json]);
+                                    }
+                                });
                             }
                         }
-                    } catch (error) {
-                        alert(error);
-                        console.log(error);
-                        dispatch(getListFriendFail());
-                        navigate('/login');
-                    }
-                };
-                if (friends.length == 0) {
-                    callApiGetFriend();
-                }
-            }
-        } else {
-            console.log('<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>');
-            const getUserData = async () => {
-                const response = await UserService.getUserInfo();
-                if (response) {
-                    const data = response.data as AuthenticationReponse;
-                    if (data.code === 200) {
-                        const newUser = data.user;
-                        if (JSON.stringify(user) !== JSON.stringify(newUser)) {
-                            localStorage.setItem('currentUser', JSON.stringify(newUser));
-                            dispatch(updateUserInfoSuccess(newUser));
+                    } else {
+                        if (response === null || response?.status == 403) {
+                            dispatch(getListFriendFail());
+                            navigate('/login');
                         }
-                        SocketService.connectStomp(socket, stompClient, newUser.userID).then((response) => {
-                            const { socket, stompClient } = response;
-                            stompClient.subscribe('/users/private', function (message) {
-                                console.log('nhận tin nhắn private:' + message.body);
-                                console.log(message);
-                            });
-                            stompClient.subscribe('/all/messages', function (message) {
-                                console.log('nhận tin nhắn all:' + message.body);
-                                console.log(message);
-                            });
-                            dispatch(connectSuccess({ socket, stompClient }));
-                        });
                     }
-                } else {
-                    dispatch(updateUserInfoFail());
+                } catch (error) {
+                    alert(error);
+                    console.log(error);
+                    dispatch(getListFriendFail());
                     navigate('/login');
                 }
             };
-            getUserData();
+            if (friends.length == 0) {
+                callApiGetFriend();
+            }
         }
-    }, [currentStomp]);
+    }, []);
 
     useEffect(() => {
         if (friends.length != listFriend?.length) {
@@ -157,18 +206,18 @@ function Sidebar() {
         }
     };
 
-    function sendMessageAll() {
-        if (stompClient) {
-            stompClient.send(
-                '/app/all',
-                JSON.stringify({
-                    from: 'ChipChip',
-                    body: 'hello world',
-                }),
-            );
-            console.log('đã gửi tin nhắn');
-        }
-    }
+    // function sendMessageAll() {
+    //     if (stompClient) {
+    //         stompClient.send(
+    //             '/app/all',
+    //             JSON.stringify({
+    //                 from: 'ChipChip',
+    //                 body: 'hello world',
+    //             }),
+    //         );
+    //         console.log('đã gửi tin nhắn');
+    //     }
+    // }
 
     return (
         <aside className={cx('wrapper')}>

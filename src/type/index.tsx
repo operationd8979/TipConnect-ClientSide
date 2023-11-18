@@ -68,7 +68,7 @@ export interface Response {
 }
 
 export interface FriendRequestResponse {
-    id: bigint;
+    id: string;
     sender: User;
     time_stamp: bigint;
 }
@@ -77,4 +77,21 @@ export interface State {
     isLoggedIn: boolean;
     user: User | null;
     listFriend: FriendShip[] | null;
+}
+
+export interface RawChat {
+    type: string;
+    body: string;
+    timestamp: bigint;
+    seen: boolean;
+}
+
+export interface MessageChat extends RawChat {
+    from: string;
+    to: string;
+}
+
+export interface NotificationChat extends RawChat {
+    friendRResponse?: FriendRequestResponse;
+    friendShipRespone?: FriendShip;
 }

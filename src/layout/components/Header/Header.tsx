@@ -9,17 +9,28 @@ import { InboxIcon, MessageIcon, UploadIcon, CheckIcon, UncheckIcon, Close } fro
 import Button from '../../../components/Button';
 import i18n from '../../../i18n/i18n';
 import { useSelector, useDispatch } from 'react-redux';
-import { State, FriendRequestResponse } from '../../../type';
+import {
+    State,
+    FriendRequestResponse,
+    Response,
+    AuthenticationReponse,
+    RawChat,
+    MessageChat,
+    NotificationChat,
+} from '../../../type';
 import { useEffect, useState } from 'react';
 import { Wrapper as PopperWrapper } from '../../../components/Popper';
-import { UserService } from '../../../apiService';
-import { getListFriendFail } from '../../../reducers';
+import { UserService, SocketService } from '../../../apiService';
+import { getListFriendFail, updateUserInfoSuccess, updateUserInfoFail, connectSuccess } from '../../../reducers';
+import { Client } from 'webstomp-client';
 
 const cx = classNames.bind(styles);
 
 function Header() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
+    const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
     const { isLoggedIn, user } = currentUser;
+    const { socket, stompClient } = currentStomp;
     const [showNotification, setShowNotification] = useState(false);
 
     const [friendRequests, setFriendRequests] = useState<FriendRequestResponse[]>([]);
@@ -28,36 +39,119 @@ function Header() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(friendRequests.length);
-        if (user) {
-            const callApiGetFriendRequests = async () => {
-                try {
-                    const response = await UserService.getFriendRequests();
-                    if (response?.ok) {
-                        response.json().then((data) => {
-                            setFriendRequests(data);
-                        });
-                    } else {
-                        if (response === null || response?.status == 403) {
-                            //dispatch(getListFriendFail());
-                            navigate('/login');
+        return () => {
+            if (stompClient.connected) {
+                SocketService.disconnectStomp(stompClient);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            if (!stompClient.connected) {
+                console.log('<<<<<<<<<<<<<<<<CONNECT WS>>>>>>>>>>>>>>>>');
+                const getUserData = async () => {
+                    const response = await UserService.getUserInfo();
+                    if (response) {
+                        const data = response.data as AuthenticationReponse;
+                        if (data.code === 200) {
+                            const newUser = data.user;
+                            if (JSON.stringify(user) !== JSON.stringify(newUser)) {
+                                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                                dispatch(updateUserInfoSuccess(newUser));
+                            }
+                            SocketService.connectStomp(socket, stompClient, newUser.userID).then((response) => {
+                                const { socket, stompClient } = response;
+                                stompClient.subscribe('/users/private', function (message) {
+                                    try {
+                                        const data = JSON.parse(message.body) as RawChat;
+                                        switch (data.type) {
+                                            case 'SYSTEM':
+                                                const notificationData = data as NotificationChat;
+                                                const { friendRResponse, friendShipRespone } = notificationData;
+                                                if (friendRResponse) {
+                                                    setFriendRequests((prevData) => [...prevData, friendRResponse]);
+                                                    console.log(friendRResponse);
+                                                }
+                                                // if(friendShipRespone){
+                                                //     set(prevData=>[...prevData,friendRResponse]);
+                                                // }
+                                                break;
+                                            case 'MESSAGE':
+                                                console.log(data as MessageChat);
+                                                break;
+                                            default:
+                                                console.log(data);
+                                        }
+                                    } catch (error) {
+                                        alert('Some message lost!');
+                                    }
+                                });
+                                stompClient.subscribe('/all/messages', function (message) {
+                                    console.log('nhận tin nhắn all:' + message.body);
+                                    console.log(message);
+                                });
+                                dispatch(connectSuccess({ socket, stompClient }));
+                            });
                         }
+                    } else {
+                        dispatch(updateUserInfoFail());
+                        navigate('/login');
                     }
-                } catch (error) {
-                    alert(error);
-                    console.log(error);
-                    //dispatch(getListFriendFail());
-                    navigate('/login');
-                }
-            };
-            if (friendRequests.length == 0) {
-                callApiGetFriendRequests();
+                };
+                getUserData();
             }
         }
     }, []);
 
+    useEffect(() => {
+        if (isLoggedIn) {
+            if (user) {
+                const callApiGetFriendRequests = async () => {
+                    try {
+                        const response = await UserService.getFriendRequests();
+                        if (response?.ok) {
+                            response.json().then((data) => {
+                                setFriendRequests(data);
+                            });
+                        } else {
+                            if (response === null || response?.status == 403) {
+                                //dispatch(getListFriendFail());
+                                navigate('/login');
+                            }
+                        }
+                    } catch (error) {
+                        alert(error);
+                        console.log(error);
+                        //dispatch(getListFriendFail());
+                        navigate('/login');
+                    }
+                };
+                if (friendRequests.length == 0) {
+                    callApiGetFriendRequests();
+                }
+            }
+        }
+    }, []);
+
+    useEffect(() => {}, []);
+
     const handleHideNotification = () => {
         setShowNotification(false);
+    };
+
+    const handleAcceptFriend = async (requestID: string) => {
+        const response = await UserService.acceptFriendRequest(requestID);
+        if (response) {
+            const data = response.data as Response;
+            if (data.code === 200) {
+                const newFriendRequests = friendRequests.filter((friendRequest) => friendRequest.id !== requestID);
+                setFriendRequests(newFriendRequests);
+                //dispatch
+            } else {
+                alert(data.message);
+            }
+        }
     };
 
     return (
@@ -105,9 +199,7 @@ function Header() {
                                                             <div className={cx('notification-action-area')}>
                                                                 <button
                                                                     className={cx('plus_button')}
-                                                                    onClick={() => {
-                                                                        alert('press');
-                                                                    }}
+                                                                    onClick={() => handleAcceptFriend(id)}
                                                                 >
                                                                     <CheckIcon />
                                                                 </button>
@@ -135,7 +227,7 @@ function Header() {
                                         }}
                                     >
                                         <InboxIcon />
-                                        <span className={cx('badge')}>12</span>
+                                        <span className={cx('badge')}>{friendRequests.length}</span>
                                     </button>
                                 </HeadlessTippy>
                             </div>

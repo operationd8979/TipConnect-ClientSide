@@ -45,6 +45,7 @@ const Register = () => {
     }, []);
 
     const handleSubmit = async () => {
+        setLoading(true);
         if (email && firstName && lastName && password) {
             if (password === rePassword) {
                 const response = (await AuthService.Register(registerRequest)) as AuthenticationReponse;
@@ -64,6 +65,7 @@ const Register = () => {
         } else {
             alert('Input');
         }
+        setLoading(false);
     };
 
     return (

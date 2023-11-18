@@ -14,15 +14,11 @@ const Home = () => {
     useEffect(() => {}, []);
     return (
         <div className={cx('wrapper')}>
-            {isLoggedIn ? (
-                <div>
-                    Chào mừng bạn đến với <b>TipConnect</b>
-                    <br />
-                    Khám phá những tiện ích kết nối với bạn bè và đồng nhiệp.
-                </div>
-            ) : (
-                <div>UNLOGIN</div>
-            )}
+            <div className={cx('login-area')}>
+                Chào mừng bạn đến với <b>TipConnect</b>
+                <br />
+                Khám phá những tiện ích kết nối với bạn bè và đồng nhiệp.
+            </div>
         </div>
     );
 };
