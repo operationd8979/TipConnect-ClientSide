@@ -7,7 +7,7 @@ const getUserInfo = async () => {
         const response = await get({ path: `user/getUserInfo` });
         return response;
     } catch (error) {
-        alert(ERROR.ERR_NETWORK.message);
+        //alert(ERROR.ERR_NETWORK.message);
         return null;
     }
 };
@@ -17,7 +17,7 @@ const updateUserInfo = async (updateInfoRequest: UpdateInfoRequest) => {
         const response = await post({ path: `user/updateUserInfo`, options: updateInfoRequest });
         return response;
     } catch (error) {
-        alert(ERROR.ERR_NETWORK.message);
+        //alert(ERROR.ERR_NETWORK.message);
         return null;
     }
 };
@@ -27,7 +27,7 @@ const updateAvatar = async (request: UpdateAvatarRequest) => {
         const response = await post({ path: `user/updateAvatar`, options: request });
         return response;
     } catch (error) {
-        alert(ERROR.ERR_NETWORK.message);
+        //alert(ERROR.ERR_NETWORK.message);
         return null;
     }
 };
@@ -37,7 +37,17 @@ const getListFriend = async () => {
         const response = await getStream({ path: `user/getListFriend` });
         return response;
     } catch (error) {
-        alert(ERROR.ERR_NETWORK.message);
+        //alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
+const getFriendRequests = async () => {
+    try {
+        const response = await getStream({ path: `user/getFriendRequests` });
+        return response;
+    } catch (error) {
+        //alert(ERROR.ERR_NETWORK.message);
         return null;
     }
 };
@@ -50,7 +60,7 @@ const search = async (searchQuery: SearchQuery) => {
         });
         return response;
     } catch (error) {
-        alert(ERROR.ERR_NETWORK.message);
+        //alert(ERROR.ERR_NETWORK.message);
         return null;
     }
 };
@@ -60,17 +70,17 @@ const addFriend = async (friendID: string) => {
         const response = await get({ path: `user/add/${friendID}` });
         return response;
     } catch (error) {
-        alert(ERROR.ERR_NETWORK.message);
+        //alert(ERROR.ERR_NETWORK.message);
         return null;
     }
 };
 
-const getFriendRequests = async () => {
+const cancelFriendRequest = async (friendID: string) => {
     try {
-        const response = await getStream({ path: `user/getFriendRequests` });
+        const response = await get({ path: `user/cancel/${friendID}` });
         return response;
     } catch (error) {
-        alert(ERROR.ERR_NETWORK.message);
+        //alert(ERROR.ERR_NETWORK.message);
         return null;
     }
 };
@@ -80,7 +90,17 @@ const acceptFriendRequest = async (requestID: string) => {
         const response = await get({ path: `user/acceptFriendRequest/${requestID}` });
         return response;
     } catch (error) {
-        alert(ERROR.ERR_NETWORK.message);
+        //alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
+const denyFriendRequest = async (requestID: string) => {
+    try {
+        const response = await get({ path: `user/denyFriendRequest/${requestID}` });
+        return response;
+    } catch (error) {
+        //alert(ERROR.ERR_NETWORK.message);
         return null;
     }
 };
@@ -88,10 +108,12 @@ const acceptFriendRequest = async (requestID: string) => {
 export default {
     getUserInfo,
     getListFriend,
+    getFriendRequests,
     search,
     updateUserInfo,
     updateAvatar,
     addFriend,
-    getFriendRequests,
+    cancelFriendRequest,
     acceptFriendRequest,
+    denyFriendRequest,
 };

@@ -73,12 +73,19 @@ export interface FriendRequestResponse {
     time_stamp: bigint;
 }
 
+export interface Notifications {
+    listFriendRequest: FriendRequestResponse[];
+    listNotification: string[];
+}
+
 export interface State {
     isLoggedIn: boolean;
     user: User | null;
-    listFriend: FriendShip[] | null;
+    listFriend: FriendShip[];
+    notifications: Notifications;
 }
 
+//chat element
 export interface RawChat {
     type: string;
     body: string;
@@ -94,4 +101,5 @@ export interface MessageChat extends RawChat {
 export interface NotificationChat extends RawChat {
     friendRResponse?: FriendRequestResponse;
     friendShipRespone?: FriendShip;
+    actionCode: number;
 }

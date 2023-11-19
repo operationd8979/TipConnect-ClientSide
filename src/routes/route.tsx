@@ -1,7 +1,7 @@
 import { Home, Login, Register, MessageArea, Profile } from '../screens';
-import { OnlyHeader } from '../layout';
 import config from '../config';
 import StompProvider from '../websocket/Websocket';
+import { SidebarInclude } from '../layout';
 
 interface publicRoutes {
     path: string;
@@ -10,11 +10,11 @@ interface publicRoutes {
 }
 
 const publicRoutes: publicRoutes[] = [
-    { path: config.routes.home, component: Home },
-    { path: config.routes.login, component: Login, layout: OnlyHeader },
-    { path: config.routes.register, component: Register, layout: OnlyHeader },
-    { path: config.routes.message, component: MessageArea },
-    { path: config.routes.profile, component: Profile, layout: OnlyHeader },
+    { path: config.routes.home, component: Home, layout: SidebarInclude },
+    { path: config.routes.login, component: Login },
+    { path: config.routes.register, component: Register },
+    { path: config.routes.message, component: MessageArea, layout: SidebarInclude },
+    { path: config.routes.profile, component: Profile },
 ];
 
 const privateRoutes = [null];

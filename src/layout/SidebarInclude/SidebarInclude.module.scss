@@ -1,0 +1,14 @@
+.wrraper {
+    display: flex;
+}
+
+.sidebar {
+    width: var(--default-layout-width-sidebar);
+    // background-color: antiquewhite;
+}
+
+.content {
+    flex: 1;
+    margin-left: 5px;
+    // background-color: blue;
+}

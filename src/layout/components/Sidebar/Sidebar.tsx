@@ -22,121 +22,24 @@ import { PlusFriend, OnWait, Close } from '../../../components/Icons';
 const cx = className.bind(styles);
 
 function Sidebar() {
+    const [loading, setLoading] = useState(false);
+
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
 
     const { socket, stompClient } = currentStomp;
 
     const { isLoggedIn, user, listFriend } = currentUser;
-    const [friends, setFriends] = useState<FriendShip[]>(listFriend ?? []);
 
     const [query, setQuery] = useState<string>('');
     const [searchResult, setSearchResult] = useState<SearchResponse>({ tinyUser: null, messages: [] });
 
     const showList = useCallback(() => {
-        return friends.filter((f) => f.friend.fullName.trim().toLowerCase().includes(query.toLowerCase().trim()));
-    }, [friends, query]);
+        return listFriend.filter((f) => f.friend.fullName.trim().toLowerCase().includes(query.toLowerCase().trim()));
+    }, [listFriend, query]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    // stomp.subscribe('/users/private', function (message) {
-    //     console.log('nhận tin nhắn private:' + message.body);
-    // });
-    // stomp.subscribe('/all/messages', function (message) {
-    //     console.log('nhận tin nhắn all:' + message.body);
-    // });
-
-    // useEffect(() => {
-    //     return () => {
-    //         if (stompClient.connected) {
-    //             SocketService.disconnectStomp(stompClient);
-    //         }
-    //     };
-    // }, []);
-
-    // useEffect(() => {
-    //     if (stompClient.connected) {
-    //         console.log('<<<<<<<<<<<<<<<<1>>>>>>>>>>>>>>>>');
-    //         if (user) {
-    //             const callApiGetFriend = async () => {
-    //                 try {
-    //                     const response = await UserService.getListFriend();
-    //                     if (response?.ok) {
-    //                         const reader = response.body?.getReader();
-    //                         if (reader) {
-    //                             const decoder = new TextDecoder();
-    //                             while (true) {
-    //                                 const { done, value }: any = await reader.read();
-    //                                 if (done) {
-    //                                     console.log('Streaming data friends ended!');
-    //                                     break;
-    //                                 }
-    //                                 let jsonString = decoder.decode(value, { stream: true });
-    //                                 const jsonArray = jsonString.split(']');
-
-    //                                 jsonArray.forEach((jsonData) => {
-    //                                     try {
-    //                                         const json: FriendShip[] = JSON.parse(jsonData + ']') as FriendShip[];
-    //                                         setFriends((prevList) => [...prevList, ...json]);
-    //                                     } catch (error) {
-    //                                         jsonData = jsonData.substring(1);
-    //                                         const json: FriendShip[] = JSON.parse('[' + jsonData + ']') as FriendShip[];
-    //                                         setFriends((prevList) => [...prevList, ...json]);
-    //                                     }
-    //                                 });
-    //                             }
-    //                         }
-    //                     } else {
-    //                         if (response === null || response?.status == 403) {
-    //                             dispatch(getListFriendFail());
-    //                             navigate('/login');
-    //                         }
-    //                     }
-    //                 } catch (error) {
-    //                     alert(error);
-    //                     console.log(error);
-    //                     dispatch(getListFriendFail());
-    //                     navigate('/login');
-    //                 }
-    //             };
-    //             if (friends.length == 0) {
-    //                 callApiGetFriend();
-    //             }
-    //         }
-    //     } else {
-    //         console.log('<<<<<<<<<<<<<<<<2>>>>>>>>>>>>>>>>');
-    //         const getUserData = async () => {
-    //             const response = await UserService.getUserInfo();
-    //             if (response) {
-    //                 const data = response.data as AuthenticationReponse;
-    //                 if (data.code === 200) {
-    //                     const newUser = data.user;
-    //                     if (JSON.stringify(user) !== JSON.stringify(newUser)) {
-    //                         localStorage.setItem('currentUser', JSON.stringify(newUser));
-    //                         dispatch(updateUserInfoSuccess(newUser));
-    //                     }
-    //                     SocketService.connectStomp(socket, stompClient, newUser.userID).then((response) => {
-    //                         const { socket, stompClient } = response;
-    //                         stompClient.subscribe('/users/private', function (message) {
-    //                             console.log('nhận tin nhắn private:' + message.body);
-    //                             console.log(message);
-    //                         });
-    //                         stompClient.subscribe('/all/messages', function (message) {
-    //                             console.log('nhận tin nhắn all:' + message.body);
-    //                             console.log(message);
-    //                         });
-    //                         dispatch(connectSuccess({ socket, stompClient }));
-    //                     });
-    //                 }
-    //             } else {
-    //                 dispatch(updateUserInfoFail());
-    //                 navigate('/login');
-    //             }
-    //         };
-    //         getUserData();
-    //     }
-    // }, [currentStomp]);
 
     useEffect(() => {
         if (user) {
@@ -159,11 +62,15 @@ function Sidebar() {
                                 jsonArray.forEach((jsonData) => {
                                     try {
                                         const json: FriendShip[] = JSON.parse(jsonData + ']') as FriendShip[];
-                                        setFriends((prevList) => [...prevList, ...json]);
+                                        if (json.length > 0) {
+                                            dispatch(getListFriendSuccess(json));
+                                        }
                                     } catch (error) {
                                         jsonData = jsonData.substring(1);
                                         const json: FriendShip[] = JSON.parse('[' + jsonData + ']') as FriendShip[];
-                                        setFriends((prevList) => [...prevList, ...json]);
+                                        if (json.length > 0) {
+                                            dispatch(getListFriendSuccess(json));
+                                        }
                                     }
                                 });
                             }
@@ -181,43 +88,65 @@ function Sidebar() {
                     navigate('/login');
                 }
             };
-            if (friends.length == 0) {
+            if (listFriend.length == 0) {
                 callApiGetFriend();
             }
         }
     }, []);
 
-    useEffect(() => {
-        if (friends.length != listFriend?.length) {
-            dispatch(getListFriendSuccess(friends));
-        }
-    }, [friends]);
-
     const handleAddFriend = async () => {
+        setLoading(true);
         if (searchResult.tinyUser) {
             const userID = searchResult.tinyUser.userID;
             const response = await UserService.addFriend(userID);
             if (response) {
                 const res = response.data as Response;
-                if (res.code === 200) {
-                    setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'ONSEND' } });
+                switch (res.code) {
+                    case 200:
+                        setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'ONSEND' } });
+                        break;
+                    case 409:
+                        alert('Tin này không có sẵn');
+                        setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'ONSEND' } });
+                        break;
+                    default:
+                        alert(res.message);
                 }
+            } else {
+                dispatch(logout());
             }
         }
+        setLoading(false);
     };
 
-    // function sendMessageAll() {
-    //     if (stompClient) {
-    //         stompClient.send(
-    //             '/app/all',
-    //             JSON.stringify({
-    //                 from: 'ChipChip',
-    //                 body: 'hello world',
-    //             }),
-    //         );
-    //         console.log('đã gửi tin nhắn');
-    //     }
-    // }
+    const handleCancelingFriendRequest = async () => {
+        setLoading(true);
+        if (searchResult.tinyUser) {
+            const userID = searchResult.tinyUser.userID;
+            const response = await UserService.cancelFriendRequest(userID);
+            if (response) {
+                const res = response.data as Response;
+                switch (res.code) {
+                    case 200:
+                        setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'AVAIBLE' } });
+                        break;
+                    case 404:
+                        alert('Tin này không có sẵn');
+                        setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'AVAIBLE' } });
+                        break;
+                    case 409:
+                        alert('Tin này không có sẵn');
+                        setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'AVAIBLE' } });
+                        break;
+                    default:
+                        alert(res.message);
+                }
+            } else {
+                dispatch(logout());
+            }
+        }
+        setLoading(false);
+    };
 
     return (
         <aside className={cx('wrapper')}>
@@ -240,12 +169,16 @@ function Sidebar() {
                                 <div className={cx('card_detail')}>Email:{query}</div>
                             </div>
                             {searchResult.tinyUser.state == 'AVAIBLE' && (
-                                <button className={cx('plus_button')} onClick={handleAddFriend}>
+                                <button className={cx('plus_button')} onClick={handleAddFriend} disabled={loading}>
                                     <PlusFriend />
                                 </button>
                             )}
                             {searchResult.tinyUser.state == 'ONSEND' && (
-                                <button className={cx('cancel_button')} onClick={handleAddFriend}>
+                                <button
+                                    className={cx('cancel_button')}
+                                    onClick={handleCancelingFriendRequest}
+                                    disabled={loading}
+                                >
                                     <OnWait />
                                     Hủy
                                 </button>

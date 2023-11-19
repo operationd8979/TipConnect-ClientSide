@@ -10,6 +10,11 @@ export {
     updateUserInfoFail,
     uploadAvatarSuccess,
     uploadAvatarFail,
+    getListFriendRequestSuccess,
+    getListFriendRequestFail,
+    acceptFriendSuccess,
+    acceptFriendFail,
     logout,
+    removeFriendRequest,
 } from './Action';
 export default actionTypes;

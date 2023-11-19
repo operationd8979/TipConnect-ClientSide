@@ -21,19 +21,32 @@ import {
 import { useEffect, useState } from 'react';
 import { Wrapper as PopperWrapper } from '../../../components/Popper';
 import { UserService, SocketService } from '../../../apiService';
-import { getListFriendFail, updateUserInfoSuccess, updateUserInfoFail, connectSuccess } from '../../../reducers';
+import {
+    updateUserInfoSuccess,
+    updateUserInfoFail,
+    connectSuccess,
+    getListFriendRequestSuccess,
+    getListFriendFail,
+    getListFriendRequestFail,
+    getListFriendSuccess,
+    acceptFriendSuccess,
+    acceptFriendFail,
+    logout,
+    removeFriendRequest,
+} from '../../../reducers';
 import { Client } from 'webstomp-client';
 
 const cx = classNames.bind(styles);
 
 function Header() {
+    const [loading, setLoading] = useState(false);
+
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
-    const { isLoggedIn, user } = currentUser;
+    const { isLoggedIn, user, notifications } = currentUser;
+    const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient } = currentStomp;
     const [showNotification, setShowNotification] = useState(false);
-
-    const [friendRequests, setFriendRequests] = useState<FriendRequestResponse[]>([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -68,14 +81,29 @@ function Header() {
                                         switch (data.type) {
                                             case 'SYSTEM':
                                                 const notificationData = data as NotificationChat;
-                                                const { friendRResponse, friendShipRespone } = notificationData;
+                                                const { friendRResponse, friendShipRespone, actionCode } =
+                                                    notificationData;
                                                 if (friendRResponse) {
-                                                    setFriendRequests((prevData) => [...prevData, friendRResponse]);
-                                                    console.log(friendRResponse);
+                                                    switch (actionCode) {
+                                                        case 101:
+                                                            dispatch(getListFriendRequestSuccess([friendRResponse]));
+                                                            break;
+                                                        case 102:
+                                                            dispatch(removeFriendRequest(friendRResponse.id));
+                                                            break;
+                                                        default:
+                                                    }
                                                 }
-                                                // if(friendShipRespone){
-                                                //     set(prevData=>[...prevData,friendRResponse]);
-                                                // }
+                                                if (friendShipRespone) {
+                                                    switch (actionCode) {
+                                                        case 101:
+                                                            dispatch(getListFriendSuccess([friendShipRespone]));
+                                                            break;
+                                                        case 102:
+                                                            break;
+                                                        default:
+                                                    }
+                                                }
                                                 break;
                                             case 'MESSAGE':
                                                 console.log(data as MessageChat);
@@ -112,11 +140,11 @@ function Header() {
                         const response = await UserService.getFriendRequests();
                         if (response?.ok) {
                             response.json().then((data) => {
-                                setFriendRequests(data);
+                                dispatch(getListFriendRequestSuccess(data));
                             });
                         } else {
                             if (response === null || response?.status == 403) {
-                                //dispatch(getListFriendFail());
+                                dispatch(getListFriendRequestFail());
                                 navigate('/login');
                             }
                         }
@@ -127,7 +155,7 @@ function Header() {
                         navigate('/login');
                     }
                 };
-                if (friendRequests.length == 0) {
+                if (listFriendRequest.length == 0) {
                     callApiGetFriendRequests();
                 }
             }
@@ -141,17 +169,55 @@ function Header() {
     };
 
     const handleAcceptFriend = async (requestID: string) => {
+        setLoading(true);
         const response = await UserService.acceptFriendRequest(requestID);
         if (response) {
             const data = response.data as Response;
-            if (data.code === 200) {
-                const newFriendRequests = friendRequests.filter((friendRequest) => friendRequest.id !== requestID);
-                setFriendRequests(newFriendRequests);
-                //dispatch
-            } else {
-                alert(data.message);
+            switch (data.code) {
+                case 200:
+                    dispatch(acceptFriendSuccess(requestID));
+                    break;
+                case 404:
+                    alert('Tin này không có sẵn');
+                    dispatch(acceptFriendSuccess(requestID));
+                    break;
+                case 409:
+                    alert('Tin này không có sẵn');
+                    dispatch(acceptFriendSuccess(requestID));
+                    break;
+                default:
+                    alert(data.message);
             }
+        } else {
+            dispatch(logout());
         }
+        setLoading(false);
+    };
+
+    const handleDenyFriend = async (requestID: string) => {
+        setLoading(true);
+        const response = await UserService.denyFriendRequest(requestID);
+        if (response) {
+            const data = response.data as Response;
+            switch (data.code) {
+                case 200:
+                    dispatch(removeFriendRequest(requestID));
+                    break;
+                case 404:
+                    alert('Tin này không có sẵn');
+                    dispatch(removeFriendRequest(requestID));
+                    break;
+                case 409:
+                    alert('Tin này không có sẵn');
+                    dispatch(removeFriendRequest(requestID));
+                    break;
+                default:
+                    alert(data.message);
+            }
+        } else {
+            dispatch(logout());
+        }
+        setLoading(false);
     };
 
     return (
@@ -163,16 +229,6 @@ function Header() {
                 <div className={cx('actions')}>
                     {isLoggedIn ? (
                         <>
-                            {/* <Tippy delay={[0, 50]} content="Upload video" placement="bottom">
-                                <button className={cx('action-btn')}>
-                                    <UploadIcon />
-                                </button>
-                            </Tippy>
-                            <Tippy delay={[0, 50]} content="Message" placement="bottom">
-                                <button className={cx('action-btn')}>
-                                    <MessageIcon />
-                                </button>
-                            </Tippy> */}
                             <div>
                                 <HeadlessTippy
                                     interactive
@@ -181,7 +237,7 @@ function Header() {
                                         <div className={cx('notification-area')} tabIndex={-1} {...attrs}>
                                             <PopperWrapper>
                                                 <h4 className={cx('notification-title')}>Yêu cầu kết bạn</h4>
-                                                {friendRequests.map((friendRequest) => {
+                                                {listFriendRequest.map((friendRequest) => {
                                                     const { id, sender, time_stamp } = friendRequest;
                                                     return (
                                                         <div className={cx('notification-item')} key={id}>
@@ -200,14 +256,14 @@ function Header() {
                                                                 <button
                                                                     className={cx('plus_button')}
                                                                     onClick={() => handleAcceptFriend(id)}
+                                                                    disabled={loading}
                                                                 >
                                                                     <CheckIcon />
                                                                 </button>
                                                                 <button
                                                                     className={cx('cancel_button')}
-                                                                    onClick={() => {
-                                                                        alert('press');
-                                                                    }}
+                                                                    onClick={() => handleDenyFriend(id)}
+                                                                    disabled={loading}
                                                                 >
                                                                     <Close />
                                                                 </button>
@@ -227,7 +283,7 @@ function Header() {
                                         }}
                                     >
                                         <InboxIcon />
-                                        <span className={cx('badge')}>{friendRequests.length}</span>
+                                        <span className={cx('badge')}>{listFriendRequest.length}</span>
                                     </button>
                                 </HeadlessTippy>
                             </div>

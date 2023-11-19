@@ -1,5 +1,5 @@
 import userReducerAction from './userReducerAction';
-import { User, FriendShip } from '../../../type';
+import { User, FriendShip, FriendRequestResponse } from '../../../type';
 
 export const loginSuccess = (payload: User) => {
     return {
@@ -63,6 +63,39 @@ export const getListFriendSuccess = (payload: FriendShip[]) => {
 export const getListFriendFail = () => {
     return {
         type: userReducerAction.GET_LIST_FRIEND_FAIL,
+    };
+};
+
+export const getListFriendRequestSuccess = (payload: FriendRequestResponse[]) => {
+    return {
+        type: userReducerAction.GET_LIST_FRIEND_REQUEST_SUCCESS,
+        payload: payload,
+    };
+};
+
+export const acceptFriendSuccess = (payload: string) => {
+    return {
+        type: userReducerAction.ACCEPT_FRIEND_SUCCESS,
+        payload: payload,
+    };
+};
+
+export const acceptFriendFail = () => {
+    return {
+        type: userReducerAction.ACCEPT_FRIEND_FAIL,
+    };
+};
+
+export const removeFriendRequest = (payload: string) => {
+    return {
+        type: userReducerAction.REMOVE_FRIEND_REQUEST,
+        payload: payload,
+    };
+};
+
+export const getListFriendRequestFail = () => {
+    return {
+        type: userReducerAction.GET_LIST_FRIEND_REQUEST_FAIL,
     };
 };
 
