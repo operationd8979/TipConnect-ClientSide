@@ -130,7 +130,7 @@ function Header() {
                 getUserData();
             }
         }
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (isLoggedIn) {

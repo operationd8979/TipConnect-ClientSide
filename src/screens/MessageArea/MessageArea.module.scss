@@ -1,0 +1,159 @@
+.wrapper {
+    --default-card-info-width: 580px;
+    --default-chat-content-width: 980px;
+
+    display: flex;
+    flex-direction: column;
+    height: var(--default-layout-height);
+    // background-color: aqua;
+}
+
+.header {
+    flex: 1;
+    border: solid 1px black;
+    display: flex;
+    align-items: center;
+}
+
+.card-img {
+    margin-left: 8px;
+    width: 52px;
+    img {
+        height: 5rem;
+        border-radius: 50%;
+    }
+}
+
+.card-info {
+    width: var(--default-card-info-width);
+    margin-left: 8px;
+    background-color: aliceblue;
+}
+
+.card-action {
+    margin-left: auto;
+    margin-right: 8px;
+    background-color: aliceblue;
+}
+
+.card-name {
+    width: 100%;
+    font-size: large;
+}
+
+.card-detail {
+    width: 100%;
+    font-size: small;
+}
+
+.message-area {
+    flex: 8;
+    display: flex;
+    flex-direction: column;
+    border: solid 1px black;
+    overflow-y: scroll;
+}
+
+.wrapper-chat {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.chat-avatar {
+    margin-left: 8px;
+    width: 52px;
+    img {
+        height: 5rem;
+        border-radius: 50%;
+    }
+}
+
+.chat-content {
+    color: white;
+    padding: 18px 20px;
+    line-height: 26px;
+    font-size: 16px;
+    border-radius: 7px;
+    margin-bottom: 12px;
+    position: relative;
+    background: black;
+    min-width: 110px;
+    max-width: var(--default-chat-content-width);
+    margin-left: 12px;
+    margin-right: 12px;
+    // background-color: aliceblue;
+}
+
+.friend-chat {
+    .chat-content {
+        &:after {
+            bottom: 50%;
+            left: 0%;
+            border: solid transparent;
+            content: ' ';
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+            border-right-color: black;
+            border-width: 10px;
+            margin-left: -18px;
+        }
+    }
+}
+
+.user-chat {
+    margin-left: auto;
+    .chat-content {
+        &:after {
+            bottom: 50%;
+            left: 100%;
+            border: solid transparent;
+            content: ' ';
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+            border-left-color: black;
+            border-width: 10px;
+            margin-left: 0px;
+        }
+    }
+}
+
+.chat-area {
+    flex: 2;
+    border: solid 1px black;
+    display: flex;
+    flex-direction: column;
+}
+
+.header-send {
+    flex: 3;
+    background-color: aqua;
+}
+
+.container-send {
+    flex: 7;
+    display: flex;
+}
+
+.input-chat {
+    flex: 8;
+    background-color: green;
+    padding: 8px;
+    input {
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        font-size: 1.7rem;
+        font-weight: 550;
+        line-height: 2rem;
+    }
+}
+
+.button-chat {
+    background-color: blue;
+    flex: 2;
+}

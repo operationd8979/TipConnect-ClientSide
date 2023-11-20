@@ -1,4 +1,7 @@
 .wrapper {
+    display: flex;
+    flex-direction: column;
+    height: var(--default-layout-height);
 }
 
 .header {
@@ -9,8 +12,9 @@
 .friend_box {
     border: thick double black;
     overflow-y: overlay;
-    min-height: 85rem;
-    max-height: 85rem;
+    flex: 1;
+    // min-height: 95rem;
+    // max-height: 95rem;
     //background-color: aqua;
 }
 

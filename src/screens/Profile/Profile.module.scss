@@ -1,13 +1,17 @@
 .wrapper {
     display: flex;
-    height: 100%;
-    //background-color: aqua;
+    height: var(--default-layout-height);
+    justify-content: center;
+    padding-top: 50px;
 }
 
 .sidebar {
     padding: 20px 10px;
-    width: 40rem;
+    flex: 3;
     //background-color: red;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .user_avatar {
@@ -30,12 +34,12 @@
 
 .active_button_avatar {
     margin: 10px 10px;
+    width: 50%;
 }
 
 .content {
     padding: 20px 20px;
-    width: 100%;
-    //background-color: blue;
+    flex: 7;
 }
 
 .header_content {

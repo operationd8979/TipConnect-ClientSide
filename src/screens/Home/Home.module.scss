@@ -1,6 +1,6 @@
 .wrapper {
     display: flex;
-    height: 90rem;
+    height: var(--default-layout-height);
     justify-content: center;
     align-items: center;
     text-align: center;
