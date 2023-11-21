@@ -156,4 +156,7 @@
 .button-chat {
     background-color: blue;
     flex: 2;
+    button {
+        height: 100%;
+    }
 }

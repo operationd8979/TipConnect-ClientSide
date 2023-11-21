@@ -198,7 +198,9 @@ function Sidebar() {
                             </div>
                             <div className={cx('card_info')}>
                                 <div className={cx('card_name')}>{friendShip.friend.fullName}</div>
-                                <div className={cx('card_detail')}>message</div>
+                                <div className={cx('card_detail')}>
+                                    {friendShip.message?.body || 'bắt đầu nhắn tin nào'}
+                                </div>
                             </div>
                         </Link>
                     );

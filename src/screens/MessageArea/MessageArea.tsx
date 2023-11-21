@@ -14,6 +14,7 @@ import {
     FriendShip,
 } from '../../type';
 import { Client } from 'webstomp-client';
+import Button from '../../components/Button';
 
 const cx = classNames.bind(Styles);
 
@@ -25,11 +26,27 @@ const MessageArea = () => {
     const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient } = currentStomp;
 
+    const [bodyChat, setBodyChat] = useState('');
+
     const [friendShip, setFriendShip] = useState<FriendShip | undefined>(
         listFriend.find((f) => f.friend.userID === friendId),
     );
 
     useEffect(() => {}, [friendId]);
+
+    function sendMessagePrivate() {
+        if (stompClient) {
+            const chat: MessageChat = {
+                from: user?.userID || '',
+                to: friendId || '',
+                type: 'MESSAGE',
+                body: bodyChat,
+                seen: false,
+            };
+            stompClient.send('/app/private', JSON.stringify(chat));
+            setBodyChat('');
+        }
+    }
 
     return (
         <div className={cx('wrapper')}>
@@ -41,7 +58,7 @@ const MessageArea = () => {
                     <div className={cx('card-name')}>{friendShip?.friend.fullName}</div>
                     <div className={cx('card-detail')}>{friendShip?.type}</div>
                 </div>
-                <div className={cx('card-action')}>button area</div>
+                <div className={cx('card-action')}>[CALL]/[CALL VIDEO]</div>
             </div>
             <div className={cx('message-area')}>
                 <div style={{ flex: 1 }} />
@@ -97,12 +114,22 @@ const MessageArea = () => {
                 </div>
             </div>
             <div className={cx('chat-area')}>
-                <div className={cx('header-send')}></div>
+                <div className={cx('header-send')}> [xxxxICON]/[VIDEO]/[PICTURE]</div>
                 <div className={cx('container-send')}>
                     <div className={cx('input-chat')}>
-                        <input spellCheck={false} multiple={true} />
+                        <input
+                            spellCheck={false}
+                            value={bodyChat}
+                            onChange={(e) => {
+                                setBodyChat(e.target.value);
+                            }}
+                        />
                     </div>
-                    <div className={cx('button-chat')}></div>
+                    <div className={cx('button-chat')}>
+                        <Button primary large onClick={sendMessagePrivate}>
+                            Send
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

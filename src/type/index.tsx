@@ -25,6 +25,7 @@ export interface FriendShip {
     id: string;
     friend: User;
     type: string;
+    message?: MessageChat;
 }
 
 export interface Action {
@@ -89,7 +90,7 @@ export interface State {
 export interface RawChat {
     type: string;
     body: string;
-    timestamp: bigint;
+    timestamp?: bigint;
     seen: boolean;
 }
 
