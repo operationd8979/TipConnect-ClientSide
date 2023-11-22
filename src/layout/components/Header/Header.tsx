@@ -43,7 +43,7 @@ function Header() {
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
-    const { isLoggedIn, user, notifications } = currentUser;
+    const { isLoggedIn, user, notifications, listFriend } = currentUser;
     const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient } = currentStomp;
     const [showNotification, setShowNotification] = useState(false);

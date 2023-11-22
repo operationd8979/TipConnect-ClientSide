@@ -97,6 +97,7 @@ export interface RawChat {
 export interface MessageChat extends RawChat {
     from: string;
     to: string;
+    isUser: boolean;
 }
 
 export interface NotificationChat extends RawChat {

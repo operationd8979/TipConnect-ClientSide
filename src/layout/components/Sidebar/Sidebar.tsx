@@ -84,8 +84,8 @@ function Sidebar() {
                 } catch (error) {
                     alert(error);
                     console.log(error);
-                    dispatch(getListFriendFail());
-                    navigate('/login');
+                    // dispatch(getListFriendFail());
+                    // navigate('/login');
                 }
             };
             if (listFriend.length == 0) {

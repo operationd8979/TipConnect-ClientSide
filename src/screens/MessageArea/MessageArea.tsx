@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames/bind';
@@ -31,6 +31,23 @@ const MessageArea = () => {
     const [friendShip, setFriendShip] = useState<FriendShip | undefined>(
         listFriend.find((f) => f.friend.userID === friendId),
     );
+    const [listMessage, setListMessage] = useState<MessageChat[]>([]);
+
+    const handleAddMessage = useCallback(() => {
+        const newMessage = listFriend.find((f) => f.friend.userID === friendId)?.message;
+        if (newMessage) {
+            if (
+                listMessage.length === 0 ||
+                newMessage.timestamp !== listFriend[listFriend.length - 1].message?.timestamp
+            ) {
+                setListMessage((prevList) => [...prevList, newMessage]);
+            }
+        }
+    }, [listFriend]);
+
+    useEffect(() => {
+        handleAddMessage();
+    }, [handleAddMessage]);
 
     useEffect(() => {}, [friendId]);
 
@@ -42,8 +59,10 @@ const MessageArea = () => {
                 type: 'MESSAGE',
                 body: bodyChat,
                 seen: false,
+                isUser: true,
             };
             stompClient.send('/app/private', JSON.stringify(chat));
+            setListMessage((preList) => [...preList, chat]);
             setBodyChat('');
         }
     }
