@@ -1,10 +1,10 @@
 import userReducerAction from './userReducerAction';
-import { User, FriendShip, FriendRequestResponse } from '../../../type';
+import { User, FriendShip, FriendRequestResponse, MessageChat } from '../../../type';
 
 export const loginSuccess = (payload: User) => {
     return {
         type: userReducerAction.LOGIN_SUCCESS,
-        payload: payload,
+        payload,
     };
 };
 
@@ -17,7 +17,7 @@ export const loginFail = () => {
 export const registerSuccess = (payload: User) => {
     return {
         type: userReducerAction.REGISTER_SUCCESS,
-        payload: payload,
+        payload,
     };
 };
 
@@ -30,7 +30,7 @@ export const registerFail = () => {
 export const updateUserInfoSuccess = (payload: User) => {
     return {
         type: userReducerAction.UPDATE_USER_SUCCESS,
-        payload: payload,
+        payload,
     };
 };
 
@@ -43,7 +43,7 @@ export const updateUserInfoFail = () => {
 export const uploadAvatarSuccess = (payload: string) => {
     return {
         type: userReducerAction.UPLOAD_AVATAR_SUCCESS,
-        payload: payload,
+        payload,
     };
 };
 
@@ -56,7 +56,7 @@ export const uploadAvatarFail = () => {
 export const getListFriendSuccess = (payload: FriendShip[]) => {
     return {
         type: userReducerAction.GET_LIST_FRIEND_SUCCESS,
-        payload: payload,
+        payload,
     };
 };
 
@@ -69,14 +69,14 @@ export const getListFriendFail = () => {
 export const getListFriendRequestSuccess = (payload: FriendRequestResponse[]) => {
     return {
         type: userReducerAction.GET_LIST_FRIEND_REQUEST_SUCCESS,
-        payload: payload,
+        payload,
     };
 };
 
 export const acceptFriendSuccess = (payload: string) => {
     return {
         type: userReducerAction.ACCEPT_FRIEND_SUCCESS,
-        payload: payload,
+        payload,
     };
 };
 
@@ -89,13 +89,20 @@ export const acceptFriendFail = () => {
 export const removeFriendRequest = (payload: string) => {
     return {
         type: userReducerAction.REMOVE_FRIEND_REQUEST,
-        payload: payload,
+        payload,
     };
 };
 
 export const getListFriendRequestFail = () => {
     return {
         type: userReducerAction.GET_LIST_FRIEND_REQUEST_FAIL,
+    };
+};
+
+export const updateLastMessage = (payload: MessageChat) => {
+    return {
+        type: userReducerAction.UPDATE_LAST_MESSAGE,
+        payload,
     };
 };
 

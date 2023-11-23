@@ -52,6 +52,16 @@ const getFriendRequests = async () => {
     }
 };
 
+const getMessageChats = async (friendID: string) => {
+    try {
+        const response = await getStream({ path: `user/getMessages/${friendID}` });
+        return response;
+    } catch (error) {
+        //alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
 const search = async (searchQuery: SearchQuery) => {
     try {
         const { query, offset, limit } = searchQuery;
@@ -109,6 +119,7 @@ export default {
     getUserInfo,
     getListFriend,
     getFriendRequests,
+    getMessageChats,
     search,
     updateUserInfo,
     updateAvatar,

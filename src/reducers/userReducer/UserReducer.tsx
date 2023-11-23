@@ -1,4 +1,4 @@
-import { Action, User, State, FriendShip, FriendRequestResponse } from '../../type';
+import { Action, User, State, FriendShip, FriendRequestResponse, MessageChat } from '../../type';
 import actionTypes from './Action';
 
 const currentUser = localStorage.getItem('currentUser');
@@ -8,8 +8,18 @@ if (currentUser) {
 }
 
 const initalState: State = user
-    ? { isLoggedIn: true, user, listFriend: [], notifications: { listFriendRequest: [], listNotification: [] } }
-    : { isLoggedIn: false, user: null, listFriend: [], notifications: { listFriendRequest: [], listNotification: [] } };
+    ? {
+          isLoggedIn: true,
+          user,
+          listFriend: [],
+          notifications: { listFriendRequest: [], listNotification: [] },
+      }
+    : {
+          isLoggedIn: false,
+          user: null,
+          listFriend: [],
+          notifications: { listFriendRequest: [], listNotification: [] },
+      };
 
 const UserReducer = (state: State = initalState, action: Action) => {
     const { type, payload } = action;
@@ -21,6 +31,17 @@ const UserReducer = (state: State = initalState, action: Action) => {
 
         case actionTypes.GET_LIST_FRIEND_SUCCESS:
             return { ...state, listFriend: [...state.listFriend, ...payload] };
+        case actionTypes.UPDATE_LAST_MESSAGE:
+            const newListFriend = state.listFriend.map((friendShip) => {
+                if (
+                    friendShip.friend.userID === (payload as MessageChat).from ||
+                    friendShip.friend.userID === (payload as MessageChat).to
+                ) {
+                    return { ...friendShip, message: payload };
+                }
+                return friendShip;
+            });
+            return { ...state, listFriend: newListFriend };
 
         case actionTypes.UPDATE_USER_SUCCESS:
             return { ...state, user: payload };

@@ -18,6 +18,7 @@ import { UserService, SocketService } from '../../../apiService/';
 import { Link, useNavigate } from 'react-router-dom';
 import Search from '../Search';
 import { PlusFriend, OnWait, Close } from '../../../components/Icons';
+import DataReconstruct from '../../../utils/DataReconstruct';
 
 const cx = className.bind(styles);
 
@@ -187,6 +188,10 @@ function Sidebar() {
                     </div>
                 )}
                 {showList().map((friendShip) => {
+                    let showTime = 'now';
+                    if (friendShip.message?.timestamp) {
+                        showTime = DataReconstruct.TranslateTimeStampToDisplayString(friendShip.message.timestamp);
+                    }
                     return (
                         <Link
                             className={cx('friend_card')}
@@ -197,9 +202,17 @@ function Sidebar() {
                                 <img src={friendShip.friend.urlAvatar} alt={friendShip.friend.fullName} />
                             </div>
                             <div className={cx('card_info')}>
-                                <div className={cx('card_name')}>{friendShip.friend.fullName}</div>
                                 <div className={cx('card_detail')}>
-                                    {friendShip.message?.body || 'bắt đầu nhắn tin nào'}
+                                    <div className={cx('card_name')}>{friendShip.friend.fullName}</div>
+                                    {showTime && <div className={cx('card_time')}>{showTime}</div>}
+                                </div>
+                                <div className={cx('card_content')}>
+                                    {friendShip.message?.user ? 'Bạn: ' : ''}
+                                    {friendShip.message
+                                        ? friendShip.message.body.length > 50
+                                            ? friendShip.message.body.substring(0, 50) + '...'
+                                            : friendShip.message.body
+                                        : 'bắt đầu nhắn tin nào'}
                                 </div>
                             </div>
                         </Link>

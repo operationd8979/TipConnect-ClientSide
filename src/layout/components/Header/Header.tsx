@@ -33,6 +33,8 @@ import {
     acceptFriendFail,
     logout,
     removeFriendRequest,
+    recieveMessage,
+    updateLastMessage,
 } from '../../../reducers';
 import { Client } from 'webstomp-client';
 
@@ -106,7 +108,10 @@ function Header() {
                                                 }
                                                 break;
                                             case 'MESSAGE':
-                                                console.log(data as MessageChat);
+                                                console.log('[get private message]:');
+                                                console.log(data);
+                                                dispatch(recieveMessage(data as MessageChat));
+                                                dispatch(updateLastMessage(data as MessageChat));
                                                 break;
                                             default:
                                                 console.log(data);

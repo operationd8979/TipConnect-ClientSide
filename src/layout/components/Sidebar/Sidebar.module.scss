@@ -41,8 +41,13 @@
 }
 
 .card_info {
-    width: 280px;
+    width: 240px;
     margin-left: 8px;
+}
+
+.card_detail {
+    display: flex;
+    align-items: center;
 }
 
 .card_name {
@@ -50,9 +55,15 @@
     font-size: large;
 }
 
-.card_detail {
+.card_time {
+    text-align: right;
+    width: 90px;
+    font-size: 1.2rem;
+}
+
+.card_content {
     width: 100%;
-    font-size: small;
+    font-size: 1.6rem;
 }
 
 .plus_button {

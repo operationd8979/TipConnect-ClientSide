@@ -1,3 +1,5 @@
+import { Client } from 'webstomp-client';
+
 export interface User {
     userID: string;
     email?: string;
@@ -86,6 +88,12 @@ export interface State {
     notifications: Notifications;
 }
 
+export interface StateWS {
+    socket: WebSocket;
+    stompClient: Client;
+    currentMessage: MessageChat | null;
+}
+
 //chat element
 export interface RawChat {
     type: string;
@@ -97,7 +105,7 @@ export interface RawChat {
 export interface MessageChat extends RawChat {
     from: string;
     to: string;
-    isUser: boolean;
+    user: boolean;
 }
 
 export interface NotificationChat extends RawChat {

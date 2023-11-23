@@ -5,6 +5,7 @@ import {
     registerFail,
     getListFriendSuccess,
     getListFriendFail,
+    updateLastMessage,
     updateUserInfoSuccess,
     updateUserInfoFail,
     uploadAvatarSuccess,
@@ -16,7 +17,7 @@ import {
     logout,
     removeFriendRequest,
 } from './userReducer/Action';
-import { connectSuccess, connectFail, disconnect } from './stompReducer/Action';
+import { connectSuccess, connectFail, disconnect, recieveMessage } from './stompReducer/Action';
 
 export {
     loginSuccess,
@@ -31,12 +32,14 @@ export {
     uploadAvatarFail,
     getListFriendRequestSuccess,
     getListFriendRequestFail,
+    updateLastMessage,
     acceptFriendSuccess,
     acceptFriendFail,
     logout,
     connectSuccess,
     connectFail,
     disconnect,
+    recieveMessage,
     removeFriendRequest,
 };
 

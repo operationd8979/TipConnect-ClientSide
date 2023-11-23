@@ -1,3 +1,4 @@
+import { MessageChat } from '../../../type';
 import stompReducerAction from './stompReducerAction';
 import { Client } from 'webstomp-client';
 
@@ -18,6 +19,13 @@ export const connectFail = (payload: Client) => {
 export const disconnect = (payload: Client) => {
     return {
         type: stompReducerAction.DISCONNECT,
+        payload,
+    };
+};
+
+export const recieveMessage = (payload: MessageChat) => {
+    return {
+        type: stompReducerAction.RECIEVE_MESSAGE,
         payload,
     };
 };

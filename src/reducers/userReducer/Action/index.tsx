@@ -16,5 +16,6 @@ export {
     acceptFriendFail,
     logout,
     removeFriendRequest,
+    updateLastMessage,
 } from './Action';
 export default actionTypes;

@@ -317,3 +317,54 @@ export const OnWait = ({ width = '3.2rem', height = '3.2rem', className = '' }) 
         </g>
     </svg>
 );
+export const Call = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 118.875 122.877"
+        enable-background="new 0 0 118.875 122.877"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <g>
+            <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M1.432,20.714c9.427,6.476,18.779,12.989,26.673,21.375 C23.58,62.076,41.64,78.045,58.111,87.453c6.448,3.683,9.298,6.265,16.476,5.024l28.268,27.696 C49.657,138.039-10.045,63.084,1.432,20.714L1.432,20.714z M81.874,85.356l6.201-6.298c1.788-1.819,4.74-1.842,6.559-0.053 l22.862,22.509c1.818,1.789,1.841,4.741,0.053,6.559l-6.203,6.299c-1.789,1.818-4.741,1.841-6.56,0.052L81.924,91.915 C80.105,90.127,80.083,87.175,81.874,85.356L81.874,85.356z M7.004,7.467l4.5-5.464c1.929-2.342,5.425-2.68,7.767-0.751 l23.405,19.281c2.342,1.931,2.677,5.425,0.75,7.77l-4.502,5.461c-1.93,2.345-5.425,2.68-7.768,0.751L7.755,15.234 C5.413,13.305,5.073,9.809,7.004,7.467L7.004,7.467z"
+            />
+        </g>
+    </svg>
+);
+
+export const VideoCall = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 122.88 84.74"
+        enableBackground="new 0 0 122.88 84.74"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <g>
+            <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M6.01,0h72.73c3.3,0,6,2.7,6,6v22.24l38.14-19.41v63.21L84.74,50.62v28.12c0,3.3-2.7,6-6,6H6.01 c-3.3,0-6.01-2.7-6.01-6V6C0,2.7,2.7,0,6.01,0L6.01,0z M33.76,15.18v54.38l27.19-27.19L33.76,15.18L33.76,15.18L33.76,15.18z"
+            />
+        </g>
+    </svg>
+);
