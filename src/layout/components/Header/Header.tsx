@@ -113,6 +113,18 @@ function Header() {
                                                 dispatch(recieveMessage(data as MessageChat));
                                                 dispatch(updateLastMessage(data as MessageChat));
                                                 break;
+                                            case 'CALL':
+                                                console.log('[get private call]:');
+                                                const body = data.body.split('@');
+                                                const friendID = (data as MessageChat).from;
+                                                const fullName = body[0];
+                                                const type = body[1];
+                                                window.open(
+                                                    `/listen/${friendID}/${fullName}/${type}`,
+                                                    '_blank',
+                                                    'width=500,height=500',
+                                                );
+                                                break;
                                             default:
                                                 console.log(data);
                                         }

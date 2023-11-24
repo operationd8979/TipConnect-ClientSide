@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { MessageChat, NotificationChat, RawChat, State, StateWS } from '../../type';
 import classNames from 'classnames/bind';
-import Styles from './Call.module.scss';
+import Styles from './Listen.module.scss';
 import { SocketService } from '../../apiService';
 import {
     updateUserInfoSuccess,
@@ -24,7 +24,7 @@ import { VideoCall, Close } from '../../components/Icons';
 
 const cx = classNames.bind(Styles);
 
-const Call = () => {
+const Listen = () => {
     const { friendId, fullName, type } = useParams();
 
     const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ const Call = () => {
         if (isConnected) {
             // Code to handle the connected state, if needed
         } else {
-            const audioElement = new Audio('/assets/audios/waitConnect.mp3');
+            const audioElement = new Audio('/assets/audios/nokiaSound.mp3');
             audioElement.loop = true;
             audioElement.play();
             return () => {
@@ -140,7 +140,6 @@ const Call = () => {
     }
 
     const handleCloseCall = () => {
-        sendPrivateMassage('cancel');
         window.close();
     };
 
@@ -176,4 +175,4 @@ const Call = () => {
     );
 };
 
-export default Call;
+export default Listen;

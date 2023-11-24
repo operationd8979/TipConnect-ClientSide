@@ -105,9 +105,26 @@ const MessageArea = () => {
         }
     }
 
+    function callPrivate(type: string) {
+        if (stompClient) {
+            const chat: MessageChat = {
+                from: user?.userID || '',
+                to: friendId || '',
+                type: 'CALL',
+                body: user?.fullName + '@' + type,
+                seen: false,
+                user: true,
+            };
+            stompClient.send('/app/private', JSON.stringify(chat));
+            //setListMessage((preList) => [...preList, chat]);
+            //dispatch(updateLastMessage(chat));
+            //setBodyChat('');
+        }
+    }
+
     const handleCall = async () => {
         window.open(`/call/${friendId}/${friendShip?.friend.fullName}/call`, '_blank', 'width=500,height=500');
-
+        callPrivate('call');
         // const servers = {
         //     iceServers: [
         //         {
@@ -148,6 +165,7 @@ const MessageArea = () => {
 
     const handleCallVideo = () => {
         window.open(`/call/${friendId}/${friendShip?.friend.fullName}/video`, '_blank', 'width=500,height=500');
+        callPrivate('video');
     };
 
     return (
