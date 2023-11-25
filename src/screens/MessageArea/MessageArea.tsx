@@ -3,66 +3,33 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames/bind';
 import Styles from './MessageArea.module.scss';
-import {
-    State,
-    StateWS,
-    FriendRequestResponse,
-    Response,
-    AuthenticationReponse,
-    RawChat,
-    MessageChat,
-    NotificationChat,
-    FriendShip,
-} from '../../type';
-import { Client } from 'webstomp-client';
-import Button from '../../components/Button';
-import { updateLastMessage } from '../../reducers';
-import { UserService } from '../../apiService';
+
 import Chat from './Chat';
+import Button from '../../components/Button';
+import { UserService } from '../../apiService';
+import { updateLastMessage } from '../../reducers';
 import { Call, VideoCall } from '../../components/Icons';
+import { State, StateWS, MessageChat } from '../../type';
 
 const cx = classNames.bind(Styles);
 
 const MessageArea = () => {
     const { friendId } = useParams();
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const messageAreaRef = useRef<HTMLDivElement>(null);
+
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as StateWS;
     const { isLoggedIn, user, notifications, listFriend } = currentUser;
     const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient, currentMessage } = currentStomp;
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const messageAreaRef = useRef<HTMLDivElement>(null);
     const [bodyChat, setBodyChat] = useState('');
-
     const friendShip = listFriend.find((f) => f.friend.userID === friendId);
     const [listMessage, setListMessage] = useState<MessageChat[]>([]);
-
-    const handleAddMessage = useCallback(() => {
-        if (currentMessage) {
-            if (currentMessage.from === friendId) {
-                if (
-                    listMessage.length === 0 ||
-                    currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
-                ) {
-                    console.log('[2]');
-                    setListMessage((prevList) => [...prevList, currentMessage]);
-                }
-            }
-        }
-    }, [currentMessage]);
-
-    useEffect(() => {
-        handleAddMessage();
-    }, [handleAddMessage]);
-
-    useEffect(() => {
-        if (messageAreaRef.current) {
-            messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
-        }
-    }, [listMessage]);
 
     useEffect(() => {
         const callApiGetMessages = async () => {
@@ -88,6 +55,29 @@ const MessageArea = () => {
         }
     }, [friendId]);
 
+    const handleAddMessage = useCallback(() => {
+        if (currentMessage) {
+            if (currentMessage.from === friendId) {
+                if (
+                    listMessage.length === 0 ||
+                    currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
+                ) {
+                    setListMessage((prevList) => [...prevList, currentMessage]);
+                }
+            }
+        }
+    }, [currentMessage]);
+
+    useEffect(() => {
+        handleAddMessage();
+    }, [handleAddMessage]);
+
+    useEffect(() => {
+        if (messageAreaRef.current) {
+            messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
+        }
+    }, [listMessage]);
+
     function sendMessagePrivate() {
         if (stompClient) {
             const chat: MessageChat = {
@@ -106,24 +96,26 @@ const MessageArea = () => {
     }
 
     function callPrivate(type: string) {
-        if (stompClient) {
+        if (stompClient && user) {
+            const tinyUser = {
+                fullName: user.fullName,
+                urlAvatar: user.urlAvatar,
+                type: type,
+            };
             const chat: MessageChat = {
                 from: user?.userID || '',
                 to: friendId || '',
                 type: 'CALL',
-                body: user?.fullName + '@' + type,
+                body: JSON.stringify(tinyUser),
                 seen: false,
                 user: true,
             };
             stompClient.send('/app/private', JSON.stringify(chat));
-            //setListMessage((preList) => [...preList, chat]);
-            //dispatch(updateLastMessage(chat));
-            //setBodyChat('');
         }
     }
 
     const handleCall = async () => {
-        window.open(`/call/${friendId}/${friendShip?.friend.fullName}/call`, '_blank', 'width=500,height=500');
+        window.open(`/call/${friendId}/${friendShip?.friend.fullName}/call/caller`, '_blank', 'width=500,height=500');
         callPrivate('call');
         // const servers = {
         //     iceServers: [
@@ -164,7 +156,7 @@ const MessageArea = () => {
     };
 
     const handleCallVideo = () => {
-        window.open(`/call/${friendId}/${friendShip?.friend.fullName}/video`, '_blank', 'width=500,height=500');
+        window.open(`/call/${friendId}/${friendShip?.friend.fullName}/video/caller`, '_blank', 'width=500,height=500');
         callPrivate('video');
     };
 

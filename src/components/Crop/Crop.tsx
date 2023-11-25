@@ -2,20 +2,19 @@ import { useState } from 'react';
 import classNames from 'classnames/bind';
 import Styles from './Crop.module.scss';
 import Cropper, { Area } from 'react-easy-crop';
-import getCroppedImg from '../../utils/imageUtil';
+
 import Button from '../Button';
+import getCroppedImg from '../../utils/imageUtil';
 
-const cx = classNames.bind(Styles);
-
-const Crop = ({
-    urlAvatar,
-    handleCropImage,
-    onCancel,
-}: {
+interface Crop {
     urlAvatar: any;
     handleCropImage: (previewUrl: string) => void;
     onCancel: () => void;
-}) => {
+}
+
+const cx = classNames.bind(Styles);
+
+const Crop = ({ urlAvatar, handleCropImage, onCancel }: Crop) => {
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);

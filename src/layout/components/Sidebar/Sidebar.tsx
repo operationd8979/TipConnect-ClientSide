@@ -1,35 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
-import styles from './Sidebar.module.scss';
-import className from 'classnames/bind';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-    getListFriendSuccess,
-    getListFriendFail,
-    logout,
-    connectSuccess,
-    connectFail,
-    disconnect,
-    updateUserInfoSuccess,
-    updateUserInfoFail,
-} from '../../../reducers';
-import { State, FriendShip, SearchResponse, AuthenticationReponse, Response } from '../../../type';
-import { Client } from 'webstomp-client';
-import { UserService, SocketService } from '../../../apiService/';
 import { Link, useNavigate } from 'react-router-dom';
+import className from 'classnames/bind';
+import styles from './Sidebar.module.scss';
+
 import Search from '../Search';
-import { PlusFriend, OnWait, Close } from '../../../components/Icons';
+import { PlusFriend, OnWait } from '../../../components/Icons';
+import { State, FriendShip, SearchResponse, Response } from '../../../type';
+import { UserService } from '../../../apiService/';
+import { getListFriendSuccess, getListFriendFail, logout } from '../../../reducers';
 import DataReconstruct from '../../../utils/DataReconstruct';
 
 const cx = className.bind(styles);
 
 function Sidebar() {
     const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
-
-    const { socket, stompClient } = currentStomp;
-
     const { isLoggedIn, user, listFriend } = currentUser;
 
     const [query, setQuery] = useState<string>('');
@@ -38,9 +27,6 @@ function Sidebar() {
     const showList = useCallback(() => {
         return listFriend.filter((f) => f.friend.fullName.trim().toLowerCase().includes(query.toLowerCase().trim()));
     }, [listFriend, query]);
-
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (user) {
@@ -85,8 +71,6 @@ function Sidebar() {
                 } catch (error) {
                     alert(error);
                     console.log(error);
-                    // dispatch(getListFriendFail());
-                    // navigate('/login');
                 }
             };
             if (listFriend.length == 0) {
@@ -151,7 +135,6 @@ function Sidebar() {
 
     return (
         <aside className={cx('wrapper')}>
-            {/* <button onClick={sendMessageAll}>send</button> */}
             <div className={cx('header')}>
                 {isLoggedIn && <Search query={query} setQuery={setQuery} setSearchResult={setSearchResult} />}
                 <button>tat ca</button>

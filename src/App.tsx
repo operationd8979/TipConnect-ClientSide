@@ -4,7 +4,7 @@ import { publicRoutes } from './routes/index';
 import { DefaultLayout } from './layout';
 import { useSelector } from 'react-redux';
 import { State } from './type';
-import { Call, Listen } from './screens';
+import { Call } from './screens';
 
 function App() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
@@ -30,8 +30,7 @@ function App() {
                         />
                     );
                 })}
-                <Route path="/call/:friendId/:fullName/:type" element={<Call />} />
-                <Route path="/listen/:friendId/:fullName/:type" element={<Listen />} />
+                <Route path="/call/:friendId/:fullName/:type/:caller" element={<Call />} />
             </Routes>
         </div>
     );

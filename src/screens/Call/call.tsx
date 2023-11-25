@@ -1,35 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { MessageChat, NotificationChat, RawChat, State, StateWS } from '../../type';
+import { useNavigate, useParams } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import Styles from './Call.module.scss';
-import { SocketService } from '../../apiService';
-import {
-    updateUserInfoSuccess,
-    updateUserInfoFail,
-    connectSuccess,
-    getListFriendRequestSuccess,
-    getListFriendFail,
-    getListFriendRequestFail,
-    getListFriendSuccess,
-    acceptFriendSuccess,
-    acceptFriendFail,
-    logout,
-    removeFriendRequest,
-    recieveMessage,
-    updateLastMessage,
-} from '../../reducers';
+
 import { VideoCall, Close } from '../../components/Icons';
+import { SocketService } from '../../apiService';
+import { connectSuccess } from '../../reducers';
+import { MessageChat, State, StateWS } from '../../type';
+import pathAudio from '../../contants/pathAudio';
 
 const cx = classNames.bind(Styles);
 
 const Call = () => {
-    const { friendId, fullName, type } = useParams();
-
     const [loading, setLoading] = useState(false);
-    const [isVideo, setIsVideo] = useState<boolean>(type === 'video' ? true : false);
-    const [isConnected, setIsConnected] = useState(false);
+    const { friendId, fullName, type, caller } = useParams();
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const userVideo = useRef<HTMLVideoElement>(null);
+    const friendVideo = useRef<HTMLVideoElement>(null);
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as StateWS;
@@ -37,11 +28,9 @@ const Call = () => {
     const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient } = currentStomp;
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const userVideo = useRef<HTMLVideoElement>(null);
-    const friendVideo = useRef<HTMLVideoElement>(null);
+    const [isVideo, setIsVideo] = useState<boolean>(type === 'video' ? true : false);
+    const [isAccept, setIsAccept] = useState(!(caller === 'caller'));
+    const [isConnected, setIsConnected] = useState(false);
 
     const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
@@ -58,12 +47,18 @@ const Call = () => {
         if (user) {
             if (!stompClient.connected) {
                 console.log('<<<<<<<<<<<<<<<<CONNECT WS>>>>>>>>>>>>>>>>');
-                SocketService.connectStomp(socket, stompClient, user?.userID).then((response) => {
+                SocketService.connectStomp(socket, stompClient, user.userID).then((response) => {
                     const { socket, stompClient } = response;
                     stompClient.subscribe('/users/private', function (message) {
                         try {
-                            const data = JSON.parse(message.body);
-                            console.log(data);
+                            const data: MessageChat = JSON.parse(message.body);
+                            if (data.type === 'RTC') {
+                                if (data.body === 'cancel') {
+                                    handleCloseCall();
+                                } else if (data.body === 'connect') {
+                                    setIsAccept(true);
+                                }
+                            }
                         } catch (error) {
                             alert('Some message lost!');
                         }
@@ -75,10 +70,10 @@ const Call = () => {
     }, []);
 
     useEffect(() => {
-        if (isConnected) {
+        if (isAccept) {
             // Code to handle the connected state, if needed
         } else {
-            const audioElement = new Audio('/assets/audios/waitConnect.mp3');
+            const audioElement = new Audio(pathAudio.waitConnect);
             audioElement.loop = true;
             audioElement.play();
             return () => {
@@ -86,7 +81,7 @@ const Call = () => {
                 audioElement.currentTime = 0;
             };
         }
-    }, [isConnected]);
+    }, [isAccept]);
 
     useEffect(() => {
         function openStream() {
@@ -133,9 +128,6 @@ const Call = () => {
                 user: true,
             };
             stompClient.send('/app/private', JSON.stringify(chat));
-            //setListMessage((preList) => [...preList, chat]);
-            //dispatch(updateLastMessage(chat));
-            //setBodyChat('');
         }
     }
 
@@ -153,7 +145,7 @@ const Call = () => {
                         <video height={160} width={160} ref={friendVideo} />
                     </div>
                 ) : (
-                    <div>Kết nối...</div>
+                    <div>{!isAccept ? 'Kết nối...' : 'Khởi tạo đường truyền...'}</div>
                 )}
             </div>
             <div className={cx('user-area')}>
@@ -167,7 +159,7 @@ const Call = () => {
                     <button onClick={() => setIsVideo(!isVideo)} disabled={loading}>
                         <VideoCall />
                     </button>
-                    <button onClick={handleCloseCall} disabled={loading}>
+                    <button onClick={handleCloseCall}>
                         <Close />
                     </button>
                 </div>

@@ -1,24 +1,16 @@
-import classNames from 'classnames/bind';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import classNames from 'classnames/bind';
+import styles from './Header.module.scss';
 import Tippy from '@tippyjs/react';
 import HeadlessTippy from '@tippyjs/react/headless';
-import styles from './Header.module.scss';
-import config from '../../../config';
+
 import images from '../../../assets/images';
-import { InboxIcon, MessageIcon, UploadIcon, CheckIcon, UncheckIcon, Close } from '../../../components/Icons';
+import { InboxIcon, CheckIcon, Close } from '../../../components/Icons';
+import CallCard from '../../../components/CallCard';
 import Button from '../../../components/Button';
-import i18n from '../../../i18n/i18n';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-    State,
-    FriendRequestResponse,
-    Response,
-    AuthenticationReponse,
-    RawChat,
-    MessageChat,
-    NotificationChat,
-} from '../../../type';
-import { useEffect, useState } from 'react';
+import config from '../../../config';
 import { Wrapper as PopperWrapper } from '../../../components/Popper';
 import { UserService, SocketService } from '../../../apiService';
 import {
@@ -26,22 +18,24 @@ import {
     updateUserInfoFail,
     connectSuccess,
     getListFriendRequestSuccess,
-    getListFriendFail,
     getListFriendRequestFail,
     getListFriendSuccess,
     acceptFriendSuccess,
-    acceptFriendFail,
     logout,
     removeFriendRequest,
     recieveMessage,
     updateLastMessage,
 } from '../../../reducers';
+import { State, Response, AuthenticationReponse, RawChat, MessageChat, NotificationChat } from '../../../type';
 import { Client } from 'webstomp-client';
+import i18n from '../../../i18n/i18n';
 
 const cx = classNames.bind(styles);
 
 function Header() {
     const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
@@ -50,8 +44,12 @@ function Header() {
     const { socket, stompClient } = currentStomp;
     const [showNotification, setShowNotification] = useState(false);
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const [callGuy, setCallGuy] = useState<{
+        friendID: string;
+        fullName: string;
+        urlAvatar: string;
+        type: string;
+    } | null>(null);
 
     useEffect(() => {
         return () => {
@@ -115,15 +113,21 @@ function Header() {
                                                 break;
                                             case 'CALL':
                                                 console.log('[get private call]:');
-                                                const body = data.body.split('@');
+                                                const body = JSON.parse(data.body) as {
+                                                    fullName: string;
+                                                    urlAvatar: string;
+                                                    type: string;
+                                                };
                                                 const friendID = (data as MessageChat).from;
-                                                const fullName = body[0];
-                                                const type = body[1];
-                                                window.open(
-                                                    `/listen/${friendID}/${fullName}/${type}`,
-                                                    '_blank',
-                                                    'width=500,height=500',
-                                                );
+                                                const fullName = body.fullName;
+                                                const type = body.type;
+                                                const urlAvatar = body.urlAvatar;
+                                                setCallGuy({ friendID, fullName, urlAvatar, type });
+                                                break;
+                                            case 'RTC':
+                                                if (data.body === 'cancel') {
+                                                    setCallGuy(null);
+                                                }
                                                 break;
                                             default:
                                                 console.log(data);
@@ -168,8 +172,6 @@ function Header() {
                     } catch (error) {
                         alert(error);
                         console.log(error);
-                        //dispatch(getListFriendFail());
-                        navigate('/login');
                     }
                 };
                 if (listFriendRequest.length == 0) {
@@ -178,8 +180,6 @@ function Header() {
             }
         }
     }, []);
-
-    useEffect(() => {}, []);
 
     const handleHideNotification = () => {
         setShowNotification(false);
@@ -243,6 +243,19 @@ function Header() {
                 <Link to={config.routes.home} className={cx('logo')}>
                     <img src={images.logo} alt="TipConnect" />
                 </Link>
+                <div className={cx('income-call')}>
+                    {callGuy && (
+                        <CallCard
+                            userID={user?.userID || ''}
+                            stompClient={stompClient}
+                            friendID={callGuy.friendID}
+                            fullName={callGuy.fullName}
+                            urlAvatar={callGuy.urlAvatar}
+                            type={callGuy.type}
+                            setCallGuy={setCallGuy}
+                        />
+                    )}
+                </div>
                 <div className={cx('actions')}>
                     {isLoggedIn ? (
                         <>

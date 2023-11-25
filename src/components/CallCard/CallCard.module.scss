@@ -1,0 +1,48 @@
+.wrraper {
+}
+
+.crop_container {
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    border-radius: 10px;
+    border: 2px solid #0115ea;
+    background-color: #03e2ff;
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.25);
+}
+
+.avatar-card {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    img {
+        height: calc(var(--default-layout-header-height) / 3 * 2);
+        border-radius: 50%;
+    }
+}
+
+.name-card {
+    flex: 1;
+}
+
+.call-actions {
+    flex: 2;
+    width: 20%;
+    display: flex;
+    justify-content: center;
+}
+
+.button-call {
+    button {
+        background-color: transparent;
+        color: red;
+    }
+}
+
+.button-cancel {
+    margin-left: 30px;
+    button {
+        background-color: transparent;
+        color: red;
+    }
+}

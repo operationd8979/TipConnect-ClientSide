@@ -1,30 +1,29 @@
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import Styles from './Register.module.scss';
+
 import Button from '../../components/Button';
-import { Link, useNavigate } from 'react-router-dom';
 import config from '../../config';
-import { RegisterRequest, AuthenticationReponse, State } from '../../type';
-import Stomp, { Frame, VERSIONS, client, over, Client } from 'webstomp-client';
-import { useEffect, useState } from 'react';
+import { Client } from 'webstomp-client';
 import { AuthService, SocketService } from '../../apiService';
-import { registerSuccess, registerFail, connectFail, connectSuccess } from '../../reducers';
-import { useDispatch, useSelector } from 'react-redux';
+import { registerSuccess, registerFail } from '../../reducers';
+import { RegisterRequest, AuthenticationReponse, State } from '../../type';
 import i18n from '../../i18n/i18n';
 
 const cx = classNames.bind(Styles);
 
 const Register = () => {
+    const [loading, setLoading] = useState(false);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
-
     const { socket, stompClient } = currentStomp;
-
     const { isLoggedIn, user, listFriend } = currentUser;
-
-    const [loading, setLoading] = useState(false);
 
     const [registerRequest, setRegisterRequest] = useState<RegisterRequest>({
         email: 'operationddd@gmail.com',

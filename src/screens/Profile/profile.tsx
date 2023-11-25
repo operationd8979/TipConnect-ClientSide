@@ -1,9 +1,12 @@
-import Styles from './Profile.module.scss';
-import classNames from 'classnames/bind';
-import { useSelector, useDispatch } from 'react-redux';
-import { AuthenticationReponse, UpdateInfoRequest, State, UpdateAvatarRequest } from '../../type';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import classNames from 'classnames/bind';
+import Styles from './Profile.module.scss';
+
+import Button from '../../components/Button';
+import Crop from '../../components/Crop';
+import { CheckIcon, UncheckIcon } from '../../components/Icons';
 import { UserService } from '../../apiService';
 import {
     updateUserInfoSuccess,
@@ -11,13 +14,7 @@ import {
     uploadAvatarSuccess,
     uploadAvatarFail,
 } from '../../reducers/userReducer/Action';
-import Button from '../../components/Button';
-import { CheckIcon, UncheckIcon } from '../../components/Icons';
-import config from '../../config';
-import routes from '../../config/routes';
-import Cropper, { Area } from 'react-easy-crop';
-import getCroppedImg, { blobUrlToFile } from '../../utils/imageUtil';
-import Crop from '../../components/Crop';
+import { AuthenticationReponse, UpdateInfoRequest, State, UpdateAvatarRequest } from '../../type';
 import { uploadBytes, getDownloadURL, storageRef, storage } from '../../firebase';
 
 const cx = classNames.bind(Styles);
@@ -28,6 +25,7 @@ const Profile = () => {
     const dispatch = useDispatch();
 
     const inputFile = useRef<HTMLInputElement>(null);
+
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const { isLoggedIn, user, listFriend } = currentUser;
 
@@ -38,12 +36,8 @@ const Profile = () => {
         password: '',
     });
     const [rePassword, setRePassword] = useState('');
-
-    const [newAvatar, setNewAvatar] = useState<File | null>(null);
     const [urlAvatar, setUrlAvatar] = useState<any>('');
-
     const [showCrop, setShowCrop] = useState(false);
-
     const { firstName, lastName, newPassword, password } = infoUser;
 
     const update = useCallback(() => {
@@ -255,7 +249,7 @@ const Profile = () => {
                                         }}
                                     ></input>
                                     <div className={cx('icon_check')}>
-                                        {newPassword === rePassword && newPassword != '' ? (
+                                        {newPassword === rePassword && newPassword !== '' ? (
                                             <CheckIcon></CheckIcon>
                                         ) : (
                                             <UncheckIcon></UncheckIcon>

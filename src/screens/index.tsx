@@ -4,6 +4,5 @@ import Register from './Register';
 import Profile from './Profile';
 import MessageArea from './MessageArea';
 import Call from './Call';
-import Listen from './Listen';
 
-export { Home, Login, Register, MessageArea, Profile, Call, Listen };
+export { Home, Login, Register, MessageArea, Profile, Call };

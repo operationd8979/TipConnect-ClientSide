@@ -1,3 +1,1 @@
-import Call from './call';
-
-export default Call;
+export { default } from './call';

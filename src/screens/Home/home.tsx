@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { State } from '../../type';
-import firebase from '../../firebase';
 import classNames from 'classnames/bind';
 import Styles from './Home.module.scss';
+
+import { State } from '../../type';
 
 const cx = classNames.bind(Styles);
 
