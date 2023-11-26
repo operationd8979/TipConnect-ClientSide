@@ -86,7 +86,7 @@
     max-width: var(--default-chat-content-width);
     margin-left: 12px;
     margin-right: 12px;
-    // background-color: aliceblue;
+    word-wrap: break-word;
 }
 
 .friend-chat {

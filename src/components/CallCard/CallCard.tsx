@@ -42,7 +42,7 @@ const CallCard = ({ userID, stompClient, friendID, fullName, urlAvatar, type, se
     }, []);
 
     function sendPrivateMassage(body: string) {
-        if (stompClient) {
+        if (stompClient.connected) {
             const chat: MessageChat = {
                 from: userID,
                 to: friendID,
@@ -51,13 +51,13 @@ const CallCard = ({ userID, stompClient, friendID, fullName, urlAvatar, type, se
                 seen: false,
                 user: true,
             };
-            stompClient.send('/app/private', JSON.stringify(chat));
+            stompClient.send('/app/tradeRTC', JSON.stringify(chat));
         }
     }
 
     const handleAcceptCall = () => {
         setCallGuy(null);
-        sendPrivateMassage('connect');
+        //sendPrivateMassage('connect');
         window.open(`/call/${friendID}/${fullName}/${type}/listener`, '_blank', 'width=500,height=500');
     };
 

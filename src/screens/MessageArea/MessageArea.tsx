@@ -23,9 +23,8 @@ const MessageArea = () => {
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as StateWS;
-    const { isLoggedIn, user, notifications, listFriend } = currentUser;
-    const { listFriendRequest, listNotification } = notifications;
-    const { socket, stompClient, currentMessage } = currentStomp;
+    const { user, listFriend } = currentUser;
+    const { stompClient, currentMessage } = currentStomp;
 
     const [bodyChat, setBodyChat] = useState('');
     const friendShip = listFriend.find((f) => f.friend.userID === friendId);
@@ -50,7 +49,7 @@ const MessageArea = () => {
                 console.log(error);
             }
         };
-        if (listMessage.length == 0) {
+        if (listMessage.length === 0) {
             callApiGetMessages();
         }
     }, [friendId]);
@@ -79,7 +78,11 @@ const MessageArea = () => {
     }, [listMessage]);
 
     function sendMessagePrivate() {
-        if (stompClient) {
+        if (bodyChat.length > 500) {
+            alert('độ dài tin nhắn quá 500 ký tự!!!');
+            return;
+        }
+        if (stompClient.connected) {
             const chat: MessageChat = {
                 from: user?.userID || '',
                 to: friendId || '',
@@ -117,42 +120,6 @@ const MessageArea = () => {
     const handleCall = async () => {
         window.open(`/call/${friendId}/${friendShip?.friend.fullName}/call/caller`, '_blank', 'width=500,height=500');
         callPrivate('call');
-        // const servers = {
-        //     iceServers: [
-        //         {
-        //             urls: [
-        //                 'stun:stun.l.google.com:19302',
-        //                 'stun:stun1.l.google.com:19302',
-        //                 'stun:stun2.l.google.com:19302',
-        //                 'stun:stun3.l.google.com:19302',
-        //                 'stun:stun4.l.google.com:19302',
-        //             ],
-        //         },
-        //     ],
-        // };
-        // const peerConnection = new RTCPeerConnection(servers);
-
-        // peerConnection.ondatachannel = (event) => {
-        //     const receiveChannel = event.channel;
-        //     receiveChannel.onmessage = (e) => {
-        //         console.log('Received Message:', e.data);
-        //     };
-        // };
-
-        // const dataChannel = peerConnection.createDataChannel('dataChannel');
-        // dataChannel.onopen = () => {
-        //     dataChannel.send('Hello, world!');
-        // };
-
-        // peerConnection.onicecandidate = async (event) => {
-        //     if (event.candidate) {
-        //         console.log('New ICE cecandiate', event.candidate);
-        //     }
-        // };
-
-        // let offer = await peerConnection.createOffer();
-        // await peerConnection.setLocalDescription(offer);
-        // console.log(offer);
     };
 
     const handleCallVideo = () => {
@@ -211,11 +178,12 @@ const MessageArea = () => {
                 })}
             </div>
             <div className={cx('chat-area')}>
-                <div className={cx('header-send')}> [xxxxICON]/[VIDEO]/[PICTURE]</div>
+                {/* <div className={cx('header-send')}> [xxxxICON]/[VIDEO]/[PICTURE]</div> */}
                 <div className={cx('container-send')}>
                     <div className={cx('input-chat')}>
                         <input
                             spellCheck={false}
+                            maxLength={500}
                             value={bodyChat}
                             onChange={(e) => {
                                 setBodyChat(e.target.value);

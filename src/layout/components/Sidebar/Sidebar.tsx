@@ -142,31 +142,39 @@ function Sidebar() {
             </div>
             <div className={cx('friend_box')}>
                 {searchResult.tinyUser && (
-                    <div>
+                    <div className={cx('aim-user')}>
                         <div className={cx('header_search')}>Tìm qua email:</div>
                         <div className={cx('friend_card')} key={searchResult.tinyUser.userID}>
                             <div className={cx('card_img')}>
                                 <img src={searchResult.tinyUser.urlAvatar} alt={searchResult.tinyUser.fullName} />
                             </div>
-                            <div className={cx('card_info')}>
-                                <div className={cx('card_name')}>{searchResult.tinyUser.fullName}</div>
-                                <div className={cx('card_detail')}>Email:{query}</div>
+                            <div className={cx('card_content')}>
+                                <div className={cx('card_info')}>
+                                    <div className={cx('info_name')}>{searchResult.tinyUser.fullName}</div>
+                                    <div className={cx('info_detail')}>Email:{query}</div>
+                                </div>
+                                <div className={cx('card_action')}>
+                                    {searchResult.tinyUser.state == 'AVAIBLE' && (
+                                        <button
+                                            className={cx('plus_button')}
+                                            onClick={handleAddFriend}
+                                            disabled={loading}
+                                        >
+                                            <PlusFriend />
+                                        </button>
+                                    )}
+                                    {searchResult.tinyUser.state == 'ONSEND' && (
+                                        <button
+                                            className={cx('cancel_button')}
+                                            onClick={handleCancelingFriendRequest}
+                                            disabled={loading}
+                                        >
+                                            <OnWait />
+                                            Hủy
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                            {searchResult.tinyUser.state == 'AVAIBLE' && (
-                                <button className={cx('plus_button')} onClick={handleAddFriend} disabled={loading}>
-                                    <PlusFriend />
-                                </button>
-                            )}
-                            {searchResult.tinyUser.state == 'ONSEND' && (
-                                <button
-                                    className={cx('cancel_button')}
-                                    onClick={handleCancelingFriendRequest}
-                                    disabled={loading}
-                                >
-                                    <OnWait />
-                                    Hủy
-                                </button>
-                            )}
                         </div>
                     </div>
                 )}
@@ -184,18 +192,20 @@ function Sidebar() {
                             <div className={cx('card_img')}>
                                 <img src={friendShip.friend.urlAvatar} alt={friendShip.friend.fullName} />
                             </div>
-                            <div className={cx('card_info')}>
-                                <div className={cx('card_detail')}>
-                                    <div className={cx('card_name')}>{friendShip.friend.fullName}</div>
-                                    {showTime && <div className={cx('card_time')}>{showTime}</div>}
-                                </div>
-                                <div className={cx('card_content')}>
-                                    {friendShip.message?.user ? 'Bạn: ' : ''}
-                                    {friendShip.message
-                                        ? friendShip.message.body.length > 50
-                                            ? friendShip.message.body.substring(0, 50) + '...'
-                                            : friendShip.message.body
-                                        : 'bắt đầu nhắn tin nào'}
+                            <div className={cx('card_content')}>
+                                <div>
+                                    <div className={cx('card_content')}>
+                                        <div className={cx('info_name')}>{friendShip.friend.fullName}</div>
+                                        {showTime && <div className={cx('info_time')}>{showTime}</div>}
+                                    </div>
+                                    <div className={cx('info_detail')}>
+                                        {friendShip.message?.user ? 'Bạn: ' : ''}
+                                        {friendShip.message
+                                            ? friendShip.message.body.length > 32
+                                                ? friendShip.message.body.substring(0, 32) + '...'
+                                                : friendShip.message.body
+                                            : 'bắt đầu nhắn tin nào'}
+                                    </div>
                                 </div>
                             </div>
                         </Link>
