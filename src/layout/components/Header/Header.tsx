@@ -7,7 +7,7 @@ import Tippy from '@tippyjs/react';
 import HeadlessTippy from '@tippyjs/react/headless';
 
 import images from '../../../assets/images';
-import { InboxIcon, CheckIcon, Close } from '../../../components/Icons';
+import { CheckIcon, Close, UserGroupIcon } from '../../../components/Icons';
 import CallCard from '../../../components/CallCard';
 import Button from '../../../components/Button';
 import config from '../../../config';
@@ -312,7 +312,7 @@ function Header() {
                                             setShowNotification(true);
                                         }}
                                     >
-                                        <InboxIcon />
+                                        <UserGroupIcon />
                                         <span className={cx('badge')}>{listFriendRequest.length}</span>
                                     </button>
                                 </HeadlessTippy>

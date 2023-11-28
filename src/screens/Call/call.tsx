@@ -9,6 +9,7 @@ import { SocketService } from '../../apiService';
 import { connectSuccess } from '../../reducers';
 import { MessageChat, State, StateWS } from '../../type';
 import pathAudio from '../../contants/pathAudio';
+import { Client } from 'webstomp-client';
 
 const cx = classNames.bind(Styles);
 
@@ -26,15 +27,90 @@ const servers = {
     ],
 };
 
-var peerConnection = new RTCPeerConnection(servers);
-let offer: any = null;
+class MyConnection {
+    private peerConnection: RTCPeerConnection;
+    private stompClient: Client;
+    private friendID: string;
+    private userID: string;
+    private localStream: MediaStream;
+    private remoteStream: MediaStream;
 
-let localStream: MediaStream;
-let remoteStream: MediaStream;
+    constructor(
+        localStream: MediaStream,
+        remoteStream: MediaStream,
+        stompClient: Client,
+        userID: string,
+        friendID: string,
+    ) {
+        this.peerConnection = new RTCPeerConnection(servers);
+        this.localStream = localStream;
+        this.remoteStream = remoteStream;
+        this.stompClient = stompClient;
+        this.userID = userID;
+        this.friendID = friendID;
 
-let dataChannel: RTCDataChannel | null = null;
+        this.peerConnection.oniceconnectionstatechange = () => {
+            console.log('ICE Connection State:', this.peerConnection.iceConnectionState);
+        };
+        this.localStream.getTracks().forEach((track) => this.peerConnection.addTrack(track, this.localStream));
+
+        this.peerConnection.ontrack = (event) => {
+            this.remoteStream = event.streams[0];
+        };
+    }
+
+    public createOffer = async () => {
+        this.peerConnection.onicecandidate = async (event) => {
+            if (event.candidate) {
+                //this.sendRTCMessage(JSON.stringify(this.peerConnection.localDescription));
+                return offer;
+            }
+        };
+        const offer = await this.peerConnection.createOffer();
+        await this.peerConnection.setLocalDescription(offer);
+        console.log(offer);
+    };
+
+    public createAnswer = async (offerString: string) => {
+        let offer = JSON.parse(offerString);
+        this.peerConnection.onicecandidate = async (event) => {
+            if (event.candidate) {
+                this.sendRTCMessage(JSON.stringify(this.peerConnection.localDescription));
+            }
+        };
+        await this.peerConnection.setRemoteDescription(offer);
+        let answer = await this.peerConnection.createAnswer();
+        await this.peerConnection.setLocalDescription(answer);
+    };
+
+    public addAnswer = async (answerString: string) => {
+        let answer = JSON.parse(answerString);
+        if (!this.peerConnection.currentRemoteDescription) {
+            this.peerConnection.setRemoteDescription(answer);
+        }
+    };
+
+    public sendRTCMessage(body: string) {
+        if (this.stompClient.connected) {
+            const chat: MessageChat = {
+                from: this.userID,
+                to: this.friendID,
+                type: 'RTC',
+                body: body,
+                seen: false,
+                user: true,
+            };
+            this.stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+        }
+    }
+}
+
+let localStream: MediaStream = new MediaStream();
+let remoteStream: MediaStream = new MediaStream();
 
 const Call = () => {
+    let myConnection: MyConnection;
+
     const [loading, setLoading] = useState(false);
     const { friendId, fullName, type, caller } = useParams();
 
@@ -57,6 +133,15 @@ const Call = () => {
     const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
     useEffect(() => {
+        if (userVideo.current) {
+            userVideo.current.srcObject = localStream;
+        }
+        if (friendVideo.current) {
+            friendVideo.current.srcObject = remoteStream;
+        }
+    }, [userVideo, friendVideo]);
+
+    useEffect(() => {
         if (user) {
             if (!stompClient.connected) {
                 console.log('<<<<<<<<<<<<<<<<CONNECT WS>>>>>>>>>>>>>>>>');
@@ -71,16 +156,23 @@ const Call = () => {
                                 } else if (data.body === 'accept') {
                                     if (!isAccept) setIsAccept(true);
                                 } else if (data.body === 'connect') {
-                                    if (stompClient.connected && offer) {
-                                        const chat: MessageChat = {
-                                            from: user?.userID || '',
-                                            to: friendId || '',
-                                            type: 'RTC',
-                                            body: JSON.stringify(offer),
-                                            seen: false,
-                                            user: true,
-                                        };
-                                        stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+                                    if (stompClient.connected) {
+                                        console.log('vào được a');
+                                        // const chat: MessageChat = {
+                                        //     from: user?.userID || '',
+                                        //     to: friendId || '',
+                                        //     type: 'RTC',
+                                        //     body: JSON.stringify(offer),
+                                        //     seen: false,
+                                        //     user: true,
+                                        // };
+                                        // stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+                                        if (myConnection) {
+                                            console.log('vào được b');
+                                            const offer = await myConnection.createOffer();
+                                            console.log(offer);
+                                            console.log('vào được c');
+                                        }
                                     }
                                 } else if (data.body === 'done') {
                                     if (!isDone) {
@@ -105,33 +197,39 @@ const Call = () => {
                                     const jsonData = JSON.parse(data.body);
                                     switch (jsonData.type) {
                                         case 'offer':
-                                            peerConnection.setRemoteDescription(new RTCSessionDescription(jsonData));
-                                            const answer = await peerConnection.createAnswer();
-                                            await peerConnection.setLocalDescription(answer);
-                                            if (stompClient.connected && answer) {
-                                                const chat: MessageChat = {
-                                                    from: user?.userID || '',
-                                                    to: friendId || '',
-                                                    type: 'RTC',
-                                                    body: JSON.stringify(answer),
-                                                    seen: false,
-                                                    user: true,
-                                                };
-                                                stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+                                            // peerConnection.setRemoteDescription(new RTCSessionDescription(jsonData));
+                                            // const answer = await peerConnection.createAnswer();
+                                            // await peerConnection.setLocalDescription(answer);
+                                            // if (stompClient.connected && answer) {
+                                            //     const chat: MessageChat = {
+                                            //         from: user?.userID || '',
+                                            //         to: friendId || '',
+                                            //         type: 'RTC',
+                                            //         body: JSON.stringify(answer),
+                                            //         seen: false,
+                                            //         user: true,
+                                            //     };
+                                            //     stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+                                            // }
+                                            if (myConnection) {
+                                                myConnection.createAnswer(data.body);
                                             }
                                             break;
                                         case 'answer':
-                                            peerConnection.setRemoteDescription(new RTCSessionDescription(jsonData));
-                                            if (stompClient.connected) {
-                                                const chat: MessageChat = {
-                                                    from: user?.userID || '',
-                                                    to: friendId || '',
-                                                    type: 'RTC',
-                                                    body: 'done',
-                                                    seen: false,
-                                                    user: true,
-                                                };
-                                                stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+                                            // peerConnection.setRemoteDescription(new RTCSessionDescription(jsonData));
+                                            // if (stompClient.connected) {
+                                            //     const chat: MessageChat = {
+                                            //         from: user?.userID || '',
+                                            //         to: friendId || '',
+                                            //         type: 'RTC',
+                                            //         body: 'done',
+                                            //         seen: false,
+                                            //         user: true,
+                                            //     };
+                                            //     stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+                                            // }
+                                            if (myConnection) {
+                                                myConnection.addAnswer(data.body);
                                             }
                                             break;
                                         default:
@@ -157,12 +255,14 @@ const Call = () => {
     useEffect(() => {
         if (stompClient.connected && isAccept) {
             sendPrivateMassage('accept');
+            myConnection = new MyConnection(localStream, remoteStream, stompClient, user?.userID || '', friendId || '');
         }
     }, [stompClient]);
 
     useEffect(() => {
         if (isAccept) {
-            createOffer();
+            myConnection = new MyConnection(localStream, remoteStream, stompClient, user?.userID || '', friendId || '');
+            sendPrivateMassage('connect');
         } else {
             const audioElement = new Audio(pathAudio.waitConnect);
             audioElement.loop = true;
@@ -182,29 +282,22 @@ const Call = () => {
         function playVideo(stream: MediaStream) {
             if (userVideo.current) {
                 localStream = stream;
-                userVideo.current.srcObject = stream;
-                userVideo.current.play();
-                if (peerConnection) {
-                    stream.getTracks().forEach((track) => peerConnection.addTrack(track, stream));
-                }
             }
         }
         setLoading(true);
         if (isVideo) {
             openStream().then((stream: MediaStream) => {
                 playVideo(stream);
-                setMediaStream(stream);
                 setLoading(false);
             });
         } else {
-            if (mediaStream) {
-                const tracks = mediaStream.getTracks();
+            if (localStream) {
+                const tracks = localStream.getTracks();
                 tracks.forEach((track) => {
                     track.stop();
                 });
                 if (userVideo.current) {
-                    userVideo.current.srcObject = null;
-                    setMediaStream(null);
+                    localStream = new MediaStream();
                 }
             }
             setLoading(false);
@@ -213,8 +306,6 @@ const Call = () => {
 
     useEffect(() => {
         if (isDone) {
-            console.log(peerConnection);
-            console.log(dataChannel);
         }
     }, [isDone]);
 
@@ -237,52 +328,25 @@ const Call = () => {
         window.close();
     };
 
-    const createOffer = async () => {
-        offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        peerConnection.oniceconnectionstatechange = () => {
-            console.log('ICE connection state:', peerConnection.iceConnectionState);
-        };
-        peerConnection.ontrack = (event) => {
-            remoteStream = event.streams[0];
-            console.log('tùm lum');
-            console.log(remoteStream);
-            if (friendVideo.current) {
-                friendVideo.current.srcObject = remoteStream;
-                friendVideo.current.play();
-            }
-        };
-        peerConnection.ondatachannel = (event) => {
-            const dataChannel = event.channel;
+    // const createOffer = async () => {
+    //     offer = await peerConnection.createOffer();
+    //     await peerConnection.setLocalDescription(offer);
+    //     peerConnection.oniceconnectionstatechange = () => {
+    //         console.log('ICE connection state:', peerConnection.iceConnectionState);
+    //     };
+    //     peerConnection.ontrack = (event) => {
+    //         remoteStream = event.streams[0];
+    //         console.log('tùm lum');
+    //         console.log(remoteStream);
+    //         if (friendVideo.current) {
+    //             friendVideo.current.srcObject = remoteStream;
+    //             friendVideo.current.play();
+    //         }
+    //     };
 
-            dataChannel.onmessage = (event) => {
-                const receivedData = event.data;
-                console.log('Received data:', receivedData);
-            };
-
-            dataChannel.onopen = () => {
-                console.log('Data Channel is open');
-            };
-
-            dataChannel.onclose = () => {
-                console.log('Data Channel is closed');
-            };
-        };
-
-        dataChannel = peerConnection.createDataChannel('dataChannel');
-        dataChannel.onmessage = (event) => {
-            const receivedData = event.data;
-            console.log('Received data:', receivedData);
-        };
-        dataChannel.onopen = () => {
-            console.log('Data Channel is open');
-        };
-        dataChannel.onclose = () => {
-            console.log('Data Channel is closed');
-        };
-        sendPrivateMassage('connect');
-        setIsConnected(true);
-    };
+    //     sendPrivateMassage('connect');
+    //     setIsConnected(true);
+    // };
 
     return (
         <div className={cx('wrapper')}>
@@ -290,7 +354,7 @@ const Call = () => {
                 <div className={cx('name')}>{fullName}</div>
                 {isConnected ? (
                     <div className={cx('video')}>
-                        <video height={160} width={160} ref={friendVideo} />
+                        <video height={160} width={160} ref={friendVideo} autoPlay={true} />
                     </div>
                 ) : (
                     <div>{!isAccept ? 'Kết nối...' : 'Khởi tạo đường truyền...'}</div>
@@ -300,7 +364,7 @@ const Call = () => {
                 <div className={cx('name')}>{user?.fullName}</div>
                 {isVideo ? (
                     <div className={cx('video')}>
-                        <video height={160} width={160} ref={userVideo} />
+                        <video height={160} width={160} ref={userVideo} autoPlay={true} />
                     </div>
                 ) : (
                     <div className={cx('image')}>

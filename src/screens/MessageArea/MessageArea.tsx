@@ -82,7 +82,7 @@ const MessageArea = () => {
             alert('độ dài tin nhắn quá 500 ký tự!!!');
             return;
         }
-        if (stompClient.connected) {
+        if (stompClient.connected && bodyChat !== '') {
             const chat: MessageChat = {
                 from: user?.userID || '',
                 to: friendId || '',
