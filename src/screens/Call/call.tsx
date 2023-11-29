@@ -9,7 +9,6 @@ import { SocketService } from '../../apiService';
 import { connectSuccess } from '../../reducers';
 import { MessageChat, State, StateWS } from '../../type';
 import pathAudio from '../../contants/pathAudio';
-import { Client } from 'webstomp-client';
 
 const cx = classNames.bind(Styles);
 
@@ -27,92 +26,24 @@ const servers = {
     ],
 };
 
-class MyConnection {
-    private peerConnection: RTCPeerConnection;
-    private stompClient: Client;
-    private friendID: string;
-    private userID: string;
-    private localStream: MediaStream;
-    private remoteStream: MediaStream;
+// let peerConnection: RTCPeerConnection = new RTCPeerConnection(servers);
+// let localStream: MediaStream = new MediaStream();
+// let remoteStream: MediaStream = new MediaStream();
 
-    constructor(
-        localStream: MediaStream,
-        remoteStream: MediaStream,
-        stompClient: Client,
-        userID: string,
-        friendID: string,
-    ) {
-        this.peerConnection = new RTCPeerConnection(servers);
-        this.localStream = localStream;
-        this.remoteStream = remoteStream;
-        this.stompClient = stompClient;
-        this.userID = userID;
-        this.friendID = friendID;
-
-        this.peerConnection.oniceconnectionstatechange = () => {
-            console.log('ICE Connection State:', this.peerConnection.iceConnectionState);
-        };
-        this.localStream.getTracks().forEach((track) => this.peerConnection.addTrack(track, this.localStream));
-
-        this.peerConnection.ontrack = (event) => {
-            this.remoteStream = event.streams[0];
-        };
-    }
-
-    public createOffer = async () => {
-        this.peerConnection.onicecandidate = async (event) => {
-            if (event.candidate) {
-                //this.sendRTCMessage(JSON.stringify(this.peerConnection.localDescription));
-                return offer;
-            }
-        };
-        const offer = await this.peerConnection.createOffer();
-        await this.peerConnection.setLocalDescription(offer);
-        console.log(offer);
-    };
-
-    public createAnswer = async (offerString: string) => {
-        let offer = JSON.parse(offerString);
-        this.peerConnection.onicecandidate = async (event) => {
-            if (event.candidate) {
-                this.sendRTCMessage(JSON.stringify(this.peerConnection.localDescription));
-            }
-        };
-        await this.peerConnection.setRemoteDescription(offer);
-        let answer = await this.peerConnection.createAnswer();
-        await this.peerConnection.setLocalDescription(answer);
-    };
-
-    public addAnswer = async (answerString: string) => {
-        let answer = JSON.parse(answerString);
-        if (!this.peerConnection.currentRemoteDescription) {
-            this.peerConnection.setRemoteDescription(answer);
-        }
-    };
-
-    public sendRTCMessage(body: string) {
-        if (this.stompClient.connected) {
-            const chat: MessageChat = {
-                from: this.userID,
-                to: this.friendID,
-                type: 'RTC',
-                body: body,
-                seen: false,
-                user: true,
-            };
-            this.stompClient.send('/app/tradeRTC', JSON.stringify(chat));
-        }
-    }
-}
-
-let localStream: MediaStream = new MediaStream();
-let remoteStream: MediaStream = new MediaStream();
+// peerConnection.onicecandidate = async (event) => {
+//     if (event.candidate) {
+//         console.log('candidate');
+//         console.log(peerConnection.localDescription);
+//     }
+// };
 
 const Call = () => {
-    let myConnection: MyConnection;
-
     const [loading, setLoading] = useState(false);
     const { friendId, fullName, type, caller } = useParams();
+
+    const [localStream, setLocalStream] = useState(new MediaStream());
+    const [remoteStream, setRemoteStream] = useState(new MediaStream());
+    const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(servers));
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -130,16 +61,97 @@ const Call = () => {
     const [isConnected, setIsConnected] = useState(false);
     const [isDone, setIsDone] = useState(false);
 
-    const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+    const [message, setMessage] = useState<MessageChat | null>(null);
 
     useEffect(() => {
-        if (userVideo.current) {
-            userVideo.current.srcObject = localStream;
+        const initCall = async () => {
+            // peerConnection.onicecandidate = (event) => {
+            //     if (event.candidate) {
+            //         console.log('candidate');
+            //         console.log(peerConnection.localDescription);
+            //     }
+            // };
+
+            peerConnection.ontrack = (event) => {
+                event.streams[0].getTracks().forEach((track) => {
+                    console.log('get track');
+                    console.log(track);
+                    setRemoteStream((prevStream) => {
+                        const newStream = new MediaStream();
+                        newStream.addTrack(track);
+                        return newStream;
+                    });
+                });
+            };
+
+            localStream.getTracks().forEach((track) => {
+                console.log('send track');
+                console.log(track);
+                peerConnection.addTrack(track, localStream);
+            });
+        };
+
+        initCall();
+
+        // return () => {
+        //     peerConnection.close();
+        // };
+    }, [localStream, peerConnection]);
+
+    useEffect(() => {
+        if (message != null) {
+            const handleRTCTrade = async () => {
+                if (message.type === 'RTC') {
+                    if (message.body === 'cancel') {
+                        handleCloseCall();
+                    } else if (message.body === 'accept') {
+                        if (!isAccept) setIsAccept(true);
+                    } else if (message.body === 'connect') {
+                        if (!isConnected) setIsConnected(true);
+                        if (peerConnection) {
+                            const offer = await peerConnection.createOffer();
+                            await peerConnection.setLocalDescription(offer);
+                            sendPrivateMassage(JSON.stringify(offer));
+                        }
+                    } else if (message.body === 'done') {
+                        if (!isDone) {
+                            setIsDone(true);
+                            sendPrivateMassage('done[*]');
+                        }
+                    } else if (message.body === 'done[*]') {
+                        if (!isDone) {
+                            setIsDone(true);
+                        }
+                    } else {
+                        const jsonData = JSON.parse(message.body);
+                        switch (jsonData.type) {
+                            case 'offer':
+                                if (peerConnection) {
+                                    let offer = JSON.parse(message.body);
+                                    await peerConnection.setRemoteDescription(offer);
+                                    const answer = await peerConnection.createAnswer();
+                                    await peerConnection.setLocalDescription(answer);
+                                    sendPrivateMassage(JSON.stringify(answer));
+                                }
+                                break;
+                            case 'answer':
+                                if (peerConnection) {
+                                    let answer = JSON.parse(message.body);
+                                    if (!peerConnection.currentRemoteDescription) {
+                                        peerConnection.setRemoteDescription(answer);
+                                    }
+                                    sendPrivateMassage('done');
+                                }
+                                break;
+                            default:
+                                console.log(jsonData);
+                        }
+                    }
+                }
+            };
+            handleRTCTrade();
         }
-        if (friendVideo.current) {
-            friendVideo.current.srcObject = remoteStream;
-        }
-    }, [userVideo, friendVideo]);
+    }, [message]);
 
     useEffect(() => {
         if (user) {
@@ -150,93 +162,7 @@ const Call = () => {
                     stompClient.subscribe('/users/private', async function (message) {
                         try {
                             const data: MessageChat = JSON.parse(message.body);
-                            if (data.type === 'RTC') {
-                                if (data.body === 'cancel') {
-                                    handleCloseCall();
-                                } else if (data.body === 'accept') {
-                                    if (!isAccept) setIsAccept(true);
-                                } else if (data.body === 'connect') {
-                                    if (stompClient.connected) {
-                                        console.log('vào được a');
-                                        // const chat: MessageChat = {
-                                        //     from: user?.userID || '',
-                                        //     to: friendId || '',
-                                        //     type: 'RTC',
-                                        //     body: JSON.stringify(offer),
-                                        //     seen: false,
-                                        //     user: true,
-                                        // };
-                                        // stompClient.send('/app/tradeRTC', JSON.stringify(chat));
-                                        if (myConnection) {
-                                            console.log('vào được b');
-                                            const offer = await myConnection.createOffer();
-                                            console.log(offer);
-                                            console.log('vào được c');
-                                        }
-                                    }
-                                } else if (data.body === 'done') {
-                                    if (!isDone) {
-                                        setIsDone(true);
-                                        if (stompClient.connected) {
-                                            const chat: MessageChat = {
-                                                from: user?.userID || '',
-                                                to: friendId || '',
-                                                type: 'RTC',
-                                                body: 'done[*]',
-                                                seen: false,
-                                                user: true,
-                                            };
-                                            stompClient.send('/app/tradeRTC', JSON.stringify(chat));
-                                        }
-                                    }
-                                } else if (data.body === 'done[*]') {
-                                    if (!isDone) {
-                                        setIsDone(true);
-                                    }
-                                } else {
-                                    const jsonData = JSON.parse(data.body);
-                                    switch (jsonData.type) {
-                                        case 'offer':
-                                            // peerConnection.setRemoteDescription(new RTCSessionDescription(jsonData));
-                                            // const answer = await peerConnection.createAnswer();
-                                            // await peerConnection.setLocalDescription(answer);
-                                            // if (stompClient.connected && answer) {
-                                            //     const chat: MessageChat = {
-                                            //         from: user?.userID || '',
-                                            //         to: friendId || '',
-                                            //         type: 'RTC',
-                                            //         body: JSON.stringify(answer),
-                                            //         seen: false,
-                                            //         user: true,
-                                            //     };
-                                            //     stompClient.send('/app/tradeRTC', JSON.stringify(chat));
-                                            // }
-                                            if (myConnection) {
-                                                myConnection.createAnswer(data.body);
-                                            }
-                                            break;
-                                        case 'answer':
-                                            // peerConnection.setRemoteDescription(new RTCSessionDescription(jsonData));
-                                            // if (stompClient.connected) {
-                                            //     const chat: MessageChat = {
-                                            //         from: user?.userID || '',
-                                            //         to: friendId || '',
-                                            //         type: 'RTC',
-                                            //         body: 'done',
-                                            //         seen: false,
-                                            //         user: true,
-                                            //     };
-                                            //     stompClient.send('/app/tradeRTC', JSON.stringify(chat));
-                                            // }
-                                            if (myConnection) {
-                                                myConnection.addAnswer(data.body);
-                                            }
-                                            break;
-                                        default:
-                                            console.log(jsonData);
-                                    }
-                                }
-                            }
+                            setMessage(data);
                         } catch (error) {
                             alert(error);
                         }
@@ -255,14 +181,13 @@ const Call = () => {
     useEffect(() => {
         if (stompClient.connected && isAccept) {
             sendPrivateMassage('accept');
-            myConnection = new MyConnection(localStream, remoteStream, stompClient, user?.userID || '', friendId || '');
         }
     }, [stompClient]);
 
     useEffect(() => {
         if (isAccept) {
-            myConnection = new MyConnection(localStream, remoteStream, stompClient, user?.userID || '', friendId || '');
             sendPrivateMassage('connect');
+            setIsConnected(true);
         } else {
             const audioElement = new Audio(pathAudio.waitConnect);
             audioElement.loop = true;
@@ -280,8 +205,10 @@ const Call = () => {
             return navigator.mediaDevices.getUserMedia(config);
         }
         function playVideo(stream: MediaStream) {
+            // localStream = stream;
+            setLocalStream(stream);
             if (userVideo.current) {
-                localStream = stream;
+                userVideo.current.srcObject = stream;
             }
         }
         setLoading(true);
@@ -291,23 +218,26 @@ const Call = () => {
                 setLoading(false);
             });
         } else {
-            if (localStream) {
-                const tracks = localStream.getTracks();
-                tracks.forEach((track) => {
-                    track.stop();
-                });
-                if (userVideo.current) {
-                    localStream = new MediaStream();
-                }
-            }
+            const tracks = localStream.getTracks();
+            tracks.forEach((track) => {
+                track.stop();
+            });
+            setLocalStream(new MediaStream());
             setLoading(false);
         }
     }, [isVideo]);
 
     useEffect(() => {
         if (isDone) {
+            console.log(peerConnection);
         }
     }, [isDone]);
+
+    useEffect(() => {
+        if (friendVideo.current) {
+            friendVideo.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
 
     function sendPrivateMassage(body: string) {
         if (stompClient.connected) {
@@ -320,6 +250,8 @@ const Call = () => {
                 user: true,
             };
             stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+            console.log('sent message done!');
+            console.log(body);
         }
     }
 
@@ -327,26 +259,6 @@ const Call = () => {
         sendPrivateMassage('cancel');
         window.close();
     };
-
-    // const createOffer = async () => {
-    //     offer = await peerConnection.createOffer();
-    //     await peerConnection.setLocalDescription(offer);
-    //     peerConnection.oniceconnectionstatechange = () => {
-    //         console.log('ICE connection state:', peerConnection.iceConnectionState);
-    //     };
-    //     peerConnection.ontrack = (event) => {
-    //         remoteStream = event.streams[0];
-    //         console.log('tùm lum');
-    //         console.log(remoteStream);
-    //         if (friendVideo.current) {
-    //             friendVideo.current.srcObject = remoteStream;
-    //             friendVideo.current.play();
-    //         }
-    //     };
-
-    //     sendPrivateMassage('connect');
-    //     setIsConnected(true);
-    // };
 
     return (
         <div className={cx('wrapper')}>
