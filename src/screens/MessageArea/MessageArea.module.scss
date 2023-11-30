@@ -27,16 +27,23 @@
 .card-info {
     width: var(--default-card-info-width);
     margin-left: 8px;
-    background-color: aliceblue;
 }
 
 .card-action {
     margin-left: auto;
     margin-right: 20px;
+    background-color: white;
     button {
         padding: 8px;
         margin-left: 10px;
         background-color: transparent;
+        border-radius: 90px;
+        border: solid black 1px;
+        color: green;
+    }
+    :hover {
+        background-color: green;
+        color: white;
     }
 }
 
@@ -54,7 +61,7 @@
     flex: 8;
     display: flex;
     flex-direction: column;
-    border: solid 1px black;
+    border: double 5px black;
     overflow-y: scroll;
 }
 
@@ -82,11 +89,15 @@
     margin-bottom: 12px;
     position: relative;
     background: black;
-    min-width: 110px;
+    min-width: 90px;
     max-width: var(--default-chat-content-width);
     margin-left: 12px;
     margin-right: 12px;
     word-wrap: break-word;
+}
+
+.chat-content-gif {
+    height: 200px;
 }
 
 .friend-chat {
@@ -131,11 +142,66 @@
     border: solid 1px black;
     display: flex;
     flex-direction: column;
+    box-shadow: 20px 20px rgba(0, 0, 0, 0.15);
 }
 
 .header-send {
     flex: 3;
-    background-color: aqua;
+    display: flex;
+    button {
+        width: 100%;
+        height: 90%;
+        border-radius: 5px;
+        box-shadow: 3px 3px rgba(0, 0, 0, 0.15);
+        svg {
+            height: 50px;
+        }
+    }
+}
+
+.header-send-icon,
+.header-send-picture {
+    width: 8rem;
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    button {
+    }
+}
+
+.gif-area {
+    width: 60rem;
+    max-height: 40rem;
+
+    display: flex;
+    flex-direction: column;
+    // max-height: min((100vh - 96px) - 60px, 734px);
+    // min-height: 100px;
+    // padding-top: 8px;
+    border-radius: 8px;
+    background: rgb(255, 255, 255);
+    box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
+}
+
+.gif-data {
+    display: flex;
+    flex-direction: row;
+    overflow-y: scroll;
+    img {
+        margin-right: 5px;
+        height: 20rem;
+    }
+}
+
+.gif-title {
+    padding: 5px 12px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: rgba(22, 24, 35, 0.7);
+}
+
+.gif-item {
+    display: flex;
 }
 
 .container-send {
@@ -145,8 +211,10 @@
 
 .input-chat {
     flex: 8;
-    background-color: green;
     padding: 8px;
+    border-top: solid 1px black;
+    border-right: solid 1px black;
+    border-radius: 8px;
     input {
         width: 100%;
         height: 100%;
@@ -155,12 +223,18 @@
         font-weight: 550;
         line-height: 2rem;
     }
+    img {
+        height: 12rem;
+    }
 }
 
 .button-chat {
-    background-color: blue;
-    flex: 2;
+    flex: 1;
     button {
         height: 100%;
+        svg {
+            width: 5rem;
+            height: 5rem;
+        }
     }
 }

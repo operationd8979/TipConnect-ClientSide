@@ -12,12 +12,14 @@ const initalState: State = user
           isLoggedIn: true,
           user,
           listFriend: [],
+          listGifItem: [],
           notifications: { listFriendRequest: [], listNotification: [] },
       }
     : {
           isLoggedIn: false,
           user: null,
           listFriend: [],
+          listGifItem: [],
           notifications: { listFriendRequest: [], listNotification: [] },
       };
 
@@ -68,6 +70,12 @@ const UserReducer = (state: State = initalState, action: Action) => {
                     ...state.notifications,
                     listFriendRequest: newFriendRequests,
                 },
+            };
+
+        case actionTypes.GET_GIF_ITEMS:
+            return {
+                ...state,
+                listGifItem: payload,
             };
 
         case actionTypes.REGISTER_FAIL:

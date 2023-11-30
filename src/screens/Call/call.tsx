@@ -26,24 +26,15 @@ const servers = {
     ],
 };
 
-// let peerConnection: RTCPeerConnection = new RTCPeerConnection(servers);
-// let localStream: MediaStream = new MediaStream();
-// let remoteStream: MediaStream = new MediaStream();
-
-// peerConnection.onicecandidate = async (event) => {
-//     if (event.candidate) {
-//         console.log('candidate');
-//         console.log(peerConnection.localDescription);
-//     }
-// };
+let peerConnection = new RTCPeerConnection(servers);
+let localStream: MediaStream = new MediaStream();
+let remoteStream: MediaStream = new MediaStream();
 
 const Call = () => {
     const [loading, setLoading] = useState(false);
     const { friendId, fullName, type, caller } = useParams();
 
-    const [localStream, setLocalStream] = useState(new MediaStream());
-    const [remoteStream, setRemoteStream] = useState(new MediaStream());
-    const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(servers));
+    const [beginTime, setBeginTime] = useState<Date | null>(null);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -62,41 +53,15 @@ const Call = () => {
     const [isDone, setIsDone] = useState(false);
 
     const [message, setMessage] = useState<MessageChat | null>(null);
+    const [candidate, setCandidate] = useState<RTCSessionDescription | null>(null);
 
     useEffect(() => {
-        const initCall = async () => {
-            // peerConnection.onicecandidate = (event) => {
-            //     if (event.candidate) {
-            //         console.log('candidate');
-            //         console.log(peerConnection.localDescription);
-            //     }
-            // };
-
-            peerConnection.ontrack = (event) => {
-                event.streams[0].getTracks().forEach((track) => {
-                    console.log('get track');
-                    console.log(track);
-                    setRemoteStream((prevStream) => {
-                        const newStream = new MediaStream();
-                        newStream.addTrack(track);
-                        return newStream;
-                    });
-                });
-            };
-
-            localStream.getTracks().forEach((track) => {
-                console.log('send track');
-                console.log(track);
-                peerConnection.addTrack(track, localStream);
-            });
-        };
-
-        initCall();
-
-        // return () => {
-        //     peerConnection.close();
-        // };
-    }, [localStream, peerConnection]);
+        if (candidate) {
+            console.log('candidate');
+            console.log(candidate);
+            sendPrivateMassage(JSON.stringify(candidate));
+        }
+    }, [candidate]);
 
     useEffect(() => {
         if (message != null) {
@@ -127,18 +92,25 @@ const Call = () => {
                         switch (jsonData.type) {
                             case 'offer':
                                 if (peerConnection) {
-                                    let offer = JSON.parse(message.body);
-                                    await peerConnection.setRemoteDescription(offer);
+                                    const offer = JSON.parse(message.body);
+                                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
                                     const answer = await peerConnection.createAnswer();
                                     await peerConnection.setLocalDescription(answer);
-                                    sendPrivateMassage(JSON.stringify(answer));
                                 }
                                 break;
                             case 'answer':
                                 if (peerConnection) {
                                     let answer = JSON.parse(message.body);
-                                    if (!peerConnection.currentRemoteDescription) {
-                                        peerConnection.setRemoteDescription(answer);
+                                    console.log(peerConnection);
+                                    if (
+                                        peerConnection.remoteDescription === null &&
+                                        peerConnection.currentRemoteDescription === null
+                                    ) {
+                                        try {
+                                            await peerConnection.setRemoteDescription(answer);
+                                        } catch (error) {
+                                            console.log('Error setRemoteDescription from answer: ' + error);
+                                        }
                                     }
                                     sendPrivateMassage('done');
                                 }
@@ -179,8 +151,47 @@ const Call = () => {
     }, []);
 
     useEffect(() => {
-        if (stompClient.connected && isAccept) {
-            sendPrivateMassage('accept');
+        if (stompClient.connected) {
+            function openStream() {
+                const config = { audio: true, video: isVideo };
+                return navigator.mediaDevices.getUserMedia(config);
+            }
+            function playVideo(stream: MediaStream) {
+                localStream = stream;
+
+                if (userVideo.current) {
+                    userVideo.current.srcObject = localStream;
+                }
+                peerConnection.onicecandidate = async (event) => {
+                    if (event.candidate) {
+                        const sdp = peerConnection.localDescription;
+                        if (sdp?.type == 'answer') setCandidate(peerConnection.localDescription);
+                    }
+                };
+                localStream.getTracks().forEach((track) => {
+                    console.log('send track');
+                    peerConnection.addTrack(track, localStream);
+                });
+                peerConnection.ontrack = (event) => {
+                    event.streams[0].getTracks().forEach((track) => {
+                        console.log('get track');
+                        remoteStream.addTrack(track);
+                        if (friendVideo.current) friendVideo.current.srcObject = remoteStream;
+                    });
+                };
+            }
+            setLoading(true);
+            openStream().then((stream: MediaStream) => {
+                playVideo(stream);
+                setLoading(false);
+                if (caller === 'caller') {
+                    callPrivate(type || 'call');
+                }
+                if (isAccept) {
+                    sendPrivateMassage('accept');
+                    setBeginTime(new Date());
+                }
+            });
         }
     }, [stompClient]);
 
@@ -199,45 +210,46 @@ const Call = () => {
         }
     }, [isAccept]);
 
-    useEffect(() => {
+    const handleChangeType = () => {
+        setIsVideo(!isVideo);
         function openStream() {
-            const config = { audio: false, video: true };
+            const config = { audio: true, video: !isVideo };
             return navigator.mediaDevices.getUserMedia(config);
         }
         function playVideo(stream: MediaStream) {
-            // localStream = stream;
-            setLocalStream(stream);
-            if (userVideo.current) {
-                userVideo.current.srcObject = stream;
-            }
+            localStream = stream;
+            if (userVideo.current) userVideo.current.srcObject = localStream;
+            // localStream.getTracks().forEach((track) => {
+            //     console.log('send track');
+            //     peerConnection.addTrack(track, localStream);
+            // });
+            // peerConnection.ontrack = (event) => {
+            //     event.streams[0].getTracks().forEach((track) => {
+            //         console.log('get track');
+            //         remoteStream.addTrack(track);
+            //         if (friendVideo.current) friendVideo.current.srcObject = remoteStream;
+            //     });
+            // };
         }
         setLoading(true);
-        if (isVideo) {
-            openStream().then((stream: MediaStream) => {
-                playVideo(stream);
-                setLoading(false);
-            });
-        } else {
+        if (localStream) {
             const tracks = localStream.getTracks();
             tracks.forEach((track) => {
                 track.stop();
             });
-            setLocalStream(new MediaStream());
-            setLoading(false);
+            localStream = new MediaStream();
         }
-    }, [isVideo]);
+        openStream().then((stream: MediaStream) => {
+            playVideo(stream);
+            setLoading(false);
+        });
+    };
 
     useEffect(() => {
         if (isDone) {
             console.log(peerConnection);
         }
     }, [isDone]);
-
-    useEffect(() => {
-        if (friendVideo.current) {
-            friendVideo.current.srcObject = remoteStream;
-        }
-    }, [remoteStream]);
 
     function sendPrivateMassage(body: string) {
         if (stompClient.connected) {
@@ -250,6 +262,25 @@ const Call = () => {
                 user: true,
             };
             stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+        }
+    }
+
+    function callPrivate(body: string) {
+        if (stompClient.connected && user) {
+            const tinyUser = {
+                fullName: user.fullName,
+                urlAvatar: user.urlAvatar,
+                type: type,
+            };
+            const chat: MessageChat = {
+                from: user?.userID || '',
+                to: friendId || '',
+                type: 'CALL',
+                body: JSON.stringify(tinyUser),
+                seen: false,
+                user: true,
+            };
+            stompClient.send('/app/tradeRTC', JSON.stringify(chat));
             console.log('sent message done!');
             console.log(body);
         }
@@ -257,6 +288,20 @@ const Call = () => {
 
     const handleCloseCall = () => {
         sendPrivateMassage('cancel');
+        if (beginTime) {
+            const duration = new Date().getTime() - beginTime.getTime();
+            if (stompClient.connected && user) {
+                const chat: MessageChat = {
+                    from: friendId || '',
+                    to: user.userID || '',
+                    type: 'CALL',
+                    body: duration.toString(),
+                    seen: false,
+                    user: true,
+                };
+                stompClient.send('/app/private', JSON.stringify(chat));
+            }
+        }
         window.close();
     };
 
@@ -266,6 +311,7 @@ const Call = () => {
                 <div className={cx('name')}>{fullName}</div>
                 {isConnected ? (
                     <div className={cx('video')}>
+                        {!isVideo && 'Only voice!!!'}
                         <video height={160} width={160} ref={friendVideo} autoPlay={true} />
                     </div>
                 ) : (
@@ -286,7 +332,7 @@ const Call = () => {
             </div>
             <div className={cx('action-area')}>
                 <div>
-                    <button onClick={() => setIsVideo(!isVideo)} disabled={loading}>
+                    <button onClick={handleChangeType} disabled={loading}>
                         <VideoCall />
                     </button>
                     <button onClick={handleCloseCall}>

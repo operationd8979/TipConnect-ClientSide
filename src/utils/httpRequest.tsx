@@ -9,6 +9,10 @@ const httpRequest = axios.create({
     baseURL: 'http://localhost:8080/api/',
     withCredentials: true,
 });
+// const httpRequest = axios.create({
+//     baseURL: 'http://25.14.203.251/api/',
+//     withCredentials: true,
+// });
 
 export const get = async ({ path, options = {} }: requestType) => {
     console.log('>>>>>>>API call: [medthod]:get  [path]:' + path + '  [option]:' + options);

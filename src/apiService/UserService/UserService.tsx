@@ -1,6 +1,7 @@
 import { get, getStream, post, postMultipart } from '../../utils/httpRequest';
 import ERROR from '../../contants/errorMessage';
 import { SearchQuery, UpdateInfoRequest, UpdateAvatarRequest } from '../../type';
+import { useDispatch } from 'react-redux';
 
 const getUserInfo = async () => {
     try {
@@ -115,6 +116,16 @@ const denyFriendRequest = async (requestID: string) => {
     }
 };
 
+const getGifItems = async () => {
+    try {
+        const response = await getStream({ path: `user/getGifItems` });
+        return response;
+    } catch (error) {
+        //alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
 export default {
     getUserInfo,
     getListFriend,
@@ -127,4 +138,5 @@ export default {
     cancelFriendRequest,
     acceptFriendRequest,
     denyFriendRequest,
+    getGifItems,
 };

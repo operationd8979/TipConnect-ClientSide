@@ -31,6 +31,11 @@
     align-items: center;
 }
 
+.non-seen {
+    font-weight: bold;
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.15);
+}
+
 .card_img {
     margin-left: 8px;
     width: 52px;
@@ -63,6 +68,19 @@
     margin-left: 8px;
     width: 100%;
     font-size: small;
+    display: flex;
+}
+
+.info_detail_count_income {
+    margin-left: auto;
+    margin-right: 20px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    border: solid red 1px;
+    border-radius: 90px;
+    background-color: red;
+    color: white;
 }
 
 .card_action {

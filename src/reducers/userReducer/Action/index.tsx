@@ -17,5 +17,6 @@ export {
     logout,
     removeFriendRequest,
     updateLastMessage,
+    getGifItems,
 } from './Action';
 export default actionTypes;

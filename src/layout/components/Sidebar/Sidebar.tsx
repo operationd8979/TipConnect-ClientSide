@@ -180,31 +180,44 @@ function Sidebar() {
                 )}
                 {showList().map((friendShip) => {
                     let showTime = 'now';
-                    if (friendShip.message?.timestamp) {
-                        showTime = DataReconstruct.TranslateTimeStampToDisplayString(friendShip.message.timestamp);
+
+                    const { message, friend } = friendShip;
+
+                    if (message?.timestamp) {
+                        showTime = DataReconstruct.TranslateTimeStampToDisplayString(message.timestamp);
                     }
                     return (
                         <Link
-                            className={cx('friend_card')}
+                            className={cx('friend_card', { 'non-seen': !message?.seen })}
                             key={friendShip.id}
-                            to={`/message/${friendShip.friend.userID}`}
+                            to={`/message/${friend.userID}`}
                         >
                             <div className={cx('card_img')}>
-                                <img src={friendShip.friend.urlAvatar} alt={friendShip.friend.fullName} />
+                                <img src={friend.urlAvatar} alt={friend.fullName} />
                             </div>
                             <div className={cx('card_content')}>
                                 <div>
                                     <div className={cx('card_content')}>
-                                        <div className={cx('info_name')}>{friendShip.friend.fullName}</div>
+                                        <div className={cx('info_name')}>{friend.fullName}</div>
                                         {showTime && <div className={cx('info_time')}>{showTime}</div>}
                                     </div>
                                     <div className={cx('info_detail')}>
-                                        {friendShip.message?.user ? 'Bạn: ' : ''}
-                                        {friendShip.message
-                                            ? friendShip.message.body.length > 32
-                                                ? friendShip.message.body.substring(0, 32) + '...'
-                                                : friendShip.message.body
-                                            : 'bắt đầu nhắn tin nào'}
+                                        {message ? (
+                                            <div>
+                                                {message.user ? 'Bạn: ' : ''}
+                                                {message.type == 'MESSAGE'
+                                                    ? message.body.length > 32
+                                                        ? message.body.substring(0, 32) + '...'
+                                                        : message.body
+                                                    : message.type}
+                                            </div>
+                                        ) : (
+                                            <div>bắt đầu nhắn tin nào</div>
+                                        )}
+
+                                        {message && !message.seen && (
+                                            <div className={cx('info_detail_count_income')}>5..</div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

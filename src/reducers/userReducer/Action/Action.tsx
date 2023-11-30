@@ -1,5 +1,5 @@
 import userReducerAction from './userReducerAction';
-import { User, FriendShip, FriendRequestResponse, MessageChat } from '../../../type';
+import { User, FriendShip, FriendRequestResponse, MessageChat, Gif } from '../../../type';
 
 export const loginSuccess = (payload: User) => {
     return {
@@ -100,8 +100,16 @@ export const getListFriendRequestFail = () => {
 };
 
 export const updateLastMessage = (payload: MessageChat) => {
+    console.log(payload);
     return {
         type: userReducerAction.UPDATE_LAST_MESSAGE,
+        payload,
+    };
+};
+
+export const getGifItems = (payload: Gif[]) => {
+    return {
+        type: userReducerAction.GET_GIF_ITEMS,
         payload,
     };
 };

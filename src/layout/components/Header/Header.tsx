@@ -111,6 +111,12 @@ function Header() {
                                                 dispatch(recieveMessage(data as MessageChat));
                                                 dispatch(updateLastMessage(data as MessageChat));
                                                 break;
+                                            case 'PHOTO':
+                                                console.log('[get private message]:');
+                                                console.log(data);
+                                                dispatch(recieveMessage(data as MessageChat));
+                                                dispatch(updateLastMessage(data as MessageChat));
+                                                break;
                                             case 'CALL':
                                                 console.log('[get private call]:');
                                                 const body = JSON.parse(data.body) as {

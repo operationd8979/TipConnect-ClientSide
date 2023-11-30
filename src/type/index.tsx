@@ -81,10 +81,17 @@ export interface Notifications {
     listNotification: string[];
 }
 
+export interface Gif {
+    gifID: number;
+    gifName: string;
+    url: string;
+}
+
 export interface State {
     isLoggedIn: boolean;
     user: User | null;
     listFriend: FriendShip[];
+    listGifItem: Gif[];
     notifications: Notifications;
 }
 
@@ -96,10 +103,10 @@ export interface StateWS {
 
 //chat element
 export interface RawChat {
-    type: string;
     body: string;
     timestamp?: bigint;
     seen: boolean;
+    type: string;
 }
 
 export interface MessageChat extends RawChat {
