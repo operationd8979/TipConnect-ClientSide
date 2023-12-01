@@ -13,14 +13,14 @@ import { getGifItems, updateLastMessage } from '../../reducers';
 import { Call, GifItem, PhotoItem, Send, VideoCall } from '../../components/Icons';
 import { State, StateWS, MessageChat, Gif } from '../../type';
 import { Wrapper as PopperWrapper } from '../../components/Popper';
+import { resolve } from 'path';
+import { rejects } from 'assert';
 
 const cx = classNames.bind(Styles);
 
-const urlGif =
-    'https://firebasestorage.googleapis.com/v0/b/tipconnect-14d4b.appspot.com/o/ItemArea%2FGifItem%2Fz4929379162123_f289b1a32aba3b34477f53f0f7a326a8.gif?alt=media&token=cd4131ce-276d-474b-9682-19856da9aafa';
-
 const MessageArea = () => {
     const { friendId } = useParams();
+    const [loading, setLoading] = useState(false);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -36,6 +36,10 @@ const MessageArea = () => {
     const friendShip = listFriend.find((f) => f.friend.userID === friendId);
     const [listMessage, setListMessage] = useState<MessageChat[]>([]);
     const [showGifTab, setShowGifTab] = useState(false);
+
+    const [urlPhotos, setUrlPhotos] = useState<string[]>([]);
+    const [showInputChat, setShowInputChat] = useState(true);
+    const inputFile = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (friendShip?.message) {
@@ -94,15 +98,34 @@ const MessageArea = () => {
         }
     }, [listMessage]);
 
-    function sendMessage() {
+    const handleSendMessage = () => {
+        if (urlPhotos.length > 0) {
+            onSendPhoto();
+        } else {
+            onSendMessage();
+        }
+    };
+
+    function onSendPhoto() {
+        const copyPhotos = [...urlPhotos];
+        for (let i = 0; i < copyPhotos.length; i++) {
+            const url = copyPhotos[i];
+            uploadImage(url).then((urlImage: string) => {
+                onSendPrivate(urlImage, 'PHOTO');
+                onDeletePhoto(i);
+            });
+        }
+    }
+
+    function onSendMessage() {
         if (bodyChat.length > 500) {
             alert('độ dài tin nhắn quá 500 ký tự!!!');
             return;
         }
-        if (bodyChat !== '') sendMessagePrivate(bodyChat, 'MESSAGE');
+        if (bodyChat !== '') onSendPrivate(bodyChat, 'MESSAGE');
     }
 
-    function sendMessagePrivate(body: string, type: string) {
+    function onSendPrivate(body: string, type: string) {
         if (stompClient.connected) {
             const chat: MessageChat = {
                 from: user?.userID || '',
@@ -158,7 +181,7 @@ const MessageArea = () => {
 
     const handleKeyEnter = (e: any) => {
         if (e.key === 'Enter') {
-            sendMessage();
+            handleSendMessage();
         }
     };
 
@@ -179,39 +202,53 @@ const MessageArea = () => {
         }
     };
 
-    const [urlPhotos, setUrlPhotos] = useState<string[]>([]);
-    const inputFile = useRef<HTMLInputElement>(null);
     const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
+            const arrayUrl = [];
             for (let i = 0; i < event.target.files.length; i++) {
+                console.log(event.target.files);
                 const file: File = event.target.files[i];
-                setUrlPhotos([...urlPhotos, URL.createObjectURL(file)]);
+                arrayUrl.push(URL.createObjectURL(file));
+            }
+            setUrlPhotos([...urlPhotos, ...arrayUrl]);
+            if (showInputChat) {
+                setShowInputChat(false);
             }
             event.target.value = '';
         }
     };
 
-    const handleDeleteFile = (index: number) => {
+    const handleDeletePhoto = (index: number) => {
         const userConfirmed = window.confirm('Bạn có chắc muốn xóa ảnh?');
         if (userConfirmed) {
-            URL.revokeObjectURL(urlPhotos[index]);
-            const newUrlPhotos = urlPhotos.filter((url, i) => i !== index);
-            setUrlPhotos(newUrlPhotos);
+            onDeletePhoto(index);
         }
     };
 
-    const uploadImage = async (previewUrl: string) => {
-        try {
-            const ref = storageRef(storage, `UserArea/${user?.email}/images/${new Date().getTime()}.jpeg`);
-            const fileData = await fetch(previewUrl);
-            const bytes = await fileData.blob();
-            const snapshot = await uploadBytes(ref, bytes, { contentType: 'image/jpeg' });
-            const url = await getDownloadURL(snapshot.ref);
-            return url;
-        } catch (error) {
-            console.log(error);
-            return null;
-        }
+    const onDeletePhoto = (index: number) => {
+        URL.revokeObjectURL(urlPhotos[index]);
+        const newUrlPhotos = urlPhotos.filter((url, i) => i !== index);
+        setUrlPhotos(newUrlPhotos);
+        return () => {
+            if (urlPhotos.length === 0) {
+                setShowInputChat(true);
+            }
+        };
+    };
+
+    const uploadImage = (previewUrl: string) => {
+        return new Promise<string>(async (resolve, reject) => {
+            try {
+                const ref = storageRef(storage, `UserArea/${user?.email}/images/${new Date().getTime()}.jpeg`);
+                const fileData = await fetch(previewUrl);
+                const bytes = await fileData.blob();
+                const snapshot = await uploadBytes(ref, bytes, { contentType: 'image/jpeg' });
+                const url: string = await getDownloadURL(snapshot.ref);
+                resolve(url);
+            } catch (error) {
+                reject(error);
+            }
+        });
     };
 
     return (
@@ -304,6 +341,7 @@ const MessageArea = () => {
                                 id="image_uploads"
                                 ref={inputFile}
                                 style={{ display: 'none' }}
+                                multiple
                                 accept="image/png, image/jpeg"
                                 onChange={(e) => onChangeFile(e)}
                             />
@@ -313,10 +351,10 @@ const MessageArea = () => {
                 </div>
                 <div className={cx('container-send')}>
                     <div className={cx('input-chat')}>
-                        {urlPhotos.length > 0 ? (
+                        {!showInputChat && urlPhotos.length > 0 ? (
                             urlPhotos.map((urlPhoto, index) => {
                                 return (
-                                    <button key={index} onClick={() => handleDeleteFile(index)}>
+                                    <button key={index} onClick={() => handleDeletePhoto(index)}>
                                         <img src={urlPhoto} />
                                     </button>
                                 );
@@ -334,7 +372,7 @@ const MessageArea = () => {
                         )}
                     </div>
                     <div className={cx('button-chat')}>
-                        <Button primary large onClick={sendMessage}>
+                        <Button primary large onClick={handleSendMessage}>
                             <Send />
                         </Button>
                     </div>

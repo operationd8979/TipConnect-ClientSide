@@ -205,7 +205,7 @@ function Sidebar() {
                                         {message ? (
                                             <div>
                                                 {message.user ? 'Bạn: ' : ''}
-                                                {message.type == 'MESSAGE'
+                                                {message.type === 'MESSAGE'
                                                     ? message.body.length > 32
                                                         ? message.body.substring(0, 32) + '...'
                                                         : message.body
