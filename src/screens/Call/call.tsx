@@ -257,6 +257,7 @@ const Call = () => {
                 from: user?.userID || '',
                 to: friendId || '',
                 type: 'RTC',
+                timestamp: new Date().getTime().toString(),
                 body: body,
                 seen: false,
                 user: true,

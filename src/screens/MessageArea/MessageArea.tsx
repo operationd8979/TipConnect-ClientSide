@@ -5,18 +5,27 @@ import classNames from 'classnames/bind';
 import Styles from './MessageArea.module.scss';
 import HeadlessTippy from '@tippyjs/react/headless';
 import { uploadBytes, getDownloadURL, storageRef, storage } from '../../firebase';
+import { useDropzone } from 'react-dropzone';
 
 import Chat from './Chat';
 import Button from '../../components/Button';
 import { UserService } from '../../apiService';
 import { getGifItems, updateLastMessage } from '../../reducers';
-import { Call, GifItem, PhotoItem, Send, VideoCall } from '../../components/Icons';
+import { Call, FileItem, GifItem, PhotoItem, Send, VideoCall } from '../../components/Icons';
 import { State, StateWS, MessageChat, Gif } from '../../type';
 import { Wrapper as PopperWrapper } from '../../components/Popper';
-import { resolve } from 'path';
-import { rejects } from 'assert';
+import { pathImage } from '../../contants';
 
 const cx = classNames.bind(Styles);
+
+const TypeFile = {
+    pdf: 'application/pdf',
+    word: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    msWord: 'application/msword',
+    excel: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+};
 
 const MessageArea = () => {
     const { friendId } = useParams();
@@ -37,9 +46,54 @@ const MessageArea = () => {
     const [listMessage, setListMessage] = useState<MessageChat[]>([]);
     const [showGifTab, setShowGifTab] = useState(false);
 
-    const [urlPhotos, setUrlPhotos] = useState<string[]>([]);
+    // const [urlPhotos, setUrlPhotos] = useState<string[]>([]);
+    const [urlFiles, setUrlFiles] = useState<{ name: string; type: string; url: string }[]>([]);
     const [showInputChat, setShowInputChat] = useState(true);
     const inputFile = useRef<HTMLInputElement>(null);
+
+    const onDrop = async (acceptedFiles: File[]) => {
+        if (acceptedFiles.length > 0) {
+            addFile(acceptedFiles);
+        }
+    };
+
+    const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            addFile(event.target.files);
+            event.target.value = '';
+            event.target.files = null;
+        }
+    };
+
+    const addFile = (listFile: FileList | File[]) => {
+        const arrayUrl = [];
+        for (let i = 0; i < listFile.length; i++) {
+            const file: File = listFile[i];
+            if (!Object.values(TypeFile).includes(file.type)) {
+                console.log('TYPE OF FILE IS NOT SUPPORTED!');
+                continue;
+            }
+            arrayUrl.push({ name: file.name, type: file.type, url: URL.createObjectURL(file) });
+        }
+        setUrlFiles([...urlFiles, ...arrayUrl]);
+        if (showInputChat) {
+            setShowInputChat(false);
+        }
+    };
+
+    const handleClick = (event: any) => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+
+    const handleKeyDown = (event: any) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    };
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
     useEffect(() => {
         if (friendShip?.message) {
@@ -47,6 +101,27 @@ const MessageArea = () => {
             newMessage.seen = true;
             dispatch(updateLastMessage(newMessage));
         }
+    }, []);
+
+    useEffect(() => {
+        const callApiGetGifItems = async () => {
+            try {
+                const response = await UserService.getGifItems();
+                if (response?.ok) {
+                    response.json().then((data) => {
+                        dispatch(getGifItems(data));
+                    });
+                } else {
+                    if (response === null || response?.status == 403) {
+                        console.log('get fail');
+                    }
+                }
+            } catch (error) {
+                alert(error);
+                console.log(error);
+            }
+        };
+        if (listGifItem.length === 0) callApiGetGifItems();
     }, []);
 
     useEffect(() => {
@@ -99,22 +174,39 @@ const MessageArea = () => {
     }, [listMessage]);
 
     const handleSendMessage = () => {
-        if (urlPhotos.length > 0) {
-            onSendPhoto();
+        if (urlFiles.length > 0) {
+            onSendFiles();
         } else {
             onSendMessage();
         }
     };
 
-    function onSendPhoto() {
-        const copyPhotos = [...urlPhotos];
-        for (let i = 0; i < copyPhotos.length; i++) {
-            const url = copyPhotos[i];
-            uploadImage(url).then((urlImage: string) => {
-                onSendPrivate(urlImage, 'PHOTO');
-                onDeletePhoto(i);
-            });
+    async function onSendFiles() {
+        for (let i = 0; i < urlFiles.length; i++) {
+            const urlFile = urlFiles[i];
+            if (urlFile.type === TypeFile.jpeg || urlFile.type === TypeFile.png) {
+                const url = await uploadImage(urlFile.url);
+                onSendPrivate(url, 'PHOTO');
+            } else {
+                const url = await uploadFile(urlFile.name, urlFile.url, urlFile.type);
+                let type = 'FILE';
+                switch (urlFile.type) {
+                    case TypeFile.msWord:
+                    case TypeFile.word:
+                        type = 'WORD';
+                        break;
+                    case TypeFile.excel:
+                        type = 'EXCEL';
+                        break;
+                    case TypeFile.pdf:
+                        type = 'PDF';
+                        break;
+                    default:
+                }
+                onSendPrivate(url, type);
+            }
         }
+        onDeletePhotos();
     }
 
     function onSendMessage() {
@@ -131,6 +223,7 @@ const MessageArea = () => {
                 from: user?.userID || '',
                 to: friendId || '',
                 body: body,
+                timestamp: new Date().getTime().toString(),
                 type: type,
                 seen: true,
                 user: true,
@@ -151,24 +244,6 @@ const MessageArea = () => {
     };
 
     const handleClickIcon = () => {
-        const callApiGetGifItems = async () => {
-            try {
-                const response = await UserService.getGifItems();
-                if (response?.ok) {
-                    response.json().then((data) => {
-                        dispatch(getGifItems(data));
-                    });
-                } else {
-                    if (response === null || response?.status == 403) {
-                        console.log('get fail');
-                    }
-                }
-            } catch (error) {
-                alert(error);
-                console.log(error);
-            }
-        };
-        if (listGifItem.length === 0) callApiGetGifItems();
         setShowGifTab(!showGifTab);
     };
     const handleClickPicture = () => {
@@ -202,35 +277,29 @@ const MessageArea = () => {
         }
     };
 
-    const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            const arrayUrl = [];
-            for (let i = 0; i < event.target.files.length; i++) {
-                console.log(event.target.files);
-                const file: File = event.target.files[i];
-                arrayUrl.push(URL.createObjectURL(file));
-            }
-            setUrlPhotos([...urlPhotos, ...arrayUrl]);
-            if (showInputChat) {
-                setShowInputChat(false);
-            }
-            event.target.value = '';
-        }
-    };
-
     const handleDeletePhoto = (index: number) => {
-        const userConfirmed = window.confirm('Bạn có chắc muốn xóa ảnh?');
+        const userConfirmed = window.confirm('Bạn có chắc muốn xóa file?');
         if (userConfirmed) {
-            onDeletePhoto(index);
+            onDeleteUrlFile(index);
         }
     };
 
-    const onDeletePhoto = (index: number) => {
-        URL.revokeObjectURL(urlPhotos[index]);
-        const newUrlPhotos = urlPhotos.filter((url, i) => i !== index);
-        setUrlPhotos(newUrlPhotos);
+    const onDeletePhotos = () => {
+        if (urlFiles.length > 0) {
+            urlFiles.map((urlFile) => {
+                URL.revokeObjectURL(urlFile.type);
+            });
+            setUrlFiles([]);
+            setShowInputChat(true);
+        }
+    };
+
+    const onDeleteUrlFile = (index: number) => {
+        URL.revokeObjectURL(urlFiles[index].url);
+        const newUrlPhotos = urlFiles.filter((url, i) => i !== index);
+        setUrlFiles(newUrlPhotos);
         return () => {
-            if (urlPhotos.length === 0) {
+            if (urlFiles.length === 0) {
                 setShowInputChat(true);
             }
         };
@@ -243,6 +312,21 @@ const MessageArea = () => {
                 const fileData = await fetch(previewUrl);
                 const bytes = await fileData.blob();
                 const snapshot = await uploadBytes(ref, bytes, { contentType: 'image/jpeg' });
+                const url: string = await getDownloadURL(snapshot.ref);
+                resolve(url);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+
+    const uploadFile = (fileName: string, previewUrl: string, type: string) => {
+        return new Promise<string>(async (resolve, reject) => {
+            try {
+                const ref = storageRef(storage, `UserArea/${user?.email}/files/${fileName}`);
+                const fileData = await fetch(previewUrl);
+                const bytes = await fileData.blob();
+                const snapshot = await uploadBytes(ref, bytes, { contentType: type });
                 const url: string = await getDownloadURL(snapshot.ref);
                 resolve(url);
             } catch (error) {
@@ -342,20 +426,38 @@ const MessageArea = () => {
                                 ref={inputFile}
                                 style={{ display: 'none' }}
                                 multiple
-                                accept="image/png, image/jpeg"
+                                //accept="image/png, image/jpeg"
                                 onChange={(e) => onChangeFile(e)}
                             />
-                            <PhotoItem />
+                            <FileItem />
                         </button>
                     </div>
                 </div>
-                <div className={cx('container-send')}>
+                <div
+                    className={cx('container-send')}
+                    {...getRootProps({
+                        onClick: handleClick,
+                        onKeyDown: handleKeyDown,
+                        tabIndex: 0,
+                        role: 'button',
+                    })}
+                >
                     <div className={cx('input-chat')}>
-                        {!showInputChat && urlPhotos.length > 0 ? (
-                            urlPhotos.map((urlPhoto, index) => {
+                        {!showInputChat && urlFiles.length > 0 ? (
+                            urlFiles.map((urlFile, index) => {
                                 return (
                                     <button key={index} onClick={() => handleDeletePhoto(index)}>
-                                        <img src={urlPhoto} />
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            {(urlFile.type === TypeFile.jpeg || urlFile.type === TypeFile.png) && (
+                                                <img src={urlFile.url} />
+                                            )}
+                                            {urlFile.type === TypeFile.pdf && <iframe title="pdf" src={urlFile.url} />}
+                                            {(urlFile.type === TypeFile.word || urlFile.type === TypeFile.msWord) && (
+                                                <img src={pathImage.wordFile} />
+                                            )}
+                                            {urlFile.type === TypeFile.excel && <img src={pathImage.excelFile} />}
+                                            {urlFile.name.substring(0, 10)}
+                                        </div>
                                     </button>
                                 );
                             })

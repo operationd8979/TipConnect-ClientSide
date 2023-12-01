@@ -1,6 +1,6 @@
 .wrapper {
     --default-card-info-width: 580px;
-    --default-chat-content-width: 980px;
+    --default-chat-content-width: 800px;
 
     display: flex;
     flex-direction: column;
@@ -94,6 +94,17 @@
     margin-left: 12px;
     margin-right: 12px;
     word-wrap: break-word;
+}
+
+.chat-content-file {
+    display: flex;
+    flex-direction: column;
+    color: white;
+
+    img {
+        width: 100px;
+        height: 100px;
+    }
 }
 
 .chat-content-gif {
@@ -222,6 +233,9 @@
         font-size: 1.7rem;
         font-weight: 550;
         line-height: 2rem;
+    }
+    iframe {
+        height: 12rem;
     }
     img {
         height: 12rem;

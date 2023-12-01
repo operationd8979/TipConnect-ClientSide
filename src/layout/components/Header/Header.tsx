@@ -106,15 +106,11 @@ function Header() {
                                                 }
                                                 break;
                                             case 'MESSAGE':
-                                                console.log('[get private message]:');
-                                                console.log(data);
-                                                dispatch(recieveMessage(data as MessageChat));
-                                                dispatch(updateLastMessage(data as MessageChat));
-                                                break;
                                             case 'PHOTO':
                                             case 'GIF':
-                                                console.log('[get private message]:');
-                                                console.log(data);
+                                            case 'PDF':
+                                            case 'WORD':
+                                            case 'EXCEL':
                                                 dispatch(recieveMessage(data as MessageChat));
                                                 dispatch(updateLastMessage(data as MessageChat));
                                                 break;

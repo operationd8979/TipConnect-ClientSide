@@ -4,9 +4,9 @@ const TranslateTimeStampToDate = (timeStamp: bigint) => {
     return date;
 };
 
-const TranslateTimeStampToDisplayString = (timeStamp: bigint) => {
+const TranslateTimeStampToDisplayString = (timeStamp: string) => {
     const now = new Date();
-    const time = TranslateTimeStampToDate(timeStamp);
+    const time = TranslateTimeStampToDate(BigInt(timeStamp));
 
     const result =
         now.getFullYear() - time.getFullYear() > 0

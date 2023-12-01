@@ -104,7 +104,7 @@ export interface StateWS {
 //chat element
 export interface RawChat {
     body: string;
-    timestamp?: bigint;
+    timestamp?: string;
     seen: boolean;
     type: string;
 }
