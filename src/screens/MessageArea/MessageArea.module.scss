@@ -65,6 +65,14 @@
     overflow-y: scroll;
 }
 
+.last-message {
+    margin: 12px;
+    text-align: center;
+    color: black;
+    font-size: 1.7rem;
+    font-weight: 600;
+}
+
 .wrapper-chat {
     margin-top: 8px;
     display: flex;

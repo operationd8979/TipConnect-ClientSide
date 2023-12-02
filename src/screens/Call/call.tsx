@@ -27,8 +27,8 @@ const servers = {
 };
 
 let peerConnection = new RTCPeerConnection(servers);
-let localStream: MediaStream = new MediaStream();
-let remoteStream: MediaStream = new MediaStream();
+// let localStream: MediaStream = new MediaStream();
+// let remoteStream: MediaStream = new MediaStream();
 
 const Call = () => {
     const [loading, setLoading] = useState(false);
@@ -41,6 +41,9 @@ const Call = () => {
 
     const userVideo = useRef<HTMLVideoElement>(null);
     const friendVideo = useRef<HTMLVideoElement>(null);
+
+    const [localStream, setLocalStream] = useState<MediaStream>(new MediaStream());
+    const [remoteStream, setRemoteStream] = useState<MediaStream>(new MediaStream());
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as StateWS;
@@ -81,12 +84,12 @@ const Call = () => {
                     } else if (message.body === 'done') {
                         if (!isDone) {
                             setIsDone(true);
-                            sendPrivateMassage('done[*]');
+                            // sendPrivateMassage('done[*]');
                         }
-                    } else if (message.body === 'done[*]') {
-                        if (!isDone) {
-                            setIsDone(true);
-                        }
+                        // } else if (message.body === 'done[*]') {
+                        //     if (!isDone) {
+                        //         setIsDone(true);
+                        //     }
                     } else {
                         const jsonData = JSON.parse(message.body);
                         switch (jsonData.type) {
@@ -100,8 +103,7 @@ const Call = () => {
                                 break;
                             case 'answer':
                                 if (peerConnection) {
-                                    let answer = JSON.parse(message.body);
-                                    console.log(peerConnection);
+                                    const answer = JSON.parse(message.body);
                                     if (
                                         peerConnection.remoteDescription === null &&
                                         peerConnection.currentRemoteDescription === null
@@ -113,6 +115,7 @@ const Call = () => {
                                         }
                                     }
                                     sendPrivateMassage('done');
+                                    setIsDone(true);
                                 }
                                 break;
                             default:
@@ -126,6 +129,7 @@ const Call = () => {
     }, [message]);
 
     useEffect(() => {
+        //KẾT NỐI WEBSOCKET
         if (user) {
             if (!stompClient.connected) {
                 console.log('<<<<<<<<<<<<<<<<CONNECT WS>>>>>>>>>>>>>>>>');
@@ -151,36 +155,68 @@ const Call = () => {
     }, []);
 
     useEffect(() => {
+        console.log('change local stream');
+        console.log(localStream);
+        if (userVideo.current) {
+            userVideo.current.srcObject = localStream;
+        }
+    }, [localStream]);
+
+    useEffect(() => {
+        console.log('change remote stream');
+        console.log(remoteStream);
+        if (friendVideo.current) {
+            friendVideo.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
+
+    useEffect(() => {
+        //OPEN MEDIA STREAM
         if (stompClient.connected) {
             function openStream() {
                 const config = { audio: true, video: isVideo };
+                console.log('open camera');
                 return navigator.mediaDevices.getUserMedia(config);
             }
             function playVideo(stream: MediaStream) {
-                localStream = stream;
-
-                if (userVideo.current) {
-                    userVideo.current.srcObject = localStream;
-                }
+                console.log('done open camera');
+                setLocalStream(stream);
                 peerConnection.onicecandidate = async (event) => {
                     if (event.candidate) {
                         const sdp = peerConnection.localDescription;
                         if (sdp?.type == 'answer') setCandidate(peerConnection.localDescription);
                     }
                 };
-                localStream.getTracks().forEach((track) => {
+                stream.getTracks().forEach((track) => {
                     console.log('send track');
-                    peerConnection.addTrack(track, localStream);
+                    peerConnection.addTrack(track, stream);
                 });
                 peerConnection.ontrack = (event) => {
-                    event.streams[0].getTracks().forEach((track) => {
-                        console.log('get track');
-                        remoteStream.addTrack(track);
-                        if (friendVideo.current) friendVideo.current.srcObject = remoteStream;
-                    });
+                    console.log('get track');
+                    setRemoteStream(event.streams[0]);
+                    // event.streams[0].getTracks().forEach((track) => {
+                    //     console.log('get track');
+                    //     remoteStream.addTrack(track);
+                    //     if (friendVideo.current) friendVideo.current.srcObject = remoteStream;
+                    // });
                 };
             }
             setLoading(true);
+            //test
+            if (caller === 'caller') {
+                callPrivate(type || 'call');
+                peerConnection.onicecandidate = async (event) => {
+                    if (event.candidate) {
+                        const sdp = peerConnection.localDescription;
+                        if (sdp?.type == 'answer') setCandidate(peerConnection.localDescription);
+                    }
+                };
+                peerConnection.ontrack = (event) => {
+                    console.log('get track');
+                    setRemoteStream(event.streams[0]);
+                };
+                return;
+            }
             openStream().then((stream: MediaStream) => {
                 playVideo(stream);
                 setLoading(false);
@@ -196,6 +232,7 @@ const Call = () => {
     }, [stompClient]);
 
     useEffect(() => {
+        //audio wait accept
         if (isAccept) {
             sendPrivateMassage('connect');
             setIsConnected(true);
@@ -217,19 +254,20 @@ const Call = () => {
             return navigator.mediaDevices.getUserMedia(config);
         }
         function playVideo(stream: MediaStream) {
-            localStream = stream;
-            if (userVideo.current) userVideo.current.srcObject = localStream;
-            // localStream.getTracks().forEach((track) => {
+            setLocalStream(stream);
+            // stream.getTracks().forEach((track) => {
             //     console.log('send track');
-            //     peerConnection.addTrack(track, localStream);
+            //     peerConnection.addTrack(track, stream);
             // });
-            // peerConnection.ontrack = (event) => {
-            //     event.streams[0].getTracks().forEach((track) => {
-            //         console.log('get track');
-            //         remoteStream.addTrack(track);
-            //         if (friendVideo.current) friendVideo.current.srcObject = remoteStream;
-            //     });
-            // };
+            stream.getTracks().forEach((track) => {
+                console.log('send track');
+                const sender = peerConnection.getSenders().find((s) => s.track?.kind === track.kind);
+                if (sender) {
+                    sender.replaceTrack(track);
+                } else {
+                    peerConnection.addTrack(track, stream);
+                }
+            });
         }
         setLoading(true);
         if (localStream) {
@@ -237,7 +275,6 @@ const Call = () => {
             tracks.forEach((track) => {
                 track.stop();
             });
-            localStream = new MediaStream();
         }
         openStream().then((stream: MediaStream) => {
             playVideo(stream);
@@ -291,17 +328,17 @@ const Call = () => {
         sendPrivateMassage('cancel');
         if (beginTime) {
             const duration = new Date().getTime() - beginTime.getTime();
-            if (stompClient.connected && user) {
-                const chat: MessageChat = {
-                    from: friendId || '',
-                    to: user.userID || '',
-                    type: 'CALL',
-                    body: duration.toString(),
-                    seen: false,
-                    user: true,
-                };
-                stompClient.send('/app/private', JSON.stringify(chat));
-            }
+            // if (stompClient.connected && user) {
+            //     const chat: MessageChat = {
+            //         from: friendId || '',
+            //         to: user.userID || '',
+            //         type: 'ENDCALL',
+            //         body: duration.toString(),
+            //         seen: false,
+            //         user: true,
+            //     };
+            //     stompClient.send('/app/private', JSON.stringify(chat));
+            // }
         }
         window.close();
     };
@@ -321,11 +358,10 @@ const Call = () => {
             </div>
             <div className={cx('user-area')}>
                 <div className={cx('name')}>{user?.fullName}</div>
-                {isVideo ? (
-                    <div className={cx('video')}>
-                        <video height={160} width={160} ref={userVideo} autoPlay={true} />
-                    </div>
-                ) : (
+                <div className={cx('video')}>
+                    <video height={160} width={160} ref={userVideo} autoPlay={true} hidden={!isVideo} muted />
+                </div>
+                {!isVideo && (
                     <div className={cx('image')}>
                         <img src={user?.urlAvatar} />
                     </div>

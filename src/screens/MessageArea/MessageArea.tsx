@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames/bind';
 import Styles from './MessageArea.module.scss';
@@ -11,9 +11,8 @@ import Chat from './Chat';
 import Button from '../../components/Button';
 import { UserService } from '../../apiService';
 import { getGifItems, updateLastMessage } from '../../reducers';
-import { Call, FileItem, GifItem, PhotoItem, Send, VideoCall } from '../../components/Icons';
+import { Call, FileItem, GifItem, Send, VideoCall } from '../../components/Icons';
 import { State, StateWS, MessageChat, Gif } from '../../type';
-import { Wrapper as PopperWrapper } from '../../components/Popper';
 import { pathImage } from '../../contants';
 
 const cx = classNames.bind(Styles);
@@ -27,14 +26,16 @@ const TypeFile = {
     png: 'image/png',
 };
 
+let currentHeightChat = 0;
+
 const MessageArea = () => {
     const { friendId } = useParams();
     const [loading, setLoading] = useState(false);
 
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     const messageAreaRef = useRef<HTMLDivElement>(null);
+    const chatInputRef = useRef<HTMLInputElement>(null);
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as StateWS;
@@ -50,6 +51,9 @@ const MessageArea = () => {
     const [urlFiles, setUrlFiles] = useState<{ name: string; type: string; url: string }[]>([]);
     const [showInputChat, setShowInputChat] = useState(true);
     const inputFile = useRef<HTMLInputElement>(null);
+
+    const [currentOffset, setCurrentOffset] = useState('');
+    const [isEnd, setIsEnd] = useState(false);
 
     const onDrop = async (acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
@@ -103,6 +107,53 @@ const MessageArea = () => {
         }
     }, []);
 
+    const callApiGetMessages = useCallback(
+        async (friendId: string, offset: string, limit: number) => {
+            try {
+                console.log('[offset]:' + offset);
+                console.log('[listMessage]:' + listMessage);
+                const response = await UserService.getMessageChats(friendId, offset, limit);
+                if (response?.ok) {
+                    response.json().then((data: MessageChat[]) => {
+                        if (data[0]) {
+                            setCurrentOffset(data[0].offset || '');
+                        } else {
+                            setIsEnd(true);
+                        }
+                        if (listMessage.length > 0) setListMessage((prevList) => [...data, ...prevList]);
+                        else setListMessage(data);
+                    });
+                } else {
+                    if (response === null || response?.status === 403) {
+                        console.log('get fail');
+                    }
+                }
+            } catch (error) {
+                alert(error);
+                console.log(error);
+            }
+        },
+        [listMessage],
+    );
+
+    const handleScroll = useCallback(() => {
+        if (messageAreaRef.current) {
+            if (messageAreaRef.current.scrollTop === 0 && !isEnd) {
+                callApiGetMessages(friendId || '', currentOffset, 20);
+            }
+        }
+    }, [callApiGetMessages, isEnd, currentOffset, friendId]);
+
+    useEffect(() => {
+        if (messageAreaRef.current) {
+            const refMessage = messageAreaRef.current;
+            messageAreaRef.current.addEventListener('scroll', handleScroll);
+            return () => {
+                refMessage.removeEventListener('scroll', handleScroll);
+            };
+        }
+    }, [handleScroll]);
+
     useEffect(() => {
         const callApiGetGifItems = async () => {
             try {
@@ -112,7 +163,7 @@ const MessageArea = () => {
                         dispatch(getGifItems(data));
                     });
                 } else {
-                    if (response === null || response?.status == 403) {
+                    if (response === null || response?.status === 403) {
                         console.log('get fail');
                     }
                 }
@@ -125,25 +176,8 @@ const MessageArea = () => {
     }, []);
 
     useEffect(() => {
-        const callApiGetMessages = async () => {
-            try {
-                const response = await UserService.getMessageChats(friendId || '');
-                if (response?.ok) {
-                    response.json().then((data) => {
-                        setListMessage(data);
-                    });
-                } else {
-                    if (response === null || response?.status == 403) {
-                        console.log('get fail');
-                    }
-                }
-            } catch (error) {
-                alert(error);
-                console.log(error);
-            }
-        };
         if (listMessage.length === 0) {
-            callApiGetMessages();
+            callApiGetMessages(friendId || '', currentOffset, 20);
         }
     }, [friendId]);
 
@@ -161,7 +195,7 @@ const MessageArea = () => {
                 }
             }
         }
-    }, [currentMessage]);
+    }, [currentMessage, friendId]);
 
     useEffect(() => {
         handleAddMessage();
@@ -169,7 +203,16 @@ const MessageArea = () => {
 
     useEffect(() => {
         if (messageAreaRef.current) {
-            messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
+            // console.log('[current height]:' + currentHeightChat);
+            // console.log('[current scroll]:' + messageAreaRef.current.scrollTop);
+            // console.log('[height scroll]:' + messageAreaRef.current.scrollHeight);
+            // console.log('[result]:' + (messageAreaRef.current.scrollHeight - messageAreaRef.current.scrollTop));
+            if (messageAreaRef.current.scrollTop === 0) {
+                messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight - currentHeightChat;
+            } else {
+                messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
+            }
+            currentHeightChat = messageAreaRef.current.scrollHeight;
         }
     }, [listMessage]);
 
@@ -179,6 +222,7 @@ const MessageArea = () => {
         } else {
             onSendMessage();
         }
+        if (chatInputRef.current) chatInputRef.current.focus();
     };
 
     async function onSendFiles() {
@@ -356,6 +400,7 @@ const MessageArea = () => {
             </div>
             <div className={cx('message-area')} ref={messageAreaRef}>
                 <div style={{ flex: 1 }} />
+                {isEnd && <div className={cx('last-message')}>Đây là tin nhắn cuối cùng</div>}
                 {listMessage.map((message, index) => {
                     return (
                         <Chat
@@ -403,7 +448,7 @@ const MessageArea = () => {
                                                 return (
                                                     <div className={cx('gif-item')} key={gifID}>
                                                         <button onClick={() => onClickIcon(url)}>
-                                                            <img src={gifItem.url} />
+                                                            <img src={gifItem.url} alt={gifName} />
                                                         </button>
                                                     </div>
                                                 );
@@ -449,13 +494,15 @@ const MessageArea = () => {
                                     <button key={index} onClick={() => handleDeletePhoto(index)}>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             {(urlFile.type === TypeFile.jpeg || urlFile.type === TypeFile.png) && (
-                                                <img src={urlFile.url} />
+                                                <img src={urlFile.url} alt={urlFile.name} />
                                             )}
                                             {urlFile.type === TypeFile.pdf && <iframe title="pdf" src={urlFile.url} />}
                                             {(urlFile.type === TypeFile.word || urlFile.type === TypeFile.msWord) && (
-                                                <img src={pathImage.wordFile} />
+                                                <img src={pathImage.wordFile} alt={urlFile.name} />
                                             )}
-                                            {urlFile.type === TypeFile.excel && <img src={pathImage.excelFile} />}
+                                            {urlFile.type === TypeFile.excel && (
+                                                <img src={pathImage.excelFile} alt={urlFile.name} />
+                                            )}
                                             {urlFile.name.substring(0, 10)}
                                         </div>
                                     </button>
@@ -463,6 +510,7 @@ const MessageArea = () => {
                             })
                         ) : (
                             <input
+                                ref={chatInputRef}
                                 spellCheck={false}
                                 maxLength={500}
                                 value={bodyChat}

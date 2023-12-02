@@ -107,6 +107,7 @@ export interface RawChat {
     timestamp?: string;
     seen: boolean;
     type: string;
+    offset?: string;
 }
 
 export interface MessageChat extends RawChat {

@@ -53,9 +53,9 @@ const getFriendRequests = async () => {
     }
 };
 
-const getMessageChats = async (friendID: string) => {
+const getMessageChats = async (friendID: string, offset: string, limit: number) => {
     try {
-        const response = await getStream({ path: `user/getMessages/${friendID}` });
+        const response = await getStream({ path: `user/getMessages/${friendID}&${offset}&${limit}` });
         return response;
     } catch (error) {
         //alert(ERROR.ERR_NETWORK.message);
