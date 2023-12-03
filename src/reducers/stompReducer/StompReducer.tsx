@@ -11,8 +11,6 @@ const StompReducer = (state: StateWS = { socket, stompClient: initalStomp, curre
     switch (type) {
         case actionTypes.CONNECT_SUCCESS:
             return payload;
-        case actionTypes.RECIEVE_MESSAGE:
-            return { ...state, currentMessage: payload };
         case actionTypes.CONNECT_FAIL:
         case actionTypes.DISCONNECT:
             return { ...state, stompClient: payload };

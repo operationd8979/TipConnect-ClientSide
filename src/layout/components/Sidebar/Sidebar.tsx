@@ -8,7 +8,7 @@ import Search from '../Search';
 import { PlusFriend, OnWait } from '../../../components/Icons';
 import { State, FriendShip, SearchResponse, Response } from '../../../type';
 import { UserService } from '../../../apiService/';
-import { getListFriendSuccess, getListFriendFail, logout } from '../../../reducers';
+import { getListFriendSuccess, getListFriendFail, updateLastMessage, logout } from '../../../reducers';
 import DataReconstruct from '../../../utils/DataReconstruct';
 
 const cx = className.bind(styles);
@@ -188,8 +188,19 @@ function Sidebar() {
                     }
                     return (
                         <Link
-                            className={cx('friend_card', { 'non-seen': !message?.seen })}
+                            className={cx('friend_card', {
+                                'non-seen': message && !message.seen && !message.user,
+                            })}
                             key={friendShip.id}
+                            onClick={() => {
+                                if (friendShip?.message) {
+                                    if (!friendShip.message.seen) {
+                                        let newMessage = friendShip.message;
+                                        newMessage.seen = true;
+                                        dispatch(updateLastMessage(newMessage));
+                                    }
+                                }
+                            }}
                             to={`/message/${friend.userID}`}
                         >
                             <div className={cx('card_img')}>
@@ -215,7 +226,7 @@ function Sidebar() {
                                             <div>bắt đầu nhắn tin nào</div>
                                         )}
 
-                                        {message && !message.seen && (
+                                        {message && !message.seen && !message.user && (
                                             <div className={cx('info_detail_count_income')}>5..</div>
                                         )}
                                     </div>

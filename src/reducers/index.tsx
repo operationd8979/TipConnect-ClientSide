@@ -18,7 +18,7 @@ import {
     removeFriendRequest,
     getGifItems,
 } from './userReducer/Action';
-import { connectSuccess, connectFail, disconnect, recieveMessage } from './stompReducer/Action';
+import { connectSuccess, connectFail, disconnect } from './stompReducer/Action';
 
 export {
     loginSuccess,
@@ -40,7 +40,6 @@ export {
     connectSuccess,
     connectFail,
     disconnect,
-    recieveMessage,
     removeFriendRequest,
     getGifItems,
 };

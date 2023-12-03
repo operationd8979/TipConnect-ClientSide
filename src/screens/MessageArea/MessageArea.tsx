@@ -12,7 +12,7 @@ import Button from '../../components/Button';
 import { UserService } from '../../apiService';
 import { getGifItems, updateLastMessage } from '../../reducers';
 import { Call, FileItem, GifItem, Send, VideoCall } from '../../components/Icons';
-import { State, StateWS, MessageChat, Gif } from '../../type';
+import { State, StateWS, MessageChat, Gif, RawChat, SeenNotification } from '../../type';
 import { pathImage } from '../../contants';
 
 const cx = classNames.bind(Styles);
@@ -30,82 +30,123 @@ let currentHeightChat = 0;
 
 const MessageArea = () => {
     const { friendId } = useParams();
-    const [loading, setLoading] = useState(false);
 
     const dispatch = useDispatch();
 
     const messageAreaRef = useRef<HTMLDivElement>(null);
     const chatInputRef = useRef<HTMLInputElement>(null);
+    const inputFile = useRef<HTMLInputElement>(null);
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as StateWS;
     const { user, listFriend, listGifItem } = currentUser;
-    const { stompClient, currentMessage } = currentStomp;
-
-    const [bodyChat, setBodyChat] = useState('');
+    const { stompClient } = currentStomp;
     const friendShip = listFriend.find((f) => f.friend.userID === friendId);
-    const [listMessage, setListMessage] = useState<MessageChat[]>([]);
-    const [showGifTab, setShowGifTab] = useState(false);
 
-    // const [urlPhotos, setUrlPhotos] = useState<string[]>([]);
-    const [urlFiles, setUrlFiles] = useState<{ name: string; type: string; url: string }[]>([]);
+    const [listMessage, setListMessage] = useState<MessageChat[]>([]);
+    const [currentMessage, setCurrentMessage] = useState<MessageChat | null>(friendShip?.message || null);
+    const [seenGet, setSeenGet] = useState<SeenNotification | null>(null);
+    const [bodyChat, setBodyChat] = useState('');
+
+    const [loading, setLoading] = useState(false);
+    const [showGifTab, setShowGifTab] = useState(false);
     const [showInputChat, setShowInputChat] = useState(true);
-    const inputFile = useRef<HTMLInputElement>(null);
 
     const [currentOffset, setCurrentOffset] = useState('');
     const [isEnd, setIsEnd] = useState(false);
-
-    const onDrop = async (acceptedFiles: File[]) => {
-        if (acceptedFiles.length > 0) {
-            addFile(acceptedFiles);
-        }
-    };
-
-    const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            addFile(event.target.files);
-            event.target.value = '';
-            event.target.files = null;
-        }
-    };
-
-    const addFile = (listFile: FileList | File[]) => {
-        const arrayUrl = [];
-        for (let i = 0; i < listFile.length; i++) {
-            const file: File = listFile[i];
-            if (!Object.values(TypeFile).includes(file.type)) {
-                console.log('TYPE OF FILE IS NOT SUPPORTED!');
-                continue;
-            }
-            arrayUrl.push({ name: file.name, type: file.type, url: URL.createObjectURL(file) });
-        }
-        setUrlFiles([...urlFiles, ...arrayUrl]);
-        if (showInputChat) {
-            setShowInputChat(false);
-        }
-    };
-
-    const handleClick = (event: any) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-
-    const handleKeyDown = (event: any) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-    };
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+    const [urlFiles, setUrlFiles] = useState<{ name: string; type: string; url: string }[]>([]);
 
     useEffect(() => {
-        if (friendShip?.message) {
-            let newMessage = friendShip.message;
-            newMessage.seen = true;
-            dispatch(updateLastMessage(newMessage));
+        if (stompClient.connected) {
+            console.log('subcribe');
+            stompClient.subscribe('/users/private', function (message) {
+                try {
+                    const data = JSON.parse(message.body);
+                    switch (data.type) {
+                        case 'MESSAGE':
+                        case 'PHOTO':
+                        case 'GIF':
+                        case 'PDF':
+                        case 'WORD':
+                        case 'EXCEL':
+                            setCurrentMessage(data as MessageChat);
+                            dispatch(updateLastMessage(data as MessageChat));
+                            break;
+                        case 'SEEN':
+                            setSeenGet(data as SeenNotification);
+                            break;
+                        default:
+                    }
+                } catch (error) {
+                    alert('Some message lost!');
+                }
+            });
         }
+    }, [stompClient]);
+
+    useEffect(() => {
+        const callApiGetGifItems = async () => {
+            try {
+                const response = await UserService.getGifItems();
+                if (response?.ok) {
+                    response.json().then((data) => {
+                        dispatch(getGifItems(data));
+                    });
+                } else {
+                    if (response === null || response?.status === 403) {
+                        console.log('get fail');
+                    }
+                }
+            } catch (error) {
+                alert(error);
+                console.log(error);
+            }
+        };
+        if (listGifItem.length === 0) callApiGetGifItems();
     }, []);
+
+    useEffect(() => {
+        if (listMessage.length === 0) {
+            callApiGetMessages(friendId || '', currentOffset, 20);
+        }
+    }, [friendId]);
+
+    useEffect(() => {
+        if (currentMessage) {
+            if (currentMessage.from === friendId) {
+                if (
+                    listMessage.length === 0 ||
+                    currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
+                ) {
+                    setListMessage((prevList) => [...prevList, currentMessage]);
+                    let newMessage = currentMessage;
+                    newMessage.seen = true;
+                    const seenNotification: SeenNotification = {
+                        from: currentMessage.from,
+                        to: currentMessage.to,
+                        type: 'SEEN',
+                        timestamp: currentMessage.timestamp || new Date().getTime().toString(),
+                    };
+                    onSendSeenNotification(seenNotification);
+                    dispatch(updateLastMessage(newMessage));
+                }
+            }
+        }
+    }, [currentMessage]);
+
+    useEffect(() => {
+        if (seenGet) {
+            if (seenGet.from === user?.userID) {
+                console.log('change seen!!!!');
+                const message = listMessage.filter(
+                    (m) => m.from === seenGet.from && m.to === seenGet.to && m.timestamp === seenGet.timestamp,
+                )[0];
+                message.seen = true;
+                setListMessage(listMessage);
+                console.log(message);
+            }
+        }
+    }, [seenGet]);
 
     const callApiGetMessages = useCallback(
         async (friendId: string, offset: string, limit: number) => {
@@ -155,53 +196,6 @@ const MessageArea = () => {
     }, [handleScroll]);
 
     useEffect(() => {
-        const callApiGetGifItems = async () => {
-            try {
-                const response = await UserService.getGifItems();
-                if (response?.ok) {
-                    response.json().then((data) => {
-                        dispatch(getGifItems(data));
-                    });
-                } else {
-                    if (response === null || response?.status === 403) {
-                        console.log('get fail');
-                    }
-                }
-            } catch (error) {
-                alert(error);
-                console.log(error);
-            }
-        };
-        if (listGifItem.length === 0) callApiGetGifItems();
-    }, []);
-
-    useEffect(() => {
-        if (listMessage.length === 0) {
-            callApiGetMessages(friendId || '', currentOffset, 20);
-        }
-    }, [friendId]);
-
-    const handleAddMessage = useCallback(() => {
-        if (currentMessage) {
-            if (currentMessage.from === friendId) {
-                if (
-                    listMessage.length === 0 ||
-                    currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
-                ) {
-                    setListMessage((prevList) => [...prevList, currentMessage]);
-                    let newMessage = currentMessage;
-                    newMessage.seen = true;
-                    dispatch(updateLastMessage(newMessage));
-                }
-            }
-        }
-    }, [currentMessage, friendId]);
-
-    useEffect(() => {
-        handleAddMessage();
-    }, [handleAddMessage]);
-
-    useEffect(() => {
         if (messageAreaRef.current) {
             // console.log('[current height]:' + currentHeightChat);
             // console.log('[current scroll]:' + messageAreaRef.current.scrollTop);
@@ -216,6 +210,48 @@ const MessageArea = () => {
         }
     }, [listMessage]);
 
+    const onDrop = async (acceptedFiles: File[]) => {
+        if (acceptedFiles.length > 0 && !loading) {
+            addFile(acceptedFiles);
+        }
+    };
+
+    const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            addFile(event.target.files);
+            event.target.value = '';
+            event.target.files = null;
+        }
+    };
+
+    const addFile = (listFile: FileList | File[]) => {
+        const arrayUrl = [];
+        for (let i = 0; i < listFile.length; i++) {
+            const file: File = listFile[i];
+            if (!Object.values(TypeFile).includes(file.type)) {
+                console.log('TYPE OF FILE IS NOT SUPPORTED!');
+                continue;
+            }
+            arrayUrl.push({ name: file.name, type: file.type, url: URL.createObjectURL(file) });
+        }
+        setUrlFiles([...urlFiles, ...arrayUrl]);
+        if (showInputChat) {
+            setShowInputChat(false);
+        }
+    };
+
+    const handleClick = (event: any) => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+    const handleKeyDown = (event: any) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    };
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
     const handleSendMessage = () => {
         if (urlFiles.length > 0) {
             onSendFiles();
@@ -226,6 +262,7 @@ const MessageArea = () => {
     };
 
     async function onSendFiles() {
+        setLoading(true);
         for (let i = 0; i < urlFiles.length; i++) {
             const urlFile = urlFiles[i];
             if (urlFile.type === TypeFile.jpeg || urlFile.type === TypeFile.png) {
@@ -250,7 +287,8 @@ const MessageArea = () => {
                 onSendPrivate(url, type);
             }
         }
-        onDeletePhotos();
+        setLoading(false);
+        onDeleteUrlFiles();
     }
 
     function onSendMessage() {
@@ -269,13 +307,19 @@ const MessageArea = () => {
                 body: body,
                 timestamp: new Date().getTime().toString(),
                 type: type,
-                seen: true,
+                seen: false,
                 user: true,
             };
             stompClient.send('/app/private', JSON.stringify(chat));
             setListMessage((preList) => [...preList, chat]);
             setBodyChat('');
             dispatch(updateLastMessage(chat));
+        }
+    }
+
+    function onSendSeenNotification(seenNotification: SeenNotification) {
+        if (stompClient.connected) {
+            stompClient.send('/app/seen', JSON.stringify(seenNotification));
         }
     }
 
@@ -293,11 +337,9 @@ const MessageArea = () => {
     const handleClickPicture = () => {
         inputFile?.current?.click();
     };
-
     const handleHideGifTab = () => {
         setShowGifTab(false);
     };
-
     const handleKeyEnter = (e: any) => {
         if (e.key === 'Enter') {
             handleSendMessage();
@@ -311,7 +353,7 @@ const MessageArea = () => {
                 to: friendId || '',
                 type: 'GIF',
                 body: url,
-                seen: true,
+                seen: false,
                 user: true,
             };
             stompClient.send('/app/private', JSON.stringify(chat));
@@ -321,14 +363,14 @@ const MessageArea = () => {
         }
     };
 
-    const handleDeletePhoto = (index: number) => {
+    const handleClickPhotoPreview = (index: number) => {
         const userConfirmed = window.confirm('Bạn có chắc muốn xóa file?');
         if (userConfirmed) {
             onDeleteUrlFile(index);
         }
     };
 
-    const onDeletePhotos = () => {
+    const onDeleteUrlFiles = () => {
         if (urlFiles.length > 0) {
             urlFiles.map((urlFile) => {
                 URL.revokeObjectURL(urlFile.type);
@@ -427,6 +469,7 @@ const MessageArea = () => {
                             isUser={message.user}
                             seen={message.seen}
                             type={message.type}
+                            isLast={index === listMessage.length - 1}
                         />
                     );
                 })}
@@ -464,7 +507,7 @@ const MessageArea = () => {
                         </HeadlessTippy>
                     </div>
                     <div className={cx('header-send-picture')}>
-                        <button onClick={handleClickPicture}>
+                        <button onClick={handleClickPicture} disabled={loading}>
                             <input
                                 type="file"
                                 id="image_uploads"
@@ -491,7 +534,7 @@ const MessageArea = () => {
                         {!showInputChat && urlFiles.length > 0 ? (
                             urlFiles.map((urlFile, index) => {
                                 return (
-                                    <button key={index} onClick={() => handleDeletePhoto(index)}>
+                                    <button key={index} onClick={() => handleClickPhotoPreview(index)}>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             {(urlFile.type === TypeFile.jpeg || urlFile.type === TypeFile.png) && (
                                                 <img src={urlFile.url} alt={urlFile.name} />

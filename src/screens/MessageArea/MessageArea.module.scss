@@ -104,11 +104,17 @@
     word-wrap: break-word;
 }
 
+.seen-notification {
+    margin-top: auto;
+    margin-bottom: 12px;
+    color: black;
+    font-weight: bold;
+}
+
 .chat-content-file {
     display: flex;
     flex-direction: column;
     color: white;
-
     img {
         width: 100px;
         height: 100px;

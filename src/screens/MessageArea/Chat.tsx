@@ -10,11 +10,12 @@ interface Chat {
     isUser: boolean;
     seen: boolean;
     type: string;
+    isLast: boolean;
 }
 
 const cx = classNames.bind(Styles);
 
-const Chat = ({ fullName, urlAvatar, content, isUser, seen, type }: Chat) => {
+const Chat = ({ fullName, urlAvatar, content, isUser, seen, type, isLast }: Chat) => {
     return (
         <div className={cx('wrapper-chat', { 'friend-chat': !isUser, 'user-chat': isUser })}>
             {!isUser && (
@@ -22,6 +23,7 @@ const Chat = ({ fullName, urlAvatar, content, isUser, seen, type }: Chat) => {
                     <img src={urlAvatar} alt={fullName} />
                 </div>
             )}
+            {isLast && isUser && seen && <div className={cx('seen-notification')}>đã xem</div>}
             <div className={cx('chat-content')}>
                 {type === 'MESSAGE' ? (
                     content

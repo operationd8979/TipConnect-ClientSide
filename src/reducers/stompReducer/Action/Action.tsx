@@ -22,10 +22,3 @@ export const disconnect = (payload: Client) => {
         payload,
     };
 };
-
-export const recieveMessage = (payload: MessageChat) => {
-    return {
-        type: stompReducerAction.RECIEVE_MESSAGE,
-        payload,
-    };
-};

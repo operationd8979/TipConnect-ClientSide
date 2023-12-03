@@ -23,7 +23,6 @@ import {
     acceptFriendSuccess,
     logout,
     removeFriendRequest,
-    recieveMessage,
     updateLastMessage,
 } from '../../../reducers';
 import { State, Response, AuthenticationReponse, RawChat, MessageChat, NotificationChat } from '../../../type';
@@ -111,7 +110,6 @@ function Header() {
                                             case 'PDF':
                                             case 'WORD':
                                             case 'EXCEL':
-                                                dispatch(recieveMessage(data as MessageChat));
                                                 dispatch(updateLastMessage(data as MessageChat));
                                                 break;
                                             case 'CALL':
@@ -133,7 +131,6 @@ function Header() {
                                                 }
                                                 break;
                                             default:
-                                                console.log(data);
                                         }
                                     } catch (error) {
                                         alert('Some message lost!');

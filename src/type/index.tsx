@@ -101,7 +101,13 @@ export interface StateWS {
     currentMessage: MessageChat | null;
 }
 
-//chat element
+export interface SeenNotification {
+    from: string;
+    to: string;
+    timestamp: string;
+    type: string;
+}
+
 export interface RawChat {
     body: string;
     timestamp?: string;

@@ -204,7 +204,7 @@ const Call = () => {
             setLoading(true);
             //test
             if (caller === 'caller') {
-                callPrivate(type || 'call');
+                callPrivate();
                 peerConnection.onicecandidate = async (event) => {
                     if (event.candidate) {
                         const sdp = peerConnection.localDescription;
@@ -217,11 +217,12 @@ const Call = () => {
                 };
                 return;
             }
+            //test
             openStream().then((stream: MediaStream) => {
                 playVideo(stream);
                 setLoading(false);
                 if (caller === 'caller') {
-                    callPrivate(type || 'call');
+                    callPrivate();
                 }
                 if (isAccept) {
                     sendPrivateMassage('accept');
@@ -299,11 +300,11 @@ const Call = () => {
                 seen: false,
                 user: true,
             };
-            stompClient.send('/app/tradeRTC', JSON.stringify(chat));
+            stompClient.send('/app/trade', JSON.stringify(chat));
         }
     }
 
-    function callPrivate(body: string) {
+    function callPrivate() {
         if (stompClient.connected && user) {
             const tinyUser = {
                 fullName: user.fullName,
@@ -314,13 +315,12 @@ const Call = () => {
                 from: user?.userID || '',
                 to: friendId || '',
                 type: 'CALL',
+                timestamp: new Date().getTime().toString(),
                 body: JSON.stringify(tinyUser),
                 seen: false,
                 user: true,
             };
-            stompClient.send('/app/tradeRTC', JSON.stringify(chat));
-            console.log('sent message done!');
-            console.log(body);
+            stompClient.send('/app/trade', JSON.stringify(chat));
         }
     }
 
@@ -332,6 +332,7 @@ const Call = () => {
             //     const chat: MessageChat = {
             //         from: friendId || '',
             //         to: user.userID || '',
+            //         timestamp: new Date().getTime().toString(),
             //         type: 'ENDCALL',
             //         body: duration.toString(),
             //         seen: false,
