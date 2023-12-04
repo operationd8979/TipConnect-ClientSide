@@ -62,7 +62,7 @@ export interface AuthenticationReponse {
 
 export interface SearchResponse {
     tinyUser: User | null;
-    messages: any;
+    messages: MessageChat[];
 }
 
 export interface Response {

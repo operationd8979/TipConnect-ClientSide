@@ -66,7 +66,7 @@ const getMessageChats = async (friendID: string, offset: string, limit: number) 
 const search = async (searchQuery: SearchQuery) => {
     try {
         const { query, offset, limit } = searchQuery;
-        const response = await get({
+        const response = await getStream({
             path: `user/search/${query}&${offset}&${limit}`,
         });
         return response;

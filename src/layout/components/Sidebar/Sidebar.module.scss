@@ -116,3 +116,15 @@
         color: white;
     }
 }
+
+.load-more {
+    text-align: center;
+    button {
+        background-color: transparent;
+        color: blue;
+        font-size: 1.6rem;
+    }
+    :hover {
+        opacity: 0.6;
+    }
+}

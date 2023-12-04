@@ -57,6 +57,22 @@
     font-size: small;
 }
 
+.change-type {
+    margin-left: 8px;
+
+    button {
+        width: 2.8rem;
+        height: 2.8rem;
+        svg {
+            width: 100%;
+            height: 100%;
+            :hover {
+                color: red;
+            }
+        }
+    }
+}
+
 .message-area {
     flex: 8;
     display: flex;

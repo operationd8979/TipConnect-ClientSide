@@ -9,48 +9,68 @@ import { UncheckIcon, Spinner } from '../../../components/Icons';
 
 const cx = classNames.bind(styles);
 
+let currentOffset = 0;
+
 const Search = ({
     query,
     setQuery,
+    searchResult,
     setSearchResult,
+    triggerLoadMore,
+    setShowLoadMore,
 }: {
     query: string;
     setQuery: React.Dispatch<React.SetStateAction<string>>;
+    searchResult: SearchResponse;
     setSearchResult: React.Dispatch<React.SetStateAction<SearchResponse>>;
+    triggerLoadMore: boolean;
+    setShowLoadMore: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     const [loading, setLoading] = useState(false);
-
-    // const [query, setQuery] = useState<string>('');
     const [result, setResult] = useState(false);
     const debouncedValue = useDebounce({ value: query, delay: 500 });
 
     useEffect(() => {
         if (!debouncedValue.trim()) {
             setResult(false);
+            currentOffset = 0;
             setSearchResult({ tinyUser: null, messages: [] });
+            setShowLoadMore(false);
             return;
         }
         const handleSearchRequest = async () => {
-            console.log('Search api running!');
             setLoading(true);
-            const searchRequest: SearchQuery = { query: debouncedValue, offset: 0, limit: 10 };
+            const searchRequest: SearchQuery = { query: debouncedValue, offset: currentOffset, limit: 10 };
             const response = await UserService.search(searchRequest);
-            if (response) {
-                if (response.data) {
-                    const { user_aim, messages } = response.data;
-                    console.log(user_aim);
-                    console.log(messages);
-                    setSearchResult({ tinyUser: user_aim, messages: messages });
+            if (response?.ok) {
+                response.json().then((data) => {
+                    const partOne = data[0];
+                    const partTwo = data[1];
+                    const { user_aim, offset } = partOne;
+                    if (currentOffset === 0) {
+                        currentOffset = offset;
+                        setSearchResult({ tinyUser: user_aim, messages: partTwo });
+                    } else {
+                        currentOffset = offset;
+                        setSearchResult({
+                            tinyUser: searchResult.tinyUser,
+                            messages: [...searchResult.messages, ...partTwo],
+                        });
+                    }
+                    if (offset === 0) {
+                        currentOffset = 0;
+                        setShowLoadMore(false);
+                    } else setShowLoadMore(true);
+
                     if (user_aim) {
                         setResult(true);
                     }
-                }
+                });
             }
             setLoading(false);
         };
-
         handleSearchRequest();
-    }, [debouncedValue]);
+    }, [debouncedValue, triggerLoadMore]);
 
     const handleClearResult = () => {
         setResult(false);
@@ -65,6 +85,7 @@ const Search = ({
                 onChange={(e) => {
                     if (e.target.value == '') setSearchResult({ tinyUser: null, messages: [] });
                     setQuery(e.target.value);
+                    currentOffset = 0;
                 }}
                 placeholder={i18n.t('HEADER_search_placeholder')}
                 spellCheck={false}

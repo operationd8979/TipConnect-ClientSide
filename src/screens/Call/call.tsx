@@ -84,12 +84,7 @@ const Call = () => {
                     } else if (message.body === 'done') {
                         if (!isDone) {
                             setIsDone(true);
-                            // sendPrivateMassage('done[*]');
                         }
-                        // } else if (message.body === 'done[*]') {
-                        //     if (!isDone) {
-                        //         setIsDone(true);
-                        //     }
                     } else {
                         const jsonData = JSON.parse(message.body);
                         switch (jsonData.type) {
@@ -184,7 +179,7 @@ const Call = () => {
                 peerConnection.onicecandidate = async (event) => {
                     if (event.candidate) {
                         const sdp = peerConnection.localDescription;
-                        if (sdp?.type == 'answer') setCandidate(peerConnection.localDescription);
+                        if (sdp?.type === 'answer') setCandidate(peerConnection.localDescription);
                     }
                 };
                 stream.getTracks().forEach((track) => {
@@ -194,30 +189,9 @@ const Call = () => {
                 peerConnection.ontrack = (event) => {
                     console.log('get track');
                     setRemoteStream(event.streams[0]);
-                    // event.streams[0].getTracks().forEach((track) => {
-                    //     console.log('get track');
-                    //     remoteStream.addTrack(track);
-                    //     if (friendVideo.current) friendVideo.current.srcObject = remoteStream;
-                    // });
                 };
             }
             setLoading(true);
-            //test
-            if (caller === 'caller') {
-                callPrivate();
-                peerConnection.onicecandidate = async (event) => {
-                    if (event.candidate) {
-                        const sdp = peerConnection.localDescription;
-                        if (sdp?.type == 'answer') setCandidate(peerConnection.localDescription);
-                    }
-                };
-                peerConnection.ontrack = (event) => {
-                    console.log('get track');
-                    setRemoteStream(event.streams[0]);
-                };
-                return;
-            }
-            //test
             openStream().then((stream: MediaStream) => {
                 playVideo(stream);
                 setLoading(false);
@@ -256,10 +230,6 @@ const Call = () => {
         }
         function playVideo(stream: MediaStream) {
             setLocalStream(stream);
-            // stream.getTracks().forEach((track) => {
-            //     console.log('send track');
-            //     peerConnection.addTrack(track, stream);
-            // });
             stream.getTracks().forEach((track) => {
                 console.log('send track');
                 const sender = peerConnection.getSenders().find((s) => s.track?.kind === track.kind);
@@ -348,18 +318,15 @@ const Call = () => {
         <div className={cx('wrapper')}>
             <div className={cx('friend-area')}>
                 <div className={cx('name')}>{fullName}</div>
-                {isConnected ? (
-                    <div className={cx('video')}>
-                        {!isVideo && 'Only voice!!!'}
-                        <video height={160} width={160} ref={friendVideo} autoPlay={true} />
-                    </div>
-                ) : (
-                    <div>{!isAccept ? 'Kết nối...' : 'Khởi tạo đường truyền...'}</div>
-                )}
+                <div className={cx('video')} style={{ backgroundColor: 'black' }}>
+                    {!isVideo && 'Only voice!!!'}
+                    <video height={160} width={160} ref={friendVideo} autoPlay={true} />
+                </div>
+                {isConnected ? <div></div> : <div>{!isAccept ? 'Kết nối...' : 'Khởi tạo đường truyền...'}</div>}
             </div>
             <div className={cx('user-area')}>
                 <div className={cx('name')}>{user?.fullName}</div>
-                <div className={cx('video')}>
+                <div className={cx('video')} style={{ backgroundColor: 'black' }}>
                     <video height={160} width={160} ref={userVideo} autoPlay={true} hidden={!isVideo} muted />
                 </div>
                 {!isVideo && (

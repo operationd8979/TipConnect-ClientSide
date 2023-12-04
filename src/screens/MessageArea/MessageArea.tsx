@@ -11,7 +11,7 @@ import Chat from './Chat';
 import Button from '../../components/Button';
 import { UserService } from '../../apiService';
 import { getGifItems, updateLastMessage } from '../../reducers';
-import { Call, FileItem, GifItem, Send, VideoCall } from '../../components/Icons';
+import { Call, EditItem, FileItem, GifItem, Send, VideoCall } from '../../components/Icons';
 import { State, StateWS, MessageChat, Gif, RawChat, SeenNotification } from '../../type';
 import { pathImage } from '../../contants';
 
@@ -137,12 +137,12 @@ const MessageArea = () => {
     useEffect(() => {
         if (seenGet) {
             if (seenGet.from === user?.userID) {
-                console.log('change seen!!!!');
                 const message = listMessage.filter(
                     (m) => m.from === seenGet.from && m.to === seenGet.to && m.timestamp === seenGet.timestamp,
                 )[0];
                 message.seen = true;
-                setListMessage(listMessage);
+                const newListMessage = [...listMessage];
+                setListMessage(newListMessage);
                 console.log(message);
             }
         }
@@ -151,8 +151,6 @@ const MessageArea = () => {
     const callApiGetMessages = useCallback(
         async (friendId: string, offset: string, limit: number) => {
             try {
-                console.log('[offset]:' + offset);
-                console.log('[listMessage]:' + listMessage);
                 const response = await UserService.getMessageChats(friendId, offset, limit);
                 if (response?.ok) {
                     response.json().then((data: MessageChat[]) => {
@@ -197,10 +195,6 @@ const MessageArea = () => {
 
     useEffect(() => {
         if (messageAreaRef.current) {
-            // console.log('[current height]:' + currentHeightChat);
-            // console.log('[current scroll]:' + messageAreaRef.current.scrollTop);
-            // console.log('[height scroll]:' + messageAreaRef.current.scrollHeight);
-            // console.log('[result]:' + (messageAreaRef.current.scrollHeight - messageAreaRef.current.scrollTop));
             if (messageAreaRef.current.scrollTop === 0) {
                 messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight - currentHeightChat;
             } else {
@@ -429,7 +423,16 @@ const MessageArea = () => {
                 </div>
                 <div className={cx('card-info')}>
                     <div className={cx('card-name')}>{friendShip?.friend.fullName}</div>
-                    <div className={cx('card-detail')}>{friendShip?.type}</div>
+                    <div className={cx('card-detail')}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {friendShip?.type}
+                            <div className={cx('change-type')}>
+                                <button>
+                                    <EditItem />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className={cx('card-action')}>
                     <button onClick={() => handleCall('call')}>

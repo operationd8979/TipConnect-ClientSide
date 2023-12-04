@@ -9,8 +9,11 @@ function useDebounce({ value, delay }: propsDebounce) {
     const [debouncedValue, setDebouncedValue] = useState(value);
 
     useEffect(() => {
-        const handler = setTimeout(() => setDebouncedValue(value), delay);
-        return () => clearTimeout(handler);
+        if (value === '') setDebouncedValue(value);
+        else {
+            const handler = setTimeout(() => setDebouncedValue(value), delay);
+            return () => clearTimeout(handler);
+        }
     }, [value]);
 
     return debouncedValue;
