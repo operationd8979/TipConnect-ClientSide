@@ -159,6 +159,17 @@
     }
 }
 
+.chat-content-call {
+    display: flex;
+    svg {
+        width: 2.8rem;
+    }
+}
+
+.chat-content-call-duration {
+    margin-left: 10px;
+}
+
 .user-chat {
     margin-left: auto;
     .chat-content {

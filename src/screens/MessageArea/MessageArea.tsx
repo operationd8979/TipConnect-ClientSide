@@ -69,6 +69,7 @@ const MessageArea = () => {
                         case 'PDF':
                         case 'WORD':
                         case 'EXCEL':
+                        case 'ENDCALL':
                             setCurrentMessage(data as MessageChat);
                             dispatch(updateLastMessage(data as MessageChat));
                             break;
@@ -76,6 +77,7 @@ const MessageArea = () => {
                             setSeenGet(data as SeenNotification);
                             break;
                         default:
+                            console.log(data);
                     }
                 } catch (error) {
                     alert('Some message lost!');
@@ -113,7 +115,7 @@ const MessageArea = () => {
 
     useEffect(() => {
         if (currentMessage) {
-            if (currentMessage.from === friendId) {
+            if (currentMessage.from === friendId || currentMessage.to === friendId) {
                 if (
                     listMessage.length === 0 ||
                     currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
@@ -127,7 +129,7 @@ const MessageArea = () => {
                         type: 'SEEN',
                         timestamp: currentMessage.timestamp || new Date().getTime().toString(),
                     };
-                    onSendSeenNotification(seenNotification);
+                    if (currentMessage.type !== 'ENDCALL') onSendSeenNotification(seenNotification);
                     dispatch(updateLastMessage(newMessage));
                 }
             }
@@ -154,6 +156,7 @@ const MessageArea = () => {
                 const response = await UserService.getMessageChats(friendId, offset, limit);
                 if (response?.ok) {
                     response.json().then((data: MessageChat[]) => {
+                        console.log(data);
                         if (data[0]) {
                             setCurrentOffset(data[0].offset || '');
                         } else {

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import Styles from './Call.module.scss';
 
-import { VideoCall, Call as CallIcon, Close } from '../../components/Icons';
+import { VideoCall, Close } from '../../components/Icons';
 import { SocketService } from '../../apiService';
 import { connectSuccess } from '../../reducers';
 import { MessageChat, State, StateWS } from '../../type';
@@ -51,7 +51,6 @@ const Call = () => {
     const { socket, stompClient } = currentStomp;
 
     const [isVideo, setIsVideo] = useState<boolean>(type === 'video' ? true : false);
-    const [isAudio, setIsAudio] = useState<boolean>(true);
     const [isAccept, setIsAccept] = useState(!(caller === 'caller'));
     const [isConnected, setIsConnected] = useState(false);
     const [isDone, setIsDone] = useState(false);
@@ -156,15 +155,6 @@ const Call = () => {
         if (userVideo.current) {
             userVideo.current.srcObject = localStream;
         }
-        localStream.getTracks().forEach((track) => {
-            console.log('send track');
-            const sender = peerConnection.getSenders().find((s) => s.track?.kind === track.kind);
-            if (sender) {
-                sender.replaceTrack(track);
-            } else {
-                peerConnection.addTrack(track, localStream);
-            }
-        });
     }, [localStream]);
 
     useEffect(() => {
@@ -179,7 +169,7 @@ const Call = () => {
         //OPEN MEDIA STREAM
         if (stompClient.connected) {
             function openStream() {
-                const config = { audio: isAudio, video: isVideo };
+                const config = { audio: true, video: isVideo };
                 console.log('open camera');
                 return navigator.mediaDevices.getUserMedia(config);
             }
@@ -192,10 +182,10 @@ const Call = () => {
                         if (sdp?.type === 'answer') setCandidate(peerConnection.localDescription);
                     }
                 };
-                // stream.getTracks().forEach((track) => {
-                //     console.log('send track');
-                //     peerConnection.addTrack(track, stream);
-                // });
+                stream.getTracks().forEach((track) => {
+                    console.log('send track');
+                    peerConnection.addTrack(track, stream);
+                });
                 peerConnection.ontrack = (event) => {
                     console.log('get track');
                     setRemoteStream(event.streams[0]);
@@ -210,6 +200,7 @@ const Call = () => {
                 }
                 if (isAccept) {
                     sendPrivateMassage('accept');
+                    setBeginTime(new Date());
                 }
             });
         }
@@ -218,7 +209,6 @@ const Call = () => {
     useEffect(() => {
         //audio wait accept
         if (isAccept) {
-            if (caller === 'caller') setBeginTime(new Date());
             sendPrivateMassage('connect');
             setIsConnected(true);
         } else {
@@ -232,20 +222,13 @@ const Call = () => {
         }
     }, [isAccept]);
 
-    const handleChangeType = (isAudio: boolean, isVideo: boolean) => {
-        console.log('[audio]:' + isAudio);
-        console.log('[video]:' + isVideo);
+    const handleChangeType = () => {
+        setIsVideo(!isVideo);
         function openStream() {
-            const config = { audio: isAudio, video: isVideo };
+            const config = { audio: true, video: !isVideo };
             return navigator.mediaDevices.getUserMedia(config);
         }
         function playVideo(stream: MediaStream) {
-            if (localStream) {
-                const tracks = localStream.getTracks();
-                tracks.forEach((track) => {
-                    track.stop();
-                });
-            }
             setLocalStream(stream);
             stream.getTracks().forEach((track) => {
                 console.log('send track');
@@ -258,15 +241,11 @@ const Call = () => {
             });
         }
         setLoading(true);
-        if (!isAudio && !isVideo) {
-            if (localStream) {
-                const tracks = localStream.getTracks();
-                tracks.forEach((track) => {
-                    track.stop();
-                });
-            }
-            setLoading(false);
-            return;
+        if (localStream) {
+            const tracks = localStream.getTracks();
+            tracks.forEach((track) => {
+                track.stop();
+            });
         }
         openStream().then((stream: MediaStream) => {
             playVideo(stream);
@@ -319,18 +298,18 @@ const Call = () => {
         sendPrivateMassage('cancel');
         if (beginTime) {
             const duration = new Date().getTime() - beginTime.getTime();
-            if (stompClient.connected && user) {
-                const chat: MessageChat = {
-                    from: user.userID || '',
-                    to: friendId || '',
-                    timestamp: new Date().getTime().toString(),
-                    type: 'ENDCALL',
-                    body: duration.toString(),
-                    seen: false,
-                    user: true,
-                };
-                stompClient.send('/app/private', JSON.stringify(chat));
-            }
+            // if (stompClient.connected && user) {
+            //     const chat: MessageChat = {
+            //         from: friendId || '',
+            //         to: user.userID || '',
+            //         timestamp: new Date().getTime().toString(),
+            //         type: 'ENDCALL',
+            //         body: duration.toString(),
+            //         seen: false,
+            //         user: true,
+            //     };
+            //     stompClient.send('/app/private', JSON.stringify(chat));
+            // }
         }
         window.close();
     };
@@ -358,25 +337,8 @@ const Call = () => {
             </div>
             <div className={cx('action-area')}>
                 <div>
-                    <button
-                        style={!isVideo ? { color: 'red' } : {}}
-                        onClick={() => {
-                            setIsVideo(!isVideo);
-                            handleChangeType(isAudio, !isVideo);
-                        }}
-                        disabled={loading}
-                    >
+                    <button onClick={handleChangeType} disabled={loading}>
                         <VideoCall />
-                    </button>
-                    <button
-                        style={!isAudio ? { color: 'red' } : {}}
-                        onClick={() => {
-                            setIsAudio(!isAudio);
-                            handleChangeType(!isAudio, isVideo);
-                        }}
-                        disabled={loading}
-                    >
-                        <CallIcon />
                     </button>
                     <button onClick={handleCloseCall}>
                         <Close />

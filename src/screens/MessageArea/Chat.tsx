@@ -2,6 +2,7 @@ import classNames from 'classnames/bind';
 import Styles from './MessageArea.module.scss';
 import { useEffect } from 'react';
 import { pathImage } from '../../contants';
+import { Call, CallIncome, CallOut } from '../../components/Icons';
 
 interface Chat {
     fullName: string;
@@ -46,6 +47,13 @@ const Chat = ({ fullName, urlAvatar, content, isUser, seen, type, isLast }: Chat
                         <img src={pathImage.excelFile} />
                         {content.substring(86)}
                     </a>
+                ) : type === 'ENDCALL' ? (
+                    <div className={cx('chat-content-call')}>
+                        {isUser ? <CallOut /> : <CallIncome />}
+                        <div className={cx('chat-content-call-duration')}>
+                            {(Number.parseInt(content) / 1000).toFixed()} giây
+                        </div>
+                    </div>
                 ) : (
                     'WRONG TYPE'
                 )}

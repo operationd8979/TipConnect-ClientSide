@@ -110,6 +110,7 @@ function Header() {
                                             case 'PDF':
                                             case 'WORD':
                                             case 'EXCEL':
+                                            case 'ENDCALL':
                                                 dispatch(updateLastMessage(data as MessageChat));
                                                 break;
                                             case 'CALL':
