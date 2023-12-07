@@ -1,3 +1,4 @@
+import { I18n } from 'i18n-js';
 import { Client } from 'webstomp-client';
 
 export interface User {
@@ -93,6 +94,7 @@ export interface State {
     listFriend: FriendShip[];
     listGifItem: Gif[];
     notifications: Notifications;
+    i18n: I18n;
 }
 
 export interface StateWS {

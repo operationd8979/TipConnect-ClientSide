@@ -57,6 +57,12 @@
     color: rgba(22, 24, 35, 0.5);
 }
 
+.notification-note {
+    padding: 0px 12px;
+    color: rgba(22, 24, 35, 0.8);
+    font-size: 1.7rem;
+}
+
 .notification-item {
     display: flex;
 }
@@ -124,4 +130,15 @@
     color: var(--white);
     font-family: var(--font-family);
     background-color: var(--primary);
+}
+
+.setting-area {
+    width: 20rem;
+}
+
+.setting-title {
+    padding: 5px 12px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: rgba(22, 24, 35, 0.5);
 }

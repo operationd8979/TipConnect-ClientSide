@@ -17,6 +17,8 @@ import {
     logout,
     removeFriendRequest,
     getGifItems,
+    updateFriendShip,
+    changeLanguage,
 } from './userReducer/Action';
 import { connectSuccess, connectFail, disconnect } from './stompReducer/Action';
 
@@ -42,6 +44,8 @@ export {
     disconnect,
     removeFriendRequest,
     getGifItems,
+    updateFriendShip,
+    changeLanguage,
 };
 
 export { default } from './Reducers';

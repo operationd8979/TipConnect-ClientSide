@@ -89,6 +89,43 @@
     font-weight: 600;
 }
 
+.type-area {
+    width: 20rem;
+    border-radius: 8px;
+    background: rgb(255, 255, 255);
+    box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
+}
+
+.type-data {
+}
+
+.type-title {
+    padding: 5px 12px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: rgba(22, 24, 35, 0.7);
+}
+
+.type-item {
+    border: solid black 1px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    button {
+        width: 100%;
+        background-color: transparent;
+    }
+}
+
+.selectedType {
+    background-color: red;
+}
+
+.nonSelectType {
+    :hover {
+        background-color: aqua;
+    }
+}
+
 .wrapper-chat {
     margin-top: 8px;
     display: flex;

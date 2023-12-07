@@ -10,10 +10,11 @@ import { useDropzone } from 'react-dropzone';
 import Chat from './Chat';
 import Button from '../../components/Button';
 import { UserService } from '../../apiService';
-import { getGifItems, updateLastMessage } from '../../reducers';
+import { getGifItems, updateLastMessage, updateFriendShip } from '../../reducers';
 import { Call, EditItem, FileItem, GifItem, Send, VideoCall } from '../../components/Icons';
 import { State, StateWS, MessageChat, Gif, RawChat, SeenNotification } from '../../type';
 import { pathImage } from '../../contants';
+import hardData from '../../contants/hardData';
 
 const cx = classNames.bind(Styles);
 
@@ -39,7 +40,7 @@ const MessageArea = () => {
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as StateWS;
-    const { user, listFriend, listGifItem } = currentUser;
+    const { user, listFriend, listGifItem, i18n } = currentUser;
     const { stompClient } = currentStomp;
     const friendShip = listFriend.find((f) => f.friend.userID === friendId);
 
@@ -108,14 +109,16 @@ const MessageArea = () => {
     }, []);
 
     useEffect(() => {
-        if (listMessage.length === 0) {
-            callApiGetMessages(friendId || '', currentOffset, 20);
-        }
+        setCurrentMessage(friendShip?.message || null);
+        callApiGetMessages(friendId || '', currentOffset, 20);
+        return setListMessage([]);
     }, [friendId]);
 
     useEffect(() => {
         if (currentMessage) {
-            if (currentMessage.from === friendId || currentMessage.to === friendId) {
+            console.log('hello');
+            console.log(currentMessage);
+            if (currentMessage.from === friendId) {
                 if (
                     listMessage.length === 0 ||
                     currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
@@ -123,13 +126,22 @@ const MessageArea = () => {
                     setListMessage((prevList) => [...prevList, currentMessage]);
                     let newMessage = currentMessage;
                     newMessage.seen = true;
-                    const seenNotification: SeenNotification = {
-                        from: currentMessage.from,
-                        to: currentMessage.to,
-                        type: 'SEEN',
-                        timestamp: currentMessage.timestamp || new Date().getTime().toString(),
-                    };
-                    if (currentMessage.type !== 'ENDCALL') onSendSeenNotification(seenNotification);
+                    if (currentMessage.type !== 'ENDCALL') {
+                        const seenNotification: SeenNotification = {
+                            from: currentMessage.from,
+                            to: currentMessage.to,
+                            type: 'SEEN',
+                            timestamp: currentMessage.timestamp || new Date().getTime().toString(),
+                        };
+                        onSendSeenNotification(seenNotification);
+                    }
+                    dispatch(updateLastMessage(newMessage));
+                }
+            } else if (currentMessage.to === friendId) {
+                if (currentMessage.type === 'ENDCALL') {
+                    let newMessage = currentMessage;
+                    newMessage.seen = true;
+                    setListMessage((prevList) => [...prevList, currentMessage]);
                     dispatch(updateLastMessage(newMessage));
                 }
             }
@@ -145,7 +157,6 @@ const MessageArea = () => {
                 message.seen = true;
                 const newListMessage = [...listMessage];
                 setListMessage(newListMessage);
-                console.log(message);
             }
         }
     }, [seenGet]);
@@ -156,7 +167,6 @@ const MessageArea = () => {
                 const response = await UserService.getMessageChats(friendId, offset, limit);
                 if (response?.ok) {
                     response.json().then((data: MessageChat[]) => {
-                        console.log(data);
                         if (data[0]) {
                             setCurrentOffset(data[0].offset || '');
                         } else {
@@ -290,7 +300,7 @@ const MessageArea = () => {
 
     function onSendMessage() {
         if (bodyChat.length > 500) {
-            alert('độ dài tin nhắn quá 500 ký tự!!!');
+            alert('500!!!');
             return;
         }
         if (bodyChat !== '') onSendPrivate(bodyChat, 'MESSAGE');
@@ -349,6 +359,7 @@ const MessageArea = () => {
                 from: user?.userID || '',
                 to: friendId || '',
                 type: 'GIF',
+                timestamp: new Date().getTime().toString(),
                 body: url,
                 seen: false,
                 user: true,
@@ -418,6 +429,16 @@ const MessageArea = () => {
         });
     };
 
+    const [showTypeTab, setShowTypeTab] = useState(false);
+    const handleClickType = (code: number) => {
+        const response = UserService.changeTypeFriendShip(friendId || '', hardData.typeFriendShip[code - 1].name);
+        if (friendShip) {
+            friendShip.type = hardData.typeFriendShip[code - 1].name;
+            dispatch(updateFriendShip(friendShip));
+        }
+        setShowTypeTab(false);
+    };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('header')}>
@@ -430,9 +451,53 @@ const MessageArea = () => {
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             {friendShip?.type}
                             <div className={cx('change-type')}>
-                                <button>
-                                    <EditItem />
-                                </button>
+                                <HeadlessTippy
+                                    placement="right"
+                                    visible={showTypeTab}
+                                    interactive
+                                    onClickOutside={() => {
+                                        setShowTypeTab(false);
+                                    }}
+                                    render={(attrs) => (
+                                        <div className={cx('type-area')} tabIndex={-1} {...attrs}>
+                                            <>
+                                                <h4 className={cx('type-title')}>Type</h4>
+                                                <div className={cx('type-data')}>
+                                                    {hardData.typeFriendShip.map(
+                                                        (type: { code: number; name: string }) => {
+                                                            const { code, name } = type;
+                                                            return (
+                                                                <div
+                                                                    className={cx('type-item', {
+                                                                        selectedType: friendShip?.type === name,
+                                                                        nonSelectType: friendShip?.type !== name,
+                                                                    })}
+                                                                    key={code}
+                                                                >
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            handleClickType(code);
+                                                                        }}
+                                                                    >
+                                                                        {name}
+                                                                    </button>
+                                                                </div>
+                                                            );
+                                                        },
+                                                    )}
+                                                </div>
+                                            </>
+                                        </div>
+                                    )}
+                                >
+                                    <button
+                                        onClick={() => {
+                                            setShowTypeTab(true);
+                                        }}
+                                    >
+                                        <EditItem />
+                                    </button>
+                                </HeadlessTippy>
                             </div>
                         </div>
                     </div>
@@ -448,7 +513,7 @@ const MessageArea = () => {
             </div>
             <div className={cx('message-area')} ref={messageAreaRef}>
                 <div style={{ flex: 1 }} />
-                {isEnd && <div className={cx('last-message')}>Đây là tin nhắn cuối cùng</div>}
+                {isEnd && <div className={cx('last-message')}>{i18n.t('MESSAGE_AREA_last_message')}</div>}
                 {listMessage.map((message, index) => {
                     return (
                         <Chat
@@ -490,7 +555,7 @@ const MessageArea = () => {
                             render={(attrs) => (
                                 <div className={cx('gif-area')} tabIndex={-1} {...attrs}>
                                     <>
-                                        <h4 className={cx('gif-title')}>Danh sách gif</h4>
+                                        <h4 className={cx('gif-title')}>{i18n.t('MESSAGE_AREA_list_gif')}</h4>
                                         <div className={cx('gif-data')}>
                                             {listGifItem.map((gifItem: Gif) => {
                                                 const { gifID, gifName, url } = gifItem;

@@ -572,3 +572,249 @@ export const CallOut = ({ width = '3.2rem', height = '3.2rem', className = '' })
         </g>
     </svg>
 );
+
+export const TripleDot = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 29.957 122.88"
+        enable-background="new 0 0 29.957 122.88"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <g>
+            <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M14.978,0c8.27,0,14.979,6.708,14.979,14.979c0,8.27-6.709,14.976-14.979,14.976 C6.708,29.954,0,23.249,0,14.979C0,6.708,6.708,0,14.978,0L14.978,0z M14.978,92.926c8.27,0,14.979,6.708,14.979,14.979 s-6.709,14.976-14.979,14.976C6.708,122.88,0,116.175,0,107.904S6.708,92.926,14.978,92.926L14.978,92.926z M14.978,46.463 c8.27,0,14.979,6.708,14.979,14.979s-6.709,14.978-14.979,14.978C6.708,76.419,0,69.712,0,61.441S6.708,46.463,14.978,46.463 L14.978,46.463z"
+            />
+        </g>
+    </svg>
+);
+
+export const ArrowBack = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 80.593 122.88"
+        enable-background="new 0 0 80.593 122.88"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <g>
+            <polygon points="80.593,0 49.771,0 0,61.44 49.771,122.88 80.593,122.88 30.82,61.44 80.593,0" />
+        </g>
+    </svg>
+);
+
+export const LanguegeItem = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 122.88 84.81"
+        enableBackground="new 0 0 122.88 84.81"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <style type="text/css">{`.st0-LanguegeItem{fill-rule:evenodd;clip-rule:evenodd;}`}</style>
+        <g>
+            <path
+                className="st0-LanguegeItem"
+                d="M118.29,10.9c2.31,2.31,3.9,5.34,4.41,8.72c0.19,1.3,0.18,2.42,0.18,3.7v21.09c0,1.14,0.03,2.27-0.07,3.41 c-0.44,4.72-3.08,9.07-7.06,11.64c-5.04,3.27-10.8,2.52-16.83,2.52c1.99,5.48,6,10.54,10.33,14.37l-1.62,3.04l-0.05-0.02 c-10.49-2.7-21.55-8.9-28.29-17.4c-4.17-0.04-7.58,0.01-11.74-0.55c-4.58,2.78-10.03,4.59-15.41,4.59 c-3.49,4.35-7.55,8.07-12.19,11.12c-5.01,3.29-10.67,5.79-16.98,7.45c-0.31,0.08-0.62,0.16-0.94,0.2 c-1.09,0.12-2.23-0.27-3.01-1.15c-1.28-1.44-1.14-3.65,0.3-4.93c4.08-3.61,6.36-7.57,7.99-12.67c-7.96,0-14.62,0.84-21.1-5.63 c-8.09-8.1-6.08-26.93-5.67-38.23c0.13-3.63-0.12-6.02,1.33-9.81C3.75,7.42,7.65,3.43,12.58,1.45c4.61-1.86,9.62-1.4,14.48-1.4 h29.55c2.17,0,3.94-0.01,6.16,0.51c3.74,0.86,7.13,2.85,9.78,5.74l34.12,0.01C111.18,6.31,115.05,7.65,118.29,10.9L118.29,10.9z M99.93,42.79h-8.97l-1.24,4.46h-8.04c2.69-7.6,5.39-15.21,8.08-22.82c0.97-2.75,2.07-7.3,5.6-7.3c3.66,0,4.87,4.17,5.89,7.05 l8.18,23.06h-8.24L99.93,42.79L99.93,42.79z M98.28,36.94l-2.82-9.72l-2.8,9.72H98.28L98.28,36.94z M83.15,71.66l-5.83-4.82 l-7.28,8.99l-10.57-9.17l-4.99,5.64l11.45,9.11l9.28-0.8L83.15,71.66L83.15,71.66z M76.65,9.86c3.42,13.31,7.07,36.69-2.11,48.53 c2.17,0.03,4.31,0.03,6.48,0.03c4.92,6.54,11.24,11.11,18.68,14.45c0.7,0.31,1.41,0.62,2.12,0.9c-2.53-3.06-4.75-6.59-6.16-10.33 c-0.65-1.73-1-3.25-1.44-5.02c2.04,0,4.04,0.02,6.09,0.09c4.53,0.16,9.3,0.29,13.07-1.82c1.63-0.91,2.94-2.2,3.97-3.75 c0.91-1.39,1.55-2.98,1.83-4.67c0.21-1.28,0.14-2.69,0.14-3.99V22.63c0-0.57,0.01-1.09-0.03-1.66c-0.23-2.93-1.53-5.59-3.51-7.57 c-1.92-1.93-4.49-3.21-7.33-3.49c-0.73-0.07-1.45-0.06-2.18-0.06L76.65,9.86L76.65,9.86z M21.21,13.49h13.44V9.7h6v3.79h13.49v6.22 h-2.77c-0.22,1.75-0.63,3.49-1.19,5.21l0.01,0c-0.57,1.75-1.35,3.51-2.28,5.25c-1.58,2.95-3.62,5.78-5.98,8.5 c3.78,4.52,8.46,8.45,14.05,12.03l-3.09,4.81c-5.86-3.76-10.84-7.9-14.93-12.67c-3.66,3.54-7.81,6.84-12.17,9.85l-3.25-4.7 c4.31-2.98,8.4-6.24,11.92-9.71c-3.25-4.75-5.73-10.08-7.45-16.21l5.51-1.54c1.41,5.03,3.39,9.45,5.93,13.41 c1.73-2.1,3.23-4.25,4.42-6.46c0.75-1.4,1.39-2.86,1.88-4.35l0.01,0v0c0.37-1.11,0.65-2.26,0.84-3.42H21.21V13.49L21.21,13.49z"
+            />
+        </g>
+    </svg>
+);
+
+export const ProfileItem = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 122.88 92.126"
+        enable-background="new 0 0 122.88 92.126"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <g>
+            <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M6.022,0h52.021c3.878,0,7.048,3.17,7.048,7.048v5.254h52.149 c3.102,0,5.64,2.535,5.64,5.637v68.549c0,3.101-2.538,5.638-5.64,5.638h-12.219V81.464H89.949v10.662H34.681V81.464H19.608v10.662 H6.662c-3.1,0-6.662-2.537-6.662-5.638C0,58.626,0,33.214,0,6.023C0,2.71,2.709,0,6.022,0L6.022,0z M70.785,27.972h43.325v6.39 H70.785V27.972L70.785,27.972z M70.785,44.648h43.325v6.39H70.785V44.648L70.785,44.648z M70.785,61.324h43.325v6.388H70.785 V61.324L70.785,61.324z M9.086,67.712v-8.194c4.385-1.95,17.81-5.57,18.443-10.938c0.145-1.211-2.715-5.923-3.37-8.139 c-0.823-1.313-1.268-1.782-1.245-3.401c0.011-0.912,0.025-1.81,0.156-2.687c0.166-1.121,0.134-1.154,0.719-2.057 c0.61-0.938,0.349-4.358,0.349-5.65c0-12.851,22.518-12.855,22.518,0c0,1.625-0.374,4.61,0.508,5.889 c0.431,0.621,0.354,0.694,0.496,1.456c0.191,0.993,0.204,2.011,0.22,3.05c0.021,1.619-0.422,2.089-1.245,3.401 c-0.799,2.327-3.835,6.726-3.576,8.046c0.966,4.902,13.42,8.195,17.341,9.939v9.285H9.086L9.086,67.712z M99.875,92.126h-4.656 v-5.025h4.656V92.126L99.875,92.126z M29.534,92.126h-4.658v-5.025h4.658V92.126L29.534,92.126z"
+            />
+        </g>
+    </svg>
+);
+
+export const LogoutItem = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 110.395 122.88"
+        enable-background="new 0 0 110.395 122.88"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <g>
+            <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M93.359,17.16L75.68,9.377L75.99,0h34.404v61.439v61.44H75.99l-0.311-6.835 l17.68-10.946V17.16L93.359,17.16z M82.029,79.239v-34.54H47.004V13.631L0,61.937l47.004,48.373v-31.07H82.029L82.029,79.239z"
+            />
+        </g>
+    </svg>
+);
+
+export const VietNameItem = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 55.2 38.4"
+        enableBackground="new 0 0 55.2 38.4"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <style type="text/css">{`.st0-VietNameItem{fill:#DA251D;} .st1-VietNameItem{fill:#FFFF00;}`}</style>
+        <g>
+            <path
+                className="st0-VietNameItem"
+                d="M3.01,0h49.17c1.66,0.01,3.01,1.37,3.01,3.03v32.33c0,1.66-1.35,3.02-3.01,3.03H3.01 C1.35,38.39,0,37.03,0,35.37V3.03C0,1.37,1.35,0.01,3.01,0L3.01,0z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M27.6,11.52l-2.37,7.3l4.87,1.58L27.6,11.52L27.6,11.52z M27.6,11.52L27.6,11.52L27.6,11.52L27.6,11.52z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M27.6,11.52l2.37,7.3l-4.87,1.58L27.6,11.52L27.6,11.52z M27.6,11.52L27.6,11.52L27.6,11.52L27.6,11.52z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M34.9,16.83h-7.68v5.12L34.9,16.83L34.9,16.83z M34.9,16.83L34.9,16.83L34.9,16.83L34.9,16.83z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M34.9,16.83l-6.21,4.51l-3.01-4.14L34.9,16.83L34.9,16.83z M34.9,16.83L34.9,16.83L34.9,16.83L34.9,16.83z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M32.11,25.41l-2.37-7.3l-4.87,1.58L32.11,25.41L32.11,25.41z M32.11,25.41L32.11,25.41L32.11,25.41 L32.11,25.41z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M32.11,25.41L25.9,20.9l3.01-4.14L32.11,25.41L32.11,25.41z M32.11,25.41L32.11,25.41L32.11,25.41L32.11,25.41 z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M20.3,16.83h7.68v5.12L20.3,16.83L20.3,16.83z M20.3,16.83L20.3,16.83L20.3,16.83L20.3,16.83z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M20.3,16.83l6.21,4.51l3.01-4.14L20.3,16.83L20.3,16.83z M20.3,16.83L20.3,16.83L20.3,16.83L20.3,16.83z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M23.09,25.41l2.37-7.3l4.87,1.58L23.09,25.41L23.09,25.41z M23.09,25.41L23.09,25.41L23.09,25.41L23.09,25.41z"
+            />
+            <path
+                className="st1-VietNameItem"
+                d="M23.09,25.41l6.21-4.51l-3.01-4.14L23.09,25.41L23.09,25.41z M23.09,25.41L23.09,25.41L23.09,25.41 L23.09,25.41z"
+            />
+        </g>
+    </svg>
+);
+
+export const EnglishItem = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 55.2 38.4"
+        enableBackground="new 0 0 55.2 38.4"
+        xmlSpace="preserve"
+        fill="currentColor"
+    >
+        <style type="text/css">{`.st0-EnglishItem{fill:#FEFEFE;} .st1-EnglishItem{fill:#C8102E;} .st2-EnglishItem{fill:#012169;}`}</style>
+        <g>
+            <path
+                className="st0-EnglishItem"
+                d="M2.87,38.4h49.46c1.59-0.09,2.87-1.42,2.87-3.03V3.03c0-1.66-1.35-3.02-3.01-3.03H3.01 C1.35,0.01,0,1.37,0,3.03v32.33C0,36.98,1.28,38.31,2.87,38.4L2.87,38.4z"
+            />
+            <polygon
+                className="st1-EnglishItem"
+                points="23.74,23.03 23.74,38.4 31.42,38.4 31.42,23.03 55.2,23.03 55.2,15.35 31.42,15.35 31.42,0 23.74,0 23.74,15.35 0,15.35 0,23.03 23.74,23.03"
+            />
+            <path
+                className="st2-EnglishItem"
+                d="M33.98,12.43V0h18.23c1.26,0.02,2.34,0.81,2.78,1.92L33.98,12.43L33.98,12.43z"
+            />
+            <path
+                className="st2-EnglishItem"
+                d="M33.98,25.97V38.4h18.35c1.21-0.07,2.23-0.85,2.66-1.92L33.98,25.97L33.98,25.97z"
+            />
+            <path
+                className="st2-EnglishItem"
+                d="M21.18,25.97V38.4H2.87c-1.21-0.07-2.24-0.85-2.66-1.94L21.18,25.97L21.18,25.97z"
+            />
+            <path
+                className="st2-EnglishItem"
+                d="M21.18,12.43V0H2.99C1.73,0.02,0.64,0.82,0.21,1.94L21.18,12.43L21.18,12.43z"
+            />
+            <polygon className="st2-EnglishItem" points="0,12.8 7.65,12.8 0,8.97 0,12.8" />
+            <polygon className="st2-EnglishItem" points="55.2,12.8 47.51,12.8 55.2,8.95 55.2,12.8" />
+            <polygon className="st2-EnglishItem" points="55.2,25.6 47.51,25.6 55.2,29.45 55.2,25.6" />
+            <polygon className="st2-EnglishItem" points="0,25.6 7.65,25.6 0,29.43 0,25.6" />
+            <polygon className="st1-EnglishItem" points="55.2,3.25 36.15,12.8 40.41,12.8 55.2,5.4 55.2,3.25" />
+            <polygon className="st1-EnglishItem" points="19.01,25.6 14.75,25.6 0,32.98 0,35.13 19.05,25.6 19.01,25.6" />
+            <polygon className="st1-EnglishItem" points="10.52,12.81 14.78,12.81 0,5.41 0,7.55 10.52,12.81" />
+            <polygon className="st1-EnglishItem" points="44.63,25.59 40.37,25.59 55.2,33.02 55.2,30.88 44.63,25.59" />
+        </g>
+    </svg>
+);

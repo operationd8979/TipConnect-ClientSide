@@ -126,6 +126,16 @@ const getGifItems = async () => {
     }
 };
 
+const changeTypeFriendShip = async (friendID: string, type: string) => {
+    try {
+        const response = await get({ path: `user/updateTypeFriend/${friendID}&${type}` });
+        return response;
+    } catch (error) {
+        //alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
 export default {
     getUserInfo,
     getListFriend,
@@ -139,4 +149,5 @@ export default {
     acceptFriendRequest,
     denyFriendRequest,
     getGifItems,
+    changeTypeFriendShip,
 };

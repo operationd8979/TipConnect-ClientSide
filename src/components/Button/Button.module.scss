@@ -1,5 +1,5 @@
 .wrapper {
-    min-width: 100px;
+    min-width: 120px;
     width: 100%;
     padding: 9px 16px;
     border-radius: 4px;
@@ -9,6 +9,7 @@
     border: 1px solid transparent;
     cursor: pointer;
     user-select: none;
+    text-align: center;
 
     + .wrapper {
         margin-left: 8px;

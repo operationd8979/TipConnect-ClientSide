@@ -10,7 +10,6 @@ import { Client } from 'webstomp-client';
 import { AuthService, SocketService } from '../../apiService';
 import { registerSuccess, registerFail } from '../../reducers';
 import { RegisterRequest, AuthenticationReponse, State } from '../../type';
-import i18n from '../../i18n/i18n';
 
 const cx = classNames.bind(Styles);
 
@@ -23,15 +22,15 @@ const Register = () => {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
     const { socket, stompClient } = currentStomp;
-    const { isLoggedIn, user, listFriend } = currentUser;
+    const { isLoggedIn, user, listFriend, i18n } = currentUser;
 
     const [registerRequest, setRegisterRequest] = useState<RegisterRequest>({
-        email: 'operationddd@gmail.com',
-        firstName: 'Dung',
-        lastName: 'Vo',
-        password: 'Mashiro1',
+        email: '',
+        firstName: '',
+        lastName: '',
+        password: '',
     });
-    const [rePassword, setRePassword] = useState<string>('Mashiro1');
+    const [rePassword, setRePassword] = useState<string>('');
     const { email, firstName, lastName, password } = registerRequest;
 
     useEffect(() => {
@@ -59,10 +58,10 @@ const Register = () => {
                     }
                 }
             } else {
-                alert('retype');
+                alert(i18n.t('WARRING_WRONG_RETYPE_PASSWORD'));
             }
         } else {
-            alert('Input');
+            alert(i18n.t('WARRING_REQUIRE_VALUE'));
         }
         setLoading(false);
     };

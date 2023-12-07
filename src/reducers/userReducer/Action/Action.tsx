@@ -1,5 +1,6 @@
 import userReducerAction from './userReducerAction';
 import { User, FriendShip, FriendRequestResponse, MessageChat, Gif } from '../../../type';
+import { I18n } from 'i18n-js';
 
 export const loginSuccess = (payload: User) => {
     return {
@@ -110,6 +111,20 @@ export const updateLastMessage = (payload: MessageChat) => {
 export const getGifItems = (payload: Gif[]) => {
     return {
         type: userReducerAction.GET_GIF_ITEMS,
+        payload,
+    };
+};
+
+export const updateFriendShip = (payload: FriendShip) => {
+    return {
+        type: userReducerAction.UPDATE_FRIEND_SHIP,
+        payload,
+    };
+};
+
+export const changeLanguage = (payload: I18n) => {
+    return {
+        type: userReducerAction.CHANGE_LANGUAGE,
         payload,
     };
 };

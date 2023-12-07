@@ -1,5 +1,6 @@
 import { Action, User, State, FriendShip, FriendRequestResponse, MessageChat } from '../../type';
 import actionTypes from './Action';
+import i18n from '../../i18n/i18n';
 
 const currentUser = localStorage.getItem('currentUser');
 let user;
@@ -14,6 +15,7 @@ const initalState: State = user
           listFriend: [],
           listGifItem: [],
           notifications: { listFriendRequest: [], listNotification: [] },
+          i18n: i18n,
       }
     : {
           isLoggedIn: false,
@@ -21,6 +23,7 @@ const initalState: State = user
           listFriend: [],
           listGifItem: [],
           notifications: { listFriendRequest: [], listNotification: [] },
+          i18n: i18n,
       };
 
 const UserReducer = (state: State = initalState, action: Action) => {
@@ -33,6 +36,14 @@ const UserReducer = (state: State = initalState, action: Action) => {
 
         case actionTypes.GET_LIST_FRIEND_SUCCESS:
             return { ...state, listFriend: [...state.listFriend, ...payload] };
+        case actionTypes.UPDATE_FRIEND_SHIP:
+            const UPDATE_FRIEND_SHIP = state.listFriend.map((friendShip) => {
+                if (friendShip.friend.userID === payload.friend.userID) {
+                    return payload;
+                }
+                return friendShip;
+            });
+            return { ...state, listFriend: UPDATE_FRIEND_SHIP };
         case actionTypes.UPDATE_LAST_MESSAGE:
             const newListFriend = state.listFriend.map((friendShip) => {
                 if (
@@ -81,6 +92,10 @@ const UserReducer = (state: State = initalState, action: Action) => {
         case actionTypes.REGISTER_FAIL:
         case actionTypes.LOGIN_FAIL:
             return { ...state, isLoggedIn: false };
+
+        case actionTypes.CHANGE_LANGUAGE:
+            localStorage.setItem('i18n', payload.locale);
+            return { ...state, i18n: payload };
 
         case actionTypes.ACCEPT_FRIEND_FAIL:
         case actionTypes.GET_LIST_FRIEND_REQUEST_FAIL:

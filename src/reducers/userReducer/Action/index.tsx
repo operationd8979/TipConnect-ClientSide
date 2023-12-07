@@ -18,5 +18,7 @@ export {
     removeFriendRequest,
     updateLastMessage,
     getGifItems,
+    updateFriendShip,
+    changeLanguage,
 } from './Action';
 export default actionTypes;

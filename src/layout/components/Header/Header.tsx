@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
@@ -7,7 +7,17 @@ import Tippy from '@tippyjs/react';
 import HeadlessTippy from '@tippyjs/react/headless';
 
 import images from '../../../assets/images';
-import { CheckIcon, Close, UserGroupIcon } from '../../../components/Icons';
+import {
+    CheckIcon,
+    Close,
+    EnglishItem,
+    LanguegeItem,
+    LogoutItem,
+    ProfileItem,
+    TripleDot,
+    UserGroupIcon,
+    VietNameItem,
+} from '../../../components/Icons';
 import CallCard from '../../../components/CallCard';
 import Button from '../../../components/Button';
 import config from '../../../config';
@@ -24,24 +34,35 @@ import {
     logout,
     removeFriendRequest,
     updateLastMessage,
+    changeLanguage,
 } from '../../../reducers';
 import { State, Response, AuthenticationReponse, RawChat, MessageChat, NotificationChat } from '../../../type';
 import { Client } from 'webstomp-client';
-import i18n from '../../../i18n/i18n';
+import Menu from '../../../components/Menu';
 
 const cx = classNames.bind(styles);
 
+interface SettingItem {
+    icon: JSX.Element;
+    title: string;
+    children?: SettingItem[];
+    onClick?: Function;
+    to?: string;
+}
+
 function Header() {
     const [loading, setLoading] = useState(false);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
-    const { isLoggedIn, user, notifications, listFriend } = currentUser;
+    const { isLoggedIn, user, notifications, listFriend, i18n } = currentUser;
     const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient } = currentStomp;
     const [showNotification, setShowNotification] = useState(false);
+    const [showSetting, setShowSetting] = useState(false);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [callGuy, setCallGuy] = useState<{
         friendID: string;
@@ -146,7 +167,7 @@ function Header() {
                         }
                     } else {
                         dispatch(updateUserInfoFail());
-                        navigate('/login');
+                        navigate(config.routes.login);
                     }
                 };
                 getUserData();
@@ -167,7 +188,7 @@ function Header() {
                         } else {
                             if (response === null || response?.status == 403) {
                                 dispatch(getListFriendRequestFail());
-                                navigate('/login');
+                                navigate(config.routes.login);
                             }
                         }
                     } catch (error) {
@@ -238,6 +259,54 @@ function Header() {
         setLoading(false);
     };
 
+    const MENU_ITEMS: SettingItem[] = [
+        {
+            icon: <LanguegeItem />,
+            title: i18n.t('FINAL_language'),
+            children: [
+                {
+                    icon: <VietNameItem />,
+                    title: i18n.t('FINAL_vietnamese'),
+                    onClick: () => {
+                        i18n.locale = 'vi';
+                        dispatch(changeLanguage(i18n));
+                    },
+                },
+                {
+                    icon: <EnglishItem />,
+                    title: i18n.t('FINAL_english'),
+                    onClick: () => {
+                        i18n.locale = 'en';
+                        dispatch(changeLanguage(i18n));
+                    },
+                },
+            ],
+            onClick: () => {
+                alert('ua3');
+            },
+        },
+    ];
+
+    const MENU_USER: SettingItem[] = [
+        {
+            icon: <ProfileItem />,
+            title: i18n.t('HEADER_MENU_PROFILE'),
+            to: config.routes.profile,
+        },
+        {
+            icon: <LogoutItem />,
+            title: i18n.t('FINAL_logout'),
+            onClick: () => {
+                dispatch(logout());
+                navigate(config.routes.login);
+            },
+        },
+    ];
+
+    const userMenu = [...MENU_ITEMS, ...MENU_USER];
+    const [finalMenu, setFinalMenu] = useState<SettingItem[][]>([MENU_ITEMS]);
+    const [finalMenuUser, setFinalMenuUser] = useState<SettingItem[][]>([userMenu]);
+
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
@@ -260,71 +329,102 @@ function Header() {
                 <div className={cx('actions')}>
                     {isLoggedIn ? (
                         <>
-                            <div>
-                                <HeadlessTippy
-                                    interactive
-                                    visible={showNotification}
-                                    render={(attrs) => (
-                                        <div className={cx('notification-area')} tabIndex={-1} {...attrs}>
-                                            <PopperWrapper>
-                                                <h4 className={cx('notification-title')}>Yêu cầu kết bạn</h4>
-                                                {listFriendRequest.map((friendRequest) => {
-                                                    const { id, sender, time_stamp } = friendRequest;
-                                                    return (
-                                                        <div className={cx('notification-item')} key={id}>
-                                                            <div className={cx('notification-image')}>
-                                                                <img src={sender.urlAvatar} alt={sender.fullName} />
+                            <HeadlessTippy
+                                interactive
+                                visible={showNotification}
+                                render={(attrs) => (
+                                    <div className={cx('notification-area')} tabIndex={-1} {...attrs}>
+                                        <PopperWrapper>
+                                            <h4 className={cx('notification-title')}>
+                                                {i18n.t('HEADER_friend_request')}
+                                            </h4>
+                                            {listFriendRequest.map((friendRequest) => {
+                                                const { id, sender, time_stamp } = friendRequest;
+                                                return (
+                                                    <div className={cx('notification-item')} key={id}>
+                                                        <div className={cx('notification-image')}>
+                                                            <img src={sender.urlAvatar} alt={sender.fullName} />
+                                                        </div>
+                                                        <div className={cx('notification-info')}>
+                                                            <div className={cx('notification-name')}>
+                                                                {sender.fullName}
                                                             </div>
-                                                            <div className={cx('notification-info')}>
-                                                                <div className={cx('notification-name')}>
-                                                                    {sender.fullName}
-                                                                </div>
-                                                                <div className={cx('notification-content')}>
-                                                                    Email:{sender.email}
-                                                                </div>
-                                                            </div>
-                                                            <div className={cx('notification-action-area')}>
-                                                                <button
-                                                                    className={cx('plus_button')}
-                                                                    onClick={() => handleAcceptFriend(id)}
-                                                                    disabled={loading}
-                                                                >
-                                                                    <CheckIcon />
-                                                                </button>
-                                                                <button
-                                                                    className={cx('cancel_button')}
-                                                                    onClick={() => handleDenyFriend(id)}
-                                                                    disabled={loading}
-                                                                >
-                                                                    <Close />
-                                                                </button>
+                                                            <div className={cx('notification-content')}>
+                                                                {i18n.t('FINAL_email')}:{sender.email}
                                                             </div>
                                                         </div>
-                                                    );
-                                                })}
-                                            </PopperWrapper>
-                                        </div>
-                                    )}
-                                    onClickOutside={handleHideNotification}
+                                                        <div className={cx('notification-action-area')}>
+                                                            <button
+                                                                className={cx('plus_button')}
+                                                                onClick={() => handleAcceptFriend(id)}
+                                                                disabled={loading}
+                                                            >
+                                                                <CheckIcon />
+                                                            </button>
+                                                            <button
+                                                                className={cx('cancel_button')}
+                                                                onClick={() => handleDenyFriend(id)}
+                                                                disabled={loading}
+                                                            >
+                                                                <Close />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                            {listFriendRequest.length === 0 && (
+                                                <div className={cx('notification-note')}>
+                                                    {i18n.t('HEADER_no_notification')}
+                                                </div>
+                                            )}
+                                        </PopperWrapper>
+                                    </div>
+                                )}
+                                onClickOutside={handleHideNotification}
+                            >
+                                <button
+                                    className={cx('action-btn')}
+                                    onClick={() => {
+                                        setShowNotification(true);
+                                    }}
                                 >
-                                    <button
-                                        className={cx('action-btn')}
-                                        onClick={() => {
-                                            setShowNotification(true);
-                                        }}
-                                    >
-                                        <UserGroupIcon />
-                                        <span className={cx('badge')}>{listFriendRequest.length}</span>
-                                    </button>
-                                </HeadlessTippy>
-                            </div>
-                            <Tippy delay={[0, 50]} content="User profile" placement="bottom">
-                                <Link to="/profile" className={cx('avatar_user')}>
-                                    <button className={cx('action-btn')}>
-                                        <img src={user?.urlAvatar} alt="user" />
-                                    </button>
-                                </Link>
-                            </Tippy>
+                                    <UserGroupIcon />
+                                    <span className={cx('badge')}>{listFriendRequest.length}</span>
+                                </button>
+                            </HeadlessTippy>
+                            <HeadlessTippy
+                                interactive
+                                placement="bottom-end"
+                                visible={showSetting}
+                                render={(attrs) => (
+                                    <div className={cx('setting-area')} tabIndex={-1} {...attrs}>
+                                        <PopperWrapper>
+                                            <Menu
+                                                menuItem={finalMenuUser}
+                                                setMenuItem={setFinalMenuUser}
+                                                header={i18n.t('FINAL_setting')}
+                                                setShowTab={setShowSetting}
+                                            />
+                                        </PopperWrapper>
+                                    </div>
+                                )}
+                                onClickOutside={() => {
+                                    setShowSetting(false);
+                                }}
+                            >
+                                <button
+                                    style={{ backgroundColor: 'transparent' }}
+                                    onClick={() => {
+                                        setShowSetting(true);
+                                    }}
+                                >
+                                    <div className={cx('avatar_user')}>
+                                        <div className={cx('action-btn')}>
+                                            <img src={user?.urlAvatar} alt="user" />
+                                        </div>
+                                    </div>
+                                </button>
+                            </HeadlessTippy>
                         </>
                     ) : (
                         <>
@@ -334,6 +434,37 @@ function Header() {
                             <Button outline to={config.routes.register}>
                                 {i18n.t('HEADER_register')}
                             </Button>
+                            <HeadlessTippy
+                                interactive
+                                placement="bottom-end"
+                                visible={showSetting}
+                                render={(attrs) => (
+                                    <div className={cx('setting-area')} tabIndex={-1} {...attrs}>
+                                        <PopperWrapper>
+                                            <Menu
+                                                menuItem={finalMenu}
+                                                setMenuItem={setFinalMenu}
+                                                header={i18n.t('FINAL_setting')}
+                                                setShowTab={setShowSetting}
+                                            />
+                                        </PopperWrapper>
+                                    </div>
+                                )}
+                                onClickOutside={() => {
+                                    setShowSetting(false);
+                                }}
+                            >
+                                <button
+                                    style={{ backgroundColor: 'transparent' }}
+                                    onClick={() => {
+                                        setShowSetting(true);
+                                    }}
+                                >
+                                    <div className={cx('action-btn')}>
+                                        <TripleDot />
+                                    </div>
+                                </button>
+                            </HeadlessTippy>
                         </>
                     )}
                 </div>

@@ -23,10 +23,9 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    background-image: url('../../../public/assets/images/background-login.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    filter: blur(10px);
+    background-color: cyan;
+    opacity: 0.2;
+    filter: blur(90px);
 }
 .header {
     font-size: xx-large;

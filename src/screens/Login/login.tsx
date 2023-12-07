@@ -10,7 +10,6 @@ import { AuthService, SocketService } from '../../apiService';
 import { loginSuccess, loginFail } from '../../reducers';
 import { AuthenticationReponse, LoginRequest, State } from '../../type';
 import config from '../../config';
-import i18n from '../../i18n/i18n';
 
 const cx = classNames.bind(Styles);
 
@@ -22,12 +21,12 @@ const Login = () => {
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
-    const { isLoggedIn, user, listFriend } = currentUser;
+    const { isLoggedIn, user, listFriend, i18n } = currentUser;
     const { socket, stompClient } = currentStomp;
 
     const [loginRequest, setLoginRequest] = useState<LoginRequest>({
-        email: 'operationddd@gmail.com',
-        password: 'Mashiro1',
+        email: '',
+        password: '',
     });
     const { email, password } = loginRequest;
 
@@ -55,7 +54,7 @@ const Login = () => {
                 }
             }
         } else {
-            alert('Username and Password is required!!!');
+            alert(i18n.t('WARRING_REQUIRE_VALUE'));
         }
         setLoading(false);
     };

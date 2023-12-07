@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import className from 'classnames/bind';
 import styles from './Sidebar.module.scss';
+import HeadlessTippy from '@tippyjs/react/headless';
 
 import Search from '../Search';
 import { PlusFriend, OnWait } from '../../../components/Icons';
@@ -10,6 +11,7 @@ import { State, FriendShip, SearchResponse, Response } from '../../../type';
 import { UserService } from '../../../apiService/';
 import { getListFriendSuccess, getListFriendFail, updateLastMessage, logout } from '../../../reducers';
 import DataReconstruct from '../../../utils/DataReconstruct';
+import hardData from '../../../contants/hardData';
 
 const cx = className.bind(styles);
 
@@ -19,7 +21,7 @@ function Sidebar() {
     const navigate = useNavigate();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const { isLoggedIn, user, listFriend } = currentUser;
+    const { isLoggedIn, user, listFriend, i18n } = currentUser;
 
     const [query, setQuery] = useState<string>('');
     const [searchResult, setSearchResult] = useState<SearchResponse>({ tinyUser: null, messages: [] });
@@ -28,13 +30,21 @@ function Sidebar() {
 
     const [isNonSeen, setIsNonSeen] = useState<boolean>(false);
 
+    const [showTypeTab, setShowTypeTab] = useState(false);
+    const [typeSelect, setTypeSelect] = useState<number>(0);
+    const handleClickType = (code: number) => {
+        setTypeSelect(code);
+        setShowTypeTab(false);
+    };
+
     const showList = useCallback(() => {
         return listFriend.filter(
             (f) =>
+                (typeSelect === 0 || f.type === hardData.typeFriendShip[typeSelect - 1].name) &&
                 (!f.message || !isNonSeen || f.message.seen === !isNonSeen) &&
                 f.friend.fullName.trim().toLowerCase().includes(query.toLowerCase().trim()),
         );
-    }, [listFriend, query, isNonSeen]);
+    }, [listFriend, query, isNonSeen, typeSelect]);
 
     useEffect(() => {
         if (user) {
@@ -124,11 +134,11 @@ function Sidebar() {
                         setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'AVAIBLE' } });
                         break;
                     case 404:
-                        alert('Tin này không có sẵn');
+                        alert(i18n.t('FINAL_UNAVAILABLE_MESSAGE'));
                         setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'AVAIBLE' } });
                         break;
                     case 409:
-                        alert('Tin này không có sẵn');
+                        alert(i18n.t('FINAL_UNAVAILABLE_MESSAGE'));
                         setSearchResult({ ...searchResult, tinyUser: { ...searchResult.tinyUser, state: 'AVAIBLE' } });
                         break;
                     default:
@@ -165,7 +175,7 @@ function Sidebar() {
                             setIsNonSeen(false);
                         }}
                     >
-                        TAT CA
+                        {i18n.t('SIDEBAR_ALL_MESSAGE')}
                     </button>
                     <button
                         style={{ cursor: 'pointer', marginLeft: '5px', backgroundColor: 'transparent' }}
@@ -173,11 +183,51 @@ function Sidebar() {
                             setIsNonSeen(true);
                         }}
                     >
-                        |CHUA DOC
+                        |{i18n.t('SIDEBAR_UNSEEN_MESSAGE')}
                     </button>
-                    <button style={{ marginLeft: 'auto', cursor: 'pointer', backgroundColor: 'transparent' }}>
-                        phân loại
-                    </button>
+                    <HeadlessTippy
+                        placement="bottom-end"
+                        visible={showTypeTab}
+                        interactive
+                        onClickOutside={() => {
+                            setShowTypeTab(false);
+                        }}
+                        render={(attrs) => (
+                            <div className={cx('type-area')} tabIndex={-1} {...attrs}>
+                                <>
+                                    <div className={cx('type-data')}>
+                                        {hardData.typeFriendShip.map((type: { code: number; name: string }) => {
+                                            const { code, name } = type;
+                                            return (
+                                                <div className={cx('type-item')} key={code}>
+                                                    <button
+                                                        onClick={() => {
+                                                            handleClickType(code);
+                                                        }}
+                                                    >
+                                                        {name}
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </>
+                            </div>
+                        )}
+                    >
+                        <button
+                            style={{ marginLeft: 'auto', cursor: 'pointer', backgroundColor: 'transparent' }}
+                            onClick={() => {
+                                setShowTypeTab(true);
+                            }}
+                        >
+                            {typeSelect === 0 ? (
+                                i18n.t('SIDEBAR_CHOOSE_TYPE_FRIEND')
+                            ) : (
+                                <div>{hardData.typeFriendShip[typeSelect - 1].name} X</div>
+                            )}
+                        </button>
+                    </HeadlessTippy>
                 </div>
             </div>
             <div className={cx('friend_box')}>
@@ -218,6 +268,7 @@ function Sidebar() {
                         </div>
                     </div>
                 )}
+                {typeSelect !== 0 && <div>{hardData.typeFriendShip[typeSelect - 1].name}</div>}
                 {showList().map((friendShip) => {
                     let showTime = 'now';
                     const { message, friend } = friendShip;

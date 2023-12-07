@@ -16,6 +16,7 @@ import {
 } from '../../reducers/userReducer/Action';
 import { AuthenticationReponse, UpdateInfoRequest, State, UpdateAvatarRequest } from '../../type';
 import { uploadBytes, getDownloadURL, storageRef, storage } from '../../firebase';
+import i18n from '../../i18n/i18n';
 
 const cx = classNames.bind(Styles);
 const examplePassword = '';
@@ -171,22 +172,22 @@ const Profile = () => {
                         onChange={(e) => onChangeFile(e)}
                     />
                     <Button outline large onClick={() => handleOpenFile()}>
-                        Change Avatar
+                        {i18n.t('PROFILE_CHANGE_AVATAR')}
                     </Button>
                 </div>
             </div>
             <div className={cx('content')}>
-                <div className={cx('header_content')}>Account Setting</div>
+                <div className={cx('header_content')}>{i18n.t('PROFILE_NAME_SIDE')}</div>
                 <div className={cx('info_area')}>
                     <div className={cx('info_pack')}>
-                        <div className={cx('lable')}>Email</div>
+                        <div className={cx('lable')}>{i18n.t('FINAL_email')}</div>
                         <div className={cx('input', 'disabled')}>
                             <input value={user?.email || ''} disabled={true}></input>
                             <div className={cx('old_property')}></div>
                         </div>
                     </div>
                     <div className={cx('info_pack')}>
-                        <div className={cx('lable')}>First Name</div>
+                        <div className={cx('lable')}>{i18n.t('FINAL_fristName')}</div>
                         <div className={cx('input')}>
                             <input
                                 value={firstName}
@@ -205,7 +206,7 @@ const Profile = () => {
                         </div>
                     </div>
                     <div className={cx('info_pack')}>
-                        <div className={cx('lable')}>Last Name</div>
+                        <div className={cx('lable')}>{i18n.t('FINAL_lastName')}</div>
                         <div className={cx('input')}>
                             <input
                                 value={lastName}
@@ -224,7 +225,7 @@ const Profile = () => {
                         </div>
                     </div>
                     <div className={cx('info_pack')}>
-                        <div className={cx('lable')}>New Password</div>
+                        <div className={cx('lable')}>{i18n.t('FINAL_newPassword')}</div>
                         <div className={cx('input', { change_password: newPassword !== examplePassword })}>
                             <input
                                 value={newPassword}
@@ -240,7 +241,7 @@ const Profile = () => {
                             ></input>
                             {newPassword !== examplePassword && (
                                 <div className={cx('old_property')}>
-                                    Retype password:
+                                    {i18n.t('FINAL_passwordRe')}:
                                     <input
                                         value={rePassword}
                                         type="password"
@@ -263,7 +264,7 @@ const Profile = () => {
                 <div className={cx('active_area')}>
                     {update() && (
                         <div className={cx('info_pack', 'flex_input')}>
-                            <div className={cx('lable_password')}>Enter your password</div>
+                            <div className={cx('lable_password')}>{i18n.t('PROFILE_enter_your_password')}</div>
                             <div className={cx('input_password')}>
                                 <input
                                     type="password"
@@ -290,7 +291,7 @@ const Profile = () => {
                             large
                             onClick={() => handleUpdateInfo()}
                         >
-                            Update
+                            {i18n.t('FINAL_update')}
                         </Button>
                     </div>
                 </div>

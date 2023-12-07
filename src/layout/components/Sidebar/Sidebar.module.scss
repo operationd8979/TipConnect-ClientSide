@@ -128,3 +128,23 @@
         opacity: 0.6;
     }
 }
+
+.type-area {
+    width: 20rem;
+    border-radius: 8px;
+    background: rgb(255, 255, 255);
+    box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
+}
+
+.type-data {
+}
+
+.type-item {
+    border: solid black 1px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    button {
+        width: 100%;
+        background-color: transparent;
+    }
+}

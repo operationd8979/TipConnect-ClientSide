@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames/bind';
 import Styles from './Home.module.scss';
 import { UserService } from '../../apiService';
 import { getGifItems } from '../../reducers';
 
-import { Gif, State } from '../../type';
+import { State } from '../../type';
 
 const cx = classNames.bind(Styles);
 
@@ -13,7 +13,7 @@ const Home = () => {
     const dispatch = useDispatch();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const { isLoggedIn, user, listFriend, listGifItem } = currentUser;
+    const { isLoggedIn, user, listFriend, listGifItem, i18n } = currentUser;
 
     useEffect(() => {
         const callApiGetGifItems = async () => {
@@ -39,9 +39,9 @@ const Home = () => {
     return (
         <div className={cx('wrapper')}>
             <div className={cx('login-area')}>
-                Chào mừng bạn đến với <b>TipConnect</b>
+                {i18n.t('HOME_WELCOME_DES')} <b>{i18n.t('FINAL_NAME_APP')}</b>
                 <br />
-                Khám phá những tiện ích kết nối với bạn bè và đồng nhiệp.
+                {i18n.t('HOME_INRO_DES')}
             </div>
         </div>
     );
