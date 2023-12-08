@@ -192,10 +192,6 @@ const Call = () => {
                         if (sdp?.type === 'answer') setCandidate(peerConnection.localDescription);
                     }
                 };
-                // stream.getTracks().forEach((track) => {
-                //     console.log('send track');
-                //     peerConnection.addTrack(track, stream);
-                // });
                 peerConnection.ontrack = (event) => {
                     console.log('get track');
                     setRemoteStream(event.streams[0]);

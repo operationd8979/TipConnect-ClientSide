@@ -1,4 +1,5 @@
 export const en = {
+    FINAL_NAME_APP: 'TipConnect',
     FINAL_email: 'Email',
     FINAL_password: 'Password',
     FINAL_passwordRe: 'Retype Password',
@@ -12,7 +13,6 @@ export const en = {
     FINAL_logout: 'Logout',
     FINAL_setting: 'Setting',
     FINAL_newPassword: 'New Password',
-    FINAL_NAME_APP: 'TipConnect',
     FINAL_update: 'Update',
     FINAL_UNAVAILABLE_MESSAGE: 'This message is not avaiable!',
     WARRING_REQUIRE_VALUE: 'Enter require value!',

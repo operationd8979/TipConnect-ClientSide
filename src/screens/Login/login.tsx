@@ -25,8 +25,8 @@ const Login = () => {
     const { socket, stompClient } = currentStomp;
 
     const [loginRequest, setLoginRequest] = useState<LoginRequest>({
-        email: '',
-        password: '',
+        email: 'operationddd@gmail.com',
+        password: 'Mashiro1',
     });
     const { email, password } = loginRequest;
 

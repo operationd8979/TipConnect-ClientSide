@@ -4,6 +4,9 @@
     box-shadow: 0px 1px 1px rgb(0 0 0/12%);
     display: flex;
     justify-content: center;
+    --default-width-income-call: 70rem;
+    --default-width-notification-area: 38rem;
+    --default-width-setting-area: 26rem;
 }
 
 .inner {
@@ -12,12 +15,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    * {
+        z-index: 1;
+    }
 }
 
-.logo {
+.logo-area {
     img {
         height: var(--default-layout-header-height);
     }
+}
+
+.income-call {
+    width: var(--default-width-income-call);
 }
 
 .avatar_user {
@@ -27,10 +37,6 @@
     }
 }
 
-.income-call {
-    width: 700px;
-}
-
 .actions {
     display: flex;
     align-items: center;
@@ -38,83 +44,14 @@
 
 .action-btn {
     position: relative;
-    display: flex;
-    font-size: 2.2rem;
-    color: #161823;
-    background-color: transparent;
     padding: 4px 10px;
-    cursor: pointer;
-}
-
-.notification-area {
-    width: 36rem;
-}
-
-.notification-title {
-    padding: 5px 12px;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: rgba(22, 24, 35, 0.5);
-}
-
-.notification-note {
-    padding: 0px 12px;
-    color: rgba(22, 24, 35, 0.8);
-    font-size: 1.7rem;
-}
-
-.notification-item {
-    display: flex;
-}
-
-.notification-image {
-    margin-left: 8px;
-    width: 52px;
-    img {
-        height: 5rem;
-        border-radius: 50%;
-    }
-}
-
-.notification-info {
-    width: 280px;
-    margin-left: 8px;
-}
-
-.notification-name {
-    width: 100%;
-    font-size: large;
-}
-
-.notification-content {
-    width: 100%;
-    font-size: small;
-}
-
-.notification-action-area {
-    display: flex;
-    margin: 0px 10px;
     button {
-        background-color: transparent;
-        + button {
-            margin-left: 10px;
-        }
+        cursor: pointer;
         svg {
-            width: 22px;
-            height: 22px;
-        }
-        :hover {
-            color: white;
+            width: var(--default-medium-icon-size);
+            height: var(--default-medium-icon-size);
         }
     }
-}
-
-.plus_button {
-    color: green;
-}
-
-.cancel_button {
-    color: red;
 }
 
 .badge {
@@ -125,20 +62,84 @@
     height: 2rem;
     line-height: 2rem;
     border-radius: 10px;
-    font-size: 1.4rem;
-    font-weight: 600;
+    font-size: var(--default-small-font-size);
+    font-weight: var(--default-medium-font-weight);
     color: var(--white);
     font-family: var(--font-family);
     background-color: var(--primary);
 }
 
-.setting-area {
-    width: 20rem;
+.notification-area {
+    width: var(--default-width-notification-area);
 }
 
-.setting-title {
+.notification-title {
     padding: 5px 12px;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: rgba(22, 24, 35, 0.5);
+    font-size: var(--default-medium-font-size);
+    font-weight: var(--default-medium-font-weight);
+    color: var(--color-disable);
+}
+
+.notification-notice {
+    padding: 0px 12px;
+    color: rgba(22, 24, 35, 0.8);
+    font-size: var(--default-medium-font-size);
+    font-weight: var(--default-small-font-weight);
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+}
+
+.notification-image {
+    margin-left: var(--default-small-zone);
+    display: flex;
+    img {
+        height: 5rem;
+        border-radius: 50%;
+    }
+}
+
+.notification-info {
+    flex: 1;
+    margin-left: var(--default-small-zone);
+}
+
+.notification-name {
+    font-size: var(--default-medium-font-size);
+}
+
+.notification-content {
+    font-size: var(--default-small-font-size);
+}
+
+.notification-action-area {
+    display: flex;
+    padding: var(--default-small-zone);
+    button {
+        background-color: transparent;
+        + button {
+            margin-left: var(--default-small-zone);
+        }
+        svg {
+            width: var(--default-small-icon-size);
+            height: var(--default-small-icon-size);
+        }
+        :hover {
+            color: white;
+        }
+    }
+}
+
+.button-accept {
+    color: green;
+}
+
+.button-cancel {
+    color: red;
+}
+
+.setting-area {
+    width: var(--default-width-setting-area);
 }

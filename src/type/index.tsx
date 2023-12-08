@@ -129,3 +129,11 @@ export interface NotificationChat extends RawChat {
     friendShipRespone?: FriendShip;
     actionCode: number;
 }
+
+export interface SettingItem {
+    icon: JSX.Element;
+    title: string;
+    children?: SettingItem[];
+    onClick?: Function;
+    to?: string;
+}

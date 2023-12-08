@@ -11,4 +11,10 @@
 }
 
 .load {
+    // Default var child screen
+    --default-light-blur-opacity: 0.1;
+    --default-dark-blur-opacity: 0.2;
+    --default-blur-background-color: rgba(0, 229, 255, 0.877);
+    --default-blur-value: 90px;
+    --default-color-link-a: blue;
 }

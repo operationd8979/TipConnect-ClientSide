@@ -6,6 +6,7 @@ import { Call, VideoCall, Close } from '../../components/Icons';
 import { MessageChat } from '../../type';
 import { Client } from 'webstomp-client';
 import pathAudio from '../../contants/pathAudio';
+import { SocketService } from '../../apiService';
 
 const cx = classNames.bind(Styles);
 
@@ -41,28 +42,22 @@ const CallCard = ({ userID, stompClient, friendID, fullName, urlAvatar, type, se
         };
     }, []);
 
-    function sendPrivateMassage(body: string) {
-        if (stompClient.connected) {
-            const chat: MessageChat = {
-                from: userID,
-                to: friendID,
-                type: 'RTC',
-                body: body,
-                seen: false,
-                user: true,
-            };
-            stompClient.send('/app/tradeRTC', JSON.stringify(chat));
-        }
-    }
-
     const handleAcceptCall = () => {
         setCallGuy(null);
-        //sendPrivateMassage('connect');
         window.open(`/call/${friendID}/${fullName}/${type}/listener`, '_blank', 'width=500,height=500');
     };
 
     const handleCloseCall = () => {
-        sendPrivateMassage('cancel');
+        const chat: MessageChat = {
+            from: userID,
+            to: friendID,
+            type: 'RTC',
+            body: 'cancel',
+            timestamp: new Date().getTime().toString(),
+            seen: true,
+            user: true,
+        };
+        SocketService.sendTradeMessage(stompClient, chat);
         setCallGuy(null);
     };
 
@@ -74,10 +69,10 @@ const CallCard = ({ userID, stompClient, friendID, fullName, urlAvatar, type, se
                 </div>
                 <div className={cx('name-card')}>{fullName}</div>
                 <div className={cx('call-actions')}>
-                    <div className={cx('button-call')}>
+                    <div className={cx('button-wrraper')}>
                         <button onClick={handleAcceptCall}>{type === 'call' ? <Call /> : <VideoCall />}</button>
                     </div>
-                    <div className={cx('button-cancel')}>
+                    <div className={cx('button-wrraper')}>
                         <button onClick={handleCloseCall}>
                             <Close />
                         </button>

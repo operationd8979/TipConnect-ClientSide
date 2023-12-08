@@ -6,12 +6,27 @@
     --hover-primary: #0f519c;
     --black: #000;
     --white: #fff;
-    --textColor: #333;
+    --color-text: #333;
+    --color-disable: rgba(22, 24, 35, 0.5);
     // Default layout
     --default-layout-header-height: 90px;
     --default-layout-width: 2350px;
     --default-layout-height: 1150px;
     --default-layout-width-sidebar: 356px;
+    --default-mini-zone: 5px;
+    --default-small-zone: 8px;
+    --default-medium-zone: 16px;
+    --default-large-zone: 24px;
+    --default-small-font-size: 1.6rem;
+    --default-medium-font-size: 2rem;
+    --default-large-font-size: 2.4rem;
+    --default-small-font-weight: 400;
+    --default-medium-font-weight: 600;
+    --default-large-font-weight: 800;
+    --default-mini-icon-size: 1.8rem;
+    --default-small-icon-size: 2.8rem;
+    --default-medium-icon-size: 3.6rem;
+    --default-large-icon-size: 4.8rem;
 }
 
 * {
@@ -26,7 +41,7 @@ html {
 
 body {
     font-family: 'Roboto', sans-serif;
-    font-size: 1.6rem;
+    font-size: var(--default-small-font-size);
     line-height: 1.5;
     text-rendering: optimizeSpeed;
 }
@@ -36,6 +51,10 @@ input,
 [tabindex] {
     border: none;
     outline: none;
+}
+
+button {
+    background-color: transparent;
 }
 
 a {

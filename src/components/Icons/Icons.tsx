@@ -1,6 +1,8 @@
 export const UploadIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 32 32"
@@ -18,6 +20,8 @@ export const UploadIcon = ({ width = '3.2rem', height = '3.2rem', className = ''
 export const MessageIcon = ({ width = '2.6rem', height = '2.6rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 48 48"
@@ -35,6 +39,8 @@ export const MessageIcon = ({ width = '2.6rem', height = '2.6rem', className = '
 export const InboxIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 32 32"
@@ -69,6 +75,8 @@ export const SearchIcon = ({ width = '2.4rem', height = '2.4rem', className = ''
 export const HomeIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 48 48"
@@ -86,6 +94,8 @@ export const HomeIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }
 export const HomeActiveIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 48 48"
@@ -103,6 +113,8 @@ export const HomeActiveIcon = ({ width = '3.2rem', height = '3.2rem', className 
 export const UserGroupIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 48 48"
@@ -130,6 +142,8 @@ export const UserGroupIcon = ({ width = '3.2rem', height = '3.2rem', className =
 export const UserGroupActiveIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 48 48"
@@ -146,6 +160,8 @@ export const UserGroupActiveIcon = ({ width = '3.2rem', height = '3.2rem', class
 export const LiveIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 32 32"
@@ -164,6 +180,8 @@ export const LiveIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }
 export const LiveActiveIcon = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
     <svg
         className={className}
+        x="0px"
+        y="0px"
         width={width}
         height={height}
         viewBox="0 0 48 48"

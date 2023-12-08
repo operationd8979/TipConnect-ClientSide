@@ -109,9 +109,11 @@ const MessageArea = () => {
     }, []);
 
     useEffect(() => {
+        setListMessage([]);
+        setCurrentOffset('');
         setCurrentMessage(friendShip?.message || null);
         callApiGetMessages(friendId || '', currentOffset, 20);
-        return setListMessage([]);
+        return () => {};
     }, [friendId]);
 
     useEffect(() => {

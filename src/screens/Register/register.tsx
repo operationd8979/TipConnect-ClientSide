@@ -25,12 +25,12 @@ const Register = () => {
     const { isLoggedIn, user, listFriend, i18n } = currentUser;
 
     const [registerRequest, setRegisterRequest] = useState<RegisterRequest>({
-        email: '',
-        firstName: '',
-        lastName: '',
-        password: '',
+        email: 'operationddd@gmail.com',
+        firstName: 'Vo',
+        lastName: 'Hoang Dung',
+        password: 'Mashiro1',
     });
-    const [rePassword, setRePassword] = useState<string>('');
+    const [rePassword, setRePassword] = useState<string>('Mashiro1');
     const { email, firstName, lastName, password } = registerRequest;
 
     useEffect(() => {

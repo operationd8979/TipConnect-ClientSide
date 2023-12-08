@@ -2,16 +2,9 @@ import classNames from 'classnames/bind';
 import Styles from './Menu.module.scss';
 import { Link } from 'react-router-dom';
 import { ArrowBack } from '../Icons';
+import { SettingItem } from '../../type';
 
 const cx = classNames.bind(Styles);
-
-interface SettingItem {
-    icon: JSX.Element;
-    title: string;
-    children?: SettingItem[];
-    onClick?: Function;
-    to?: string;
-}
 
 interface Menu {
     header: string;

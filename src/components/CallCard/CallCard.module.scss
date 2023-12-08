@@ -3,11 +3,11 @@
 
 .crop_container {
     display: flex;
-    padding: 5px;
+    padding: var(--default-small-zone);
     align-items: center;
     border-radius: 10px;
-    border: 2px solid #0115ea;
-    background-color: #03e2ff;
+    border: 2px solid var(--black);
+    background-color: var(--white);
     box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.25);
 }
 
@@ -23,26 +23,21 @@
 
 .name-card {
     flex: 1;
+    font-size: var(--default-medium-font-size);
 }
 
 .call-actions {
-    flex: 2;
-    width: 20%;
+    flex: 1;
     display: flex;
     justify-content: center;
-}
-
-.button-call {
     button {
         background-color: transparent;
-        color: red;
+        color: var(--primary);
+    }
+    .button-wrraper + .button-wrraper {
+        margin-left: var(--default-large-zone);
     }
 }
 
-.button-cancel {
-    margin-left: 30px;
-    button {
-        background-color: transparent;
-        color: red;
-    }
+.button-wrraper {
 }

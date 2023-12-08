@@ -12,10 +12,8 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    position: relative;
-
     * {
-        z-index: 1;
+        z-index: 0;
     }
 }
 
@@ -23,9 +21,9 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    background-color: cyan;
-    opacity: 0.2;
-    filter: blur(90px);
+    background-color: var(--default-blur-background-color);
+    opacity: var(--default-light-blur-opacity);
+    filter: blur(var(--default-blur-value));
 }
 
 .header {
@@ -73,9 +71,12 @@
 
 .link {
     margin-left: 5px;
-    color: blue;
+    color: var(--default-color-link-a);
 }
 
 .img-side {
     flex: 1;
+    background-color: var(--black);
+    opacity: var(--default-dark-blur-opacity);
+    filter: blur(var(--default-blur-value));
 }

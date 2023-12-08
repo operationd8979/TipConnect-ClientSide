@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Header, Sidebar } from '../components';
 import styles from './SidebarInclude.module.scss';
 import className from 'classnames/bind';

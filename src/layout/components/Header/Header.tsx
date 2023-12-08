@@ -36,19 +36,19 @@ import {
     updateLastMessage,
     changeLanguage,
 } from '../../../reducers';
-import { State, Response, AuthenticationReponse, RawChat, MessageChat, NotificationChat } from '../../../type';
+import {
+    State,
+    Response,
+    AuthenticationReponse,
+    RawChat,
+    MessageChat,
+    NotificationChat,
+    SettingItem,
+} from '../../../type';
 import { Client } from 'webstomp-client';
 import Menu from '../../../components/Menu';
 
 const cx = classNames.bind(styles);
-
-interface SettingItem {
-    icon: JSX.Element;
-    title: string;
-    children?: SettingItem[];
-    onClick?: Function;
-    to?: string;
-}
 
 function Header() {
     const [loading, setLoading] = useState(false);
@@ -72,7 +72,32 @@ function Header() {
     } | null>(null);
 
     useEffect(() => {
+        //get list friend
+        if (isLoggedIn && user) {
+            const callApiGetFriendRequests = async () => {
+                try {
+                    const response = await UserService.getFriendRequests();
+                    if (response?.ok) {
+                        response.json().then((data) => {
+                            dispatch(getListFriendRequestSuccess(data));
+                        });
+                    } else {
+                        if (response === null || response?.status == 403) {
+                            dispatch(getListFriendRequestFail());
+                            navigate(config.routes.login);
+                        }
+                    }
+                } catch (error) {
+                    alert(error);
+                    console.log(error);
+                }
+            };
+            if (listFriendRequest.length == 0) {
+                callApiGetFriendRequests();
+            }
+        }
         return () => {
+            //clean up websocket connect
             if (stompClient.connected) {
                 SocketService.disconnectStomp(stompClient);
             }
@@ -80,6 +105,7 @@ function Header() {
     }, []);
 
     useEffect(() => {
+        //connect websocket
         if (isLoggedIn) {
             if (!stompClient.connected) {
                 console.log('<<<<<<<<<<<<<<<<CONNECT WS>>>>>>>>>>>>>>>>');
@@ -136,16 +162,18 @@ function Header() {
                                                 break;
                                             case 'CALL':
                                                 console.log('[get private call]:');
-                                                const body = JSON.parse(data.body) as {
-                                                    fullName: string;
-                                                    urlAvatar: string;
-                                                    type: string;
-                                                };
-                                                const friendID = (data as MessageChat).from;
-                                                const fullName = body.fullName;
-                                                const type = body.type;
-                                                const urlAvatar = body.urlAvatar;
-                                                setCallGuy({ friendID, fullName, urlAvatar, type });
+                                                if (!callGuy) {
+                                                    const body = JSON.parse(data.body) as {
+                                                        fullName: string;
+                                                        urlAvatar: string;
+                                                        type: string;
+                                                    };
+                                                    const friendID = (data as MessageChat).from;
+                                                    const fullName = body.fullName;
+                                                    const type = body.type;
+                                                    const urlAvatar = body.urlAvatar;
+                                                    setCallGuy({ friendID, fullName, urlAvatar, type });
+                                                }
                                                 break;
                                             case 'RTC':
                                                 if (data.body === 'cancel') {
@@ -174,38 +202,6 @@ function Header() {
             }
         }
     }, [user]);
-
-    useEffect(() => {
-        if (isLoggedIn) {
-            if (user) {
-                const callApiGetFriendRequests = async () => {
-                    try {
-                        const response = await UserService.getFriendRequests();
-                        if (response?.ok) {
-                            response.json().then((data) => {
-                                dispatch(getListFriendRequestSuccess(data));
-                            });
-                        } else {
-                            if (response === null || response?.status == 403) {
-                                dispatch(getListFriendRequestFail());
-                                navigate(config.routes.login);
-                            }
-                        }
-                    } catch (error) {
-                        alert(error);
-                        console.log(error);
-                    }
-                };
-                if (listFriendRequest.length == 0) {
-                    callApiGetFriendRequests();
-                }
-            }
-        }
-    }, []);
-
-    const handleHideNotification = () => {
-        setShowNotification(false);
-    };
 
     const handleAcceptFriend = async (requestID: string) => {
         setLoading(true);
@@ -303,21 +299,20 @@ function Header() {
         },
     ];
 
-    const userMenu = [...MENU_ITEMS, ...MENU_USER];
     const [finalMenu, setFinalMenu] = useState<SettingItem[][]>([MENU_ITEMS]);
-    const [finalMenuUser, setFinalMenuUser] = useState<SettingItem[][]>([userMenu]);
+    const [finalMenuUser, setFinalMenuUser] = useState<SettingItem[][]>([[...MENU_ITEMS, ...MENU_USER]]);
 
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
-                <Link to={config.routes.home} className={cx('logo')}>
-                    <img src={images.logo} alt="TipConnect" />
+                <Link to={config.routes.home} className={cx('logo-area')}>
+                    <img src={images.logo} alt={i18n.t('FINAL_NAME_APP')} />
                 </Link>
                 <div className={cx('income-call')}>
-                    {callGuy && (
+                    {user && callGuy && (
                         <CallCard
-                            userID={user?.userID || ''}
                             stompClient={stompClient}
+                            userID={user.userID}
                             friendID={callGuy.friendID}
                             fullName={callGuy.fullName}
                             urlAvatar={callGuy.urlAvatar}
@@ -355,14 +350,14 @@ function Header() {
                                                         </div>
                                                         <div className={cx('notification-action-area')}>
                                                             <button
-                                                                className={cx('plus_button')}
+                                                                className={cx('button-accept')}
                                                                 onClick={() => handleAcceptFriend(id)}
                                                                 disabled={loading}
                                                             >
                                                                 <CheckIcon />
                                                             </button>
                                                             <button
-                                                                className={cx('cancel_button')}
+                                                                className={cx('button-cancel')}
                                                                 onClick={() => handleDenyFriend(id)}
                                                                 disabled={loading}
                                                             >
@@ -373,24 +368,25 @@ function Header() {
                                                 );
                                             })}
                                             {listFriendRequest.length === 0 && (
-                                                <div className={cx('notification-note')}>
+                                                <div className={cx('notification-notice')}>
                                                     {i18n.t('HEADER_no_notification')}
                                                 </div>
                                             )}
                                         </PopperWrapper>
                                     </div>
                                 )}
-                                onClickOutside={handleHideNotification}
+                                onClickOutside={() => setShowNotification(false)}
                             >
-                                <button
-                                    className={cx('action-btn')}
-                                    onClick={() => {
-                                        setShowNotification(true);
-                                    }}
-                                >
-                                    <UserGroupIcon />
-                                    <span className={cx('badge')}>{listFriendRequest.length}</span>
-                                </button>
+                                <div className={cx('action-btn')}>
+                                    <button
+                                        onClick={() => {
+                                            setShowNotification(true);
+                                        }}
+                                    >
+                                        <UserGroupIcon />
+                                        <span className={cx('badge')}>{listFriendRequest.length}</span>
+                                    </button>
+                                </div>
                             </HeadlessTippy>
                             <HeadlessTippy
                                 interactive

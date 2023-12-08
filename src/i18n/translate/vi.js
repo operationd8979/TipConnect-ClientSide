@@ -1,4 +1,5 @@
 export const vi = {
+    FINAL_NAME_APP: 'TipConnect',
     FINAL_email: 'Email',
     FINAL_password: 'Mật khẩu',
     FINAL_passwordRe: 'Nhập lại',
@@ -12,7 +13,6 @@ export const vi = {
     FINAL_logout: 'Đăng suất',
     FINAL_setting: 'Cài đặt',
     FINAL_newPassword: 'Mật khẩu mới',
-    FINAL_NAME_APP: 'TipConnect',
     FINAL_update: 'Cập nhật',
     FINAL_UNAVAILABLE_MESSAGE: 'Tin này không có sẵn!',
     WARRING_REQUIRE_VALUE: 'Nhập đầy đủ thông tin!',
