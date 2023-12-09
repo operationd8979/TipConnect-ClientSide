@@ -2,11 +2,107 @@
     display: flex;
     flex-direction: column;
     height: var(--default-layout-height);
+    --default-width-filter-type: 18rem;
 }
 
 .header {
-    margin: 10px 0px;
-    min-height: 5rem;
+    margin: var(--default-small-zone) 0px;
+}
+
+.controll-area {
+    display: flex;
+    margin-top: var(--default-small-zone);
+}
+
+.controll-area-fillter-button {
+    button {
+        cursor: pointer;
+        font-size: var(--default-small-font-size);
+    }
+    button + button {
+        margin-left: var(--default-small-zone);
+    }
+}
+
+.controll-area-filter-type {
+    width: var(--default-width-filter-type);
+    border-radius: 8px;
+    color: var(--white);
+    &:after {
+        bottom: 100%;
+        left: 50%;
+        border: solid transparent;
+        content: ' ';
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+        border-bottom-color: var(--black);
+        border-width: 12px;
+        margin-left: 0px;
+    }
+}
+
+.controll-area-filter-type-item {
+    button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: var(--default-small-font-size);
+        font-weight: var(--default-small-font-weight);
+        margin-bottom: var(--default-mini-zone);
+        svg {
+            margin-left: var(--default-small-zone);
+            margin-right: var(--default-large-zone);
+            width: var(--default-mini-icon-size);
+            height: var(--default-mini-icon-size);
+        }
+    }
+}
+
+.controll-area-filter-type-choose {
+    margin-left: auto;
+    button {
+        padding: 0px 4px;
+        cursor: pointer;
+        svg {
+            margin-left: var(--default-mini-zone);
+            width: var(--default-mini-icon-size);
+            height: var(--default-mini-icon-size);
+        }
+    }
+}
+.noActive {
+    button {
+        cursor: pointer;
+        padding: 2px 16px;
+        border-radius: 90px;
+        :hover {
+            background-color: transparent;
+        }
+    }
+    :hover {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
+.controll-area-filter-type-close-button {
+    display: flex;
+    align-items: center;
+}
+
+.COMMON {
+    color: black;
+}
+.BESTFRIEND {
+    color: red;
+}
+.FAMILY {
+    color: green;
+}
+.WORK {
+    color: blue;
 }
 
 .friend_box {
@@ -19,10 +115,10 @@
 }
 
 .header_search {
-    margin-left: 4px;
-    padding: 4px;
-    font-size: small;
-    font-weight: bold;
+    margin-left: var(--default-mini-zone);
+    padding: var(--default-mini-zone);
+    font-size: var(--default-small-font-size);
+    font-weight: var(--default-medium-font-weight);
 }
 
 .friend_card {
@@ -37,35 +133,44 @@
 }
 
 .card_img {
-    margin-left: 8px;
-    width: 52px;
+    margin-left: var(--default-small-zone);
+    width: var(--default-large-icon-size);
     img {
-        height: 5rem;
+        height: var(--default-large-icon-size);
         border-radius: 50%;
     }
 }
 
 .card_content {
-    width: 280px;
+    width: 100%;
     display: flex;
     align-items: center;
+    --default-width-card-info: 75%;
+    --default-width-card-action: 25%;
 }
 
 .card_info {
-    width: 200px;
+    width: var(--default-width-card-info);
+}
+
+.card_holder {
+    width: 100%;
+    display: flex;
+    align-items: center;
 }
 
 .info_name {
     margin-left: 8px;
     font-size: large;
+    flex: 1;
 }
 
 .info_time {
-    margin-left: auto;
+    margin-right: var(--default-small-zone);
 }
 
 .info_detail {
-    margin-left: 8px;
+    margin-left: var(--default-small-zone);
     width: 100%;
     font-size: small;
     display: flex;
@@ -84,37 +189,28 @@
 }
 
 .card_action {
-    width: 80px;
+    margin-left: auto;
+    margin-right: var(--default-small-zone);
+    // width: var(--default-width-card-action);
 }
 
-.plus_button {
+.plus_button .cancel_button {
     margin: 0px 10px;
-    padding: 5px;
+    padding: var(--default-mini-zone);
     background-color: transparent;
-    color: black;
+    color: var(--black);
     svg {
-        width: 30px;
-        height: 30px;
+        width: var(--default-small-icon-size);
+        height: var(--default-small-icon-size);
     }
     :hover {
-        color: white;
+        color: var(--white);
     }
 }
 
 .cancel_button {
     display: flex;
     align-items: center;
-    margin: 0px 10px;
-    padding: 5px;
-    background-color: transparent;
-    color: black;
-    svg {
-        width: 30px;
-        height: 30px;
-    }
-    :hover {
-        color: white;
-    }
 }
 
 .load-more {
@@ -122,29 +218,9 @@
     button {
         background-color: transparent;
         color: blue;
-        font-size: 1.6rem;
+        font-size: var(--default-small-font-size);
     }
     :hover {
         opacity: 0.6;
-    }
-}
-
-.type-area {
-    width: 20rem;
-    border-radius: 8px;
-    background: rgb(255, 255, 255);
-    box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
-}
-
-.type-data {
-}
-
-.type-item {
-    border: solid black 1px;
-    font-size: 1.8rem;
-    font-weight: bold;
-    button {
-        width: 100%;
-        background-color: transparent;
     }
 }

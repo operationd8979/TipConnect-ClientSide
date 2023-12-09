@@ -6,12 +6,14 @@ import styles from './Sidebar.module.scss';
 import HeadlessTippy from '@tippyjs/react/headless';
 
 import Search from '../Search';
-import { PlusFriend, OnWait } from '../../../components/Icons';
+import { Wrapper } from '../../../components/Popper';
+import { PlusFriend, OnWait, TagItem, ArrowShow, Close } from '../../../components/Icons';
 import { State, FriendShip, SearchResponse, Response } from '../../../type';
 import { UserService } from '../../../apiService/';
 import { getListFriendSuccess, getListFriendFail, updateLastMessage, logout } from '../../../reducers';
 import DataReconstruct from '../../../utils/DataReconstruct';
 import hardData from '../../../contants/hardData';
+import Button from '../../../components/Button';
 
 const cx = className.bind(styles);
 
@@ -32,10 +34,6 @@ function Sidebar() {
 
     const [showTypeTab, setShowTypeTab] = useState(false);
     const [typeSelect, setTypeSelect] = useState<number>(0);
-    const handleClickType = (code: number) => {
-        setTypeSelect(code);
-        setShowTypeTab(false);
-    };
 
     const showList = useCallback(() => {
         return listFriend.filter(
@@ -168,72 +166,90 @@ function Sidebar() {
                         setShowLoadMore={setShowLoadMore}
                     />
                 )}
-                <div style={{ display: 'flex', marginTop: '8px' }}>
-                    <button
-                        style={{ cursor: 'pointer', backgroundColor: 'transparent' }}
-                        onClick={() => {
-                            setIsNonSeen(false);
-                        }}
-                    >
-                        {i18n.t('SIDEBAR_ALL_MESSAGE')}
-                    </button>
-                    <button
-                        style={{ cursor: 'pointer', marginLeft: '5px', backgroundColor: 'transparent' }}
-                        onClick={() => {
-                            setIsNonSeen(true);
-                        }}
-                    >
-                        |{i18n.t('SIDEBAR_UNSEEN_MESSAGE')}
-                    </button>
+                <div className={cx('controll-area')}>
+                    <div className={cx('controll-area-fillter-button')}>
+                        <button
+                            onClick={() => {
+                                setIsNonSeen(false);
+                            }}
+                        >
+                            {i18n.t('SIDEBAR_ALL_MESSAGE')}
+                        </button>
+                        <button
+                            onClick={() => {
+                                setIsNonSeen(true);
+                            }}
+                        >
+                            |{i18n.t('SIDEBAR_UNSEEN_MESSAGE')}
+                        </button>
+                    </div>
                     <HeadlessTippy
-                        placement="bottom-end"
+                        placement="bottom"
                         visible={showTypeTab}
                         interactive
                         onClickOutside={() => {
                             setShowTypeTab(false);
                         }}
                         render={(attrs) => (
-                            <div className={cx('type-area')} tabIndex={-1} {...attrs}>
-                                <>
-                                    <div className={cx('type-data')}>
-                                        {hardData.typeFriendShip.map((type: { code: number; name: string }) => {
-                                            const { code, name } = type;
-                                            return (
-                                                <div className={cx('type-item')} key={code}>
-                                                    <button
-                                                        onClick={() => {
-                                                            handleClickType(code);
-                                                        }}
-                                                    >
-                                                        {name}
-                                                    </button>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </>
+                            <div className={cx('controll-area-filter-type')} tabIndex={-1} {...attrs}>
+                                <Wrapper>
+                                    {hardData.typeFriendShip.map((type: { code: number; name: string }) => {
+                                        const { code, name } = type;
+                                        return (
+                                            <div className={cx('controll-area-filter-type-item')} key={code}>
+                                                <button
+                                                    onClick={() => {
+                                                        setTypeSelect(code);
+                                                    }}
+                                                >
+                                                    <TagItem className={cx({ [name]: true })} />
+                                                    {name}
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </Wrapper>
                             </div>
                         )}
                     >
-                        <button
-                            style={{ marginLeft: 'auto', cursor: 'pointer', backgroundColor: 'transparent' }}
-                            onClick={() => {
-                                setShowTypeTab(true);
-                            }}
+                        <div
+                            className={cx('controll-area-filter-type-choose', {
+                                noActive: typeSelect === 0,
+                            })}
                         >
-                            {typeSelect === 0 ? (
-                                i18n.t('SIDEBAR_CHOOSE_TYPE_FRIEND')
-                            ) : (
-                                <div>{hardData.typeFriendShip[typeSelect - 1].name} X</div>
-                            )}
-                        </button>
+                            <button
+                                onClick={() => {
+                                    setShowTypeTab(true);
+                                }}
+                            >
+                                {typeSelect === 0 ? (
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        {i18n.t('SIDEBAR_CHOOSE_TYPE_FRIEND')}
+                                        <ArrowShow />
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        {hardData.typeFriendShip[typeSelect - 1].name}
+                                        <div className={cx('controll-area-filter-type-close-button')}>
+                                            <button
+                                                onClick={() => {
+                                                    setTypeSelect(0);
+                                                }}
+                                            >
+                                                <Close />
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </button>
+                        </div>
                     </HeadlessTippy>
                 </div>
             </div>
             <div className={cx('friend_box')}>
                 {searchResult.tinyUser && (
                     <div className={cx('aim-user')}>
-                        <div className={cx('header_search')}>Tìm qua email:</div>
+                        <div className={cx('header_search')}>{i18n.t('SIDEBAR_search_by_email')}</div>
                         <div className={cx('friend_card')} key={searchResult.tinyUser.userID}>
                             <div className={cx('card_img')}>
                                 <img src={searchResult.tinyUser.urlAvatar} alt={searchResult.tinyUser.fullName} />
@@ -241,7 +257,9 @@ function Sidebar() {
                             <div className={cx('card_content')}>
                                 <div className={cx('card_info')}>
                                     <div className={cx('info_name')}>{searchResult.tinyUser.fullName}</div>
-                                    <div className={cx('info_detail')}>Email:{query}</div>
+                                    <div className={cx('info_detail')}>
+                                        {i18n.t('FINAL_email')}:{query}
+                                    </div>
                                 </div>
                                 <div className={cx('card_action')}>
                                     {searchResult.tinyUser.state == 'AVAIBLE' && (
@@ -260,7 +278,7 @@ function Sidebar() {
                                             disabled={loading}
                                         >
                                             <OnWait />
-                                            Hủy
+                                            {i18n.t('FINAL_dispose')}
                                         </button>
                                     )}
                                 </div>
@@ -296,8 +314,8 @@ function Sidebar() {
                                 <img src={friend.urlAvatar} alt={friend.fullName} />
                             </div>
                             <div className={cx('card_content')}>
-                                <div>
-                                    <div className={cx('card_content')}>
+                                <div style={{ width: '100%' }}>
+                                    <div className={cx('card_holder')}>
                                         <div className={cx('info_name')}>{friend.fullName}</div>
                                         {showTime && <div className={cx('info_time')}>{showTime}</div>}
                                     </div>
@@ -312,7 +330,7 @@ function Sidebar() {
                                                     : message.type}
                                             </div>
                                         ) : (
-                                            <div>bắt đầu nhắn tin nào</div>
+                                            <div>{i18n.t('SIDEBAR_let_chat')}</div>
                                         )}
                                         {message && !message.seen && !message.user && (
                                             <div className={cx('info_detail_count_income')}>...</div>
@@ -325,7 +343,7 @@ function Sidebar() {
                 })}
                 {searchResult.messages.length > 0 && (
                     <div>
-                        <div>Tin nhắn</div>
+                        <div className={cx('header_search')}>{i18n.t('FINAL_message')}</div>
                         {searchResult.messages.map((message, index) => {
                             let showTime = 'now';
                             const friendShip = listFriend.find(
@@ -344,14 +362,14 @@ function Sidebar() {
                                         <img src={friend.urlAvatar} alt={friend.fullName} />
                                     </div>
                                     <div className={cx('card_content')}>
-                                        <div>
-                                            <div className={cx('card_content')}>
+                                        <div style={{ width: '100%' }}>
+                                            <div className={cx('card_holder')}>
                                                 <div className={cx('info_name')}>{friend.fullName}</div>
                                                 {showTime && <div className={cx('info_time')}>{showTime}</div>}
                                             </div>
                                             <div className={cx('info_detail')}>
                                                 <div>
-                                                    {message.user ? 'Bạn: ' : ''}
+                                                    {message.user ? `${i18n.t('FINAL_you')}: ` : ''}
                                                     {message.type === 'MESSAGE'
                                                         ? message.body.length > 32
                                                             ? message.body.substring(0, 32) + '...'
@@ -368,7 +386,7 @@ function Sidebar() {
                 )}
                 {showLoadMore && (
                     <div className={cx('load-more')}>
-                        <button onClick={handleLoadMore}>load more</button>
+                        <button onClick={handleLoadMore}>{i18n.t('SIDEBAR_search_more')}</button>
                     </div>
                 )}
             </div>
