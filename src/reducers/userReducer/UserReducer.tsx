@@ -44,6 +44,13 @@ const UserReducer = (state: State = initalState, action: Action) => {
                 return friendShip;
             });
             return { ...state, listFriend: UPDATE_FRIEND_SHIP };
+        case actionTypes.NOTIFY_ONLINE:
+            const friendShip = state.listFriend.find((f) => f.friend.userID === payload.from);
+            if (friendShip) {
+                friendShip.timeStamp = payload.timestamp;
+            }
+            const newListFriendOnline = [...state.listFriend];
+            return { ...state, listFriend: newListFriendOnline };
         case actionTypes.UPDATE_LAST_MESSAGE:
             const newListFriend = state.listFriend.map((friendShip) => {
                 if (
@@ -104,8 +111,14 @@ const UserReducer = (state: State = initalState, action: Action) => {
         case actionTypes.UPLOAD_AVATAR_FAIL:
         case actionTypes.LOGOUT:
             localStorage.removeItem('currentUser');
-            return { ...state, isLoggedIn: false, user: null };
-
+            return {
+                isLoggedIn: false,
+                user: null,
+                listFriend: [],
+                listGifItem: [],
+                notifications: { listFriendRequest: [], listNotification: [] },
+                i18n: i18n,
+            };
         default:
             return state;
     }

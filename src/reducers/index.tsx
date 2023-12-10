@@ -19,6 +19,7 @@ import {
     getGifItems,
     updateFriendShip,
     changeLanguage,
+    changeOnline,
 } from './userReducer/Action';
 import { connectSuccess, connectFail, disconnect } from './stompReducer/Action';
 
@@ -46,6 +47,7 @@ export {
     getGifItems,
     updateFriendShip,
     changeLanguage,
+    changeOnline,
 };
 
 export { default } from './Reducers';

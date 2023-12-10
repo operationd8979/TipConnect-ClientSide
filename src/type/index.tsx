@@ -29,6 +29,7 @@ export interface FriendShip {
     friend: User;
     type: string;
     message?: MessageChat;
+    timeStamp?: string;
 }
 
 export interface Action {
@@ -106,6 +107,12 @@ export interface StateWS {
 export interface SeenNotification {
     from: string;
     to: string;
+    timestamp: string;
+    type: string;
+}
+
+export interface OnlineNotification {
+    from: string;
     timestamp: string;
     type: string;
 }

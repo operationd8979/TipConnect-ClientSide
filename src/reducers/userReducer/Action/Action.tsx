@@ -1,5 +1,5 @@
 import userReducerAction from './userReducerAction';
-import { User, FriendShip, FriendRequestResponse, MessageChat, Gif } from '../../../type';
+import { User, FriendShip, FriendRequestResponse, MessageChat, Gif, OnlineNotification } from '../../../type';
 import { I18n } from 'i18n-js';
 
 export const loginSuccess = (payload: User) => {
@@ -101,7 +101,6 @@ export const getListFriendRequestFail = () => {
 };
 
 export const updateLastMessage = (payload: MessageChat) => {
-    console.log(payload);
     return {
         type: userReducerAction.UPDATE_LAST_MESSAGE,
         payload,
@@ -125,6 +124,13 @@ export const updateFriendShip = (payload: FriendShip) => {
 export const changeLanguage = (payload: I18n) => {
     return {
         type: userReducerAction.CHANGE_LANGUAGE,
+        payload,
+    };
+};
+
+export const changeOnline = (payload: OnlineNotification) => {
+    return {
+        type: userReducerAction.NOTIFY_ONLINE,
         payload,
     };
 };

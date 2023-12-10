@@ -9,9 +9,9 @@ import { useDropzone } from 'react-dropzone';
 
 import Chat from './Chat';
 import Button from '../../components/Button';
-import { UserService } from '../../apiService';
+import { SocketService, UserService } from '../../apiService';
 import { getGifItems, updateLastMessage, updateFriendShip } from '../../reducers';
-import { Call, EditItem, FileItem, GifItem, Send, VideoCall } from '../../components/Icons';
+import { Call, EditItem, FileItem, GifItem, Send, TagItem, VideoCall } from '../../components/Icons';
 import { State, StateWS, MessageChat, Gif, RawChat, SeenNotification } from '../../type';
 import { pathImage } from '../../contants';
 import hardData from '../../contants/hardData';
@@ -64,17 +64,17 @@ const MessageArea = () => {
                 try {
                     const data = JSON.parse(message.body);
                     switch (data.type) {
-                        case 'MESSAGE':
-                        case 'PHOTO':
-                        case 'GIF':
-                        case 'PDF':
-                        case 'WORD':
-                        case 'EXCEL':
-                        case 'ENDCALL':
+                        case hardData.typeMessage.MESSAGE.name:
+                        case hardData.typeMessage.PHOTO.name:
+                        case hardData.typeMessage.GIF.name:
+                        case hardData.typeMessage.PDF.name:
+                        case hardData.typeMessage.WORD.name:
+                        case hardData.typeMessage.EXCEL.name:
+                        case hardData.typeMessage.ENDCALL.name:
                             setCurrentMessage(data as MessageChat);
                             dispatch(updateLastMessage(data as MessageChat));
                             break;
-                        case 'SEEN':
+                        case hardData.typeMessage.SEEN.name:
                             setSeenGet(data as SeenNotification);
                             break;
                         default:
@@ -112,14 +112,11 @@ const MessageArea = () => {
         setListMessage([]);
         setCurrentOffset('');
         setCurrentMessage(friendShip?.message || null);
-        callApiGetMessages(friendId || '', currentOffset, 20);
-        return () => {};
+        callApiGetMessages(friendId || '', '', 20);
     }, [friendId]);
 
     useEffect(() => {
         if (currentMessage) {
-            console.log('hello');
-            console.log(currentMessage);
             if (currentMessage.from === friendId) {
                 if (
                     listMessage.length === 0 ||
@@ -128,11 +125,11 @@ const MessageArea = () => {
                     setListMessage((prevList) => [...prevList, currentMessage]);
                     let newMessage = currentMessage;
                     newMessage.seen = true;
-                    if (currentMessage.type !== 'ENDCALL') {
+                    if (currentMessage.type !== hardData.typeMessage.ENDCALL.name) {
                         const seenNotification: SeenNotification = {
                             from: currentMessage.from,
                             to: currentMessage.to,
-                            type: 'SEEN',
+                            type: hardData.typeMessage.SEEN.name,
                             timestamp: currentMessage.timestamp || new Date().getTime().toString(),
                         };
                         onSendSeenNotification(seenNotification);
@@ -140,7 +137,7 @@ const MessageArea = () => {
                     dispatch(updateLastMessage(newMessage));
                 }
             } else if (currentMessage.to === friendId) {
-                if (currentMessage.type === 'ENDCALL') {
+                if (currentMessage.type === hardData.typeMessage.ENDCALL.name) {
                     let newMessage = currentMessage;
                     newMessage.seen = true;
                     setListMessage((prevList) => [...prevList, currentMessage]);
@@ -283,13 +280,13 @@ const MessageArea = () => {
                 switch (urlFile.type) {
                     case TypeFile.msWord:
                     case TypeFile.word:
-                        type = 'WORD';
+                        type = hardData.typeMessage.WORD.name;
                         break;
                     case TypeFile.excel:
-                        type = 'EXCEL';
+                        type = hardData.typeMessage.EXCEL.name;
                         break;
                     case TypeFile.pdf:
-                        type = 'PDF';
+                        type = hardData.typeMessage.PDF.name;
                         break;
                     default:
                 }
@@ -305,31 +302,27 @@ const MessageArea = () => {
             alert('500!!!');
             return;
         }
-        if (bodyChat !== '') onSendPrivate(bodyChat, 'MESSAGE');
+        if (bodyChat !== '') onSendPrivate(bodyChat, hardData.typeMessage.MESSAGE.name);
     }
 
     function onSendPrivate(body: string, type: string) {
-        if (stompClient.connected) {
-            const chat: MessageChat = {
-                from: user?.userID || '',
-                to: friendId || '',
-                body: body,
-                timestamp: new Date().getTime().toString(),
-                type: type,
-                seen: false,
-                user: true,
-            };
-            stompClient.send('/app/private', JSON.stringify(chat));
-            setListMessage((preList) => [...preList, chat]);
-            setBodyChat('');
-            dispatch(updateLastMessage(chat));
-        }
+        const chat: MessageChat = {
+            from: user?.userID || '',
+            to: friendId || '',
+            body: body,
+            timestamp: new Date().getTime().toString(),
+            type: type,
+            seen: false,
+            user: true,
+        };
+        SocketService.sendPrivateMessage(stompClient, chat);
+        setListMessage((preList) => [...preList, chat]);
+        setBodyChat('');
+        dispatch(updateLastMessage(chat));
     }
 
     function onSendSeenNotification(seenNotification: SeenNotification) {
-        if (stompClient.connected) {
-            stompClient.send('/app/seen', JSON.stringify(seenNotification));
-        }
+        SocketService.sendSeenNotification(stompClient, seenNotification);
     }
 
     const handleCall = async (type: string) => {
@@ -340,14 +333,8 @@ const MessageArea = () => {
         );
     };
 
-    const handleClickIcon = () => {
-        setShowGifTab(!showGifTab);
-    };
     const handleClickPicture = () => {
         inputFile?.current?.click();
-    };
-    const handleHideGifTab = () => {
-        setShowGifTab(false);
     };
     const handleKeyEnter = (e: any) => {
         if (e.key === 'Enter') {
@@ -356,21 +343,19 @@ const MessageArea = () => {
     };
 
     const onClickIcon = (url: string) => {
-        if (stompClient.connected && url) {
-            const chat: MessageChat = {
-                from: user?.userID || '',
-                to: friendId || '',
-                type: 'GIF',
-                timestamp: new Date().getTime().toString(),
-                body: url,
-                seen: false,
-                user: true,
-            };
-            stompClient.send('/app/private', JSON.stringify(chat));
-            setListMessage((preList) => [...preList, chat]);
-            dispatch(updateLastMessage(chat));
-            handleHideGifTab();
-        }
+        const chat: MessageChat = {
+            from: user?.userID || '',
+            to: friendId || '',
+            type: 'GIF',
+            timestamp: new Date().getTime().toString(),
+            body: url,
+            seen: false,
+            user: true,
+        };
+        SocketService.sendPrivateMessage(stompClient, chat);
+        setListMessage((preList) => [...preList, chat]);
+        dispatch(updateLastMessage(chat));
+        setShowGifTab(false);
     };
 
     const handleClickPhotoPreview = (index: number) => {
@@ -433,12 +418,17 @@ const MessageArea = () => {
 
     const [showTypeTab, setShowTypeTab] = useState(false);
     const handleClickType = (code: number) => {
-        const response = UserService.changeTypeFriendShip(friendId || '', hardData.typeFriendShip[code - 1].name);
         if (friendShip) {
-            friendShip.type = hardData.typeFriendShip[code - 1].name;
-            dispatch(updateFriendShip(friendShip));
+            if (friendShip.type !== hardData.typeFriendShip[code - 1].name) {
+                const response = UserService.changeTypeFriendShip(
+                    friendId || '',
+                    hardData.typeFriendShip[code - 1].name,
+                );
+                friendShip.type = hardData.typeFriendShip[code - 1].name;
+                dispatch(updateFriendShip(friendShip));
+                setShowTypeTab(false);
+            }
         }
-        setShowTypeTab(false);
     };
 
     return (
@@ -462,39 +452,38 @@ const MessageArea = () => {
                                     }}
                                     render={(attrs) => (
                                         <div className={cx('type-area')} tabIndex={-1} {...attrs}>
-                                            <>
-                                                <h4 className={cx('type-title')}>Type</h4>
-                                                <div className={cx('type-data')}>
-                                                    {hardData.typeFriendShip.map(
-                                                        (type: { code: number; name: string }) => {
-                                                            const { code, name } = type;
-                                                            return (
-                                                                <div
-                                                                    className={cx('type-item', {
-                                                                        selectedType: friendShip?.type === name,
-                                                                        nonSelectType: friendShip?.type !== name,
-                                                                    })}
-                                                                    key={code}
-                                                                >
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            handleClickType(code);
-                                                                        }}
-                                                                    >
-                                                                        {name}
-                                                                    </button>
-                                                                </div>
-                                                            );
-                                                        },
-                                                    )}
-                                                </div>
-                                            </>
+                                            <h4 className={cx('type-title')}>
+                                                <TagItem />
+                                                Type
+                                            </h4>
+                                            <div className={cx('type-data')}>
+                                                {hardData.typeFriendShip.map((type: { code: number; name: string }) => {
+                                                    const { code, name } = type;
+                                                    return (
+                                                        <div
+                                                            className={cx('type-item', {
+                                                                selectedType: friendShip?.type === name,
+                                                                nonSelectType: friendShip?.type !== name,
+                                                            })}
+                                                            key={code}
+                                                        >
+                                                            <button
+                                                                onClick={() => {
+                                                                    handleClickType(code);
+                                                                }}
+                                                            >
+                                                                {name}
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
                                     )}
                                 >
                                     <button
                                         onClick={() => {
-                                            setShowTypeTab(true);
+                                            setShowTypeTab(!showTypeTab);
                                         }}
                                     >
                                         <EditItem />
@@ -517,34 +506,19 @@ const MessageArea = () => {
                 <div style={{ flex: 1 }} />
                 {isEnd && <div className={cx('last-message')}>{i18n.t('MESSAGE_AREA_last_message')}</div>}
                 {listMessage.map((message, index) => {
-                    return (
-                        <Chat
-                            key={index}
-                            fullName={
-                                message.user
-                                    ? user
-                                        ? user.fullName
-                                        : ''
-                                    : friendShip
-                                    ? friendShip.friend.fullName
-                                    : ''
-                            }
-                            urlAvatar={
-                                message.user
-                                    ? user
-                                        ? user.urlAvatar
-                                        : ''
-                                    : friendShip
-                                    ? friendShip.friend.urlAvatar
-                                    : ''
-                            }
-                            content={message.body}
-                            isUser={message.user}
-                            seen={message.seen}
-                            type={message.type}
-                            isLast={index === listMessage.length - 1}
-                        />
-                    );
+                    if (user && friendShip)
+                        return (
+                            <Chat
+                                key={index}
+                                fullName={message.user ? user.fullName : friendShip.friend.fullName}
+                                urlAvatar={message.user ? user.urlAvatar : friendShip.friend.urlAvatar}
+                                content={message.body}
+                                isUser={message.user}
+                                seen={message.seen}
+                                type={message.type}
+                                isLast={index === listMessage.length - 1}
+                            />
+                        );
                 })}
             </div>
             <div className={cx('chat-area')}>
@@ -553,28 +527,26 @@ const MessageArea = () => {
                         <HeadlessTippy
                             visible={showGifTab}
                             interactive
-                            onClickOutside={handleHideGifTab}
+                            onClickOutside={() => setShowGifTab(false)}
                             render={(attrs) => (
                                 <div className={cx('gif-area')} tabIndex={-1} {...attrs}>
-                                    <>
-                                        <h4 className={cx('gif-title')}>{i18n.t('MESSAGE_AREA_list_gif')}</h4>
-                                        <div className={cx('gif-data')}>
-                                            {listGifItem.map((gifItem: Gif) => {
-                                                const { gifID, gifName, url } = gifItem;
-                                                return (
-                                                    <div className={cx('gif-item')} key={gifID}>
-                                                        <button onClick={() => onClickIcon(url)}>
-                                                            <img src={gifItem.url} alt={gifName} />
-                                                        </button>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </>
+                                    <h4 className={cx('gif-title')}>{i18n.t('MESSAGE_AREA_list_gif')}</h4>
+                                    <div className={cx('gif-data')}>
+                                        {listGifItem.map((gifItem: Gif) => {
+                                            const { gifID, gifName, url } = gifItem;
+                                            return (
+                                                <div className={cx('gif-item')} key={gifID}>
+                                                    <button onClick={() => onClickIcon(url)}>
+                                                        <img src={gifItem.url} alt={gifName} />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
                         >
-                            <button onClick={handleClickIcon}>
+                            <button onClick={() => setShowGifTab(!showGifTab)}>
                                 <GifItem />
                             </button>
                         </HeadlessTippy>
@@ -587,7 +559,6 @@ const MessageArea = () => {
                                 ref={inputFile}
                                 style={{ display: 'none' }}
                                 multiple
-                                //accept="image/png, image/jpeg"
                                 onChange={(e) => onChangeFile(e)}
                             />
                             <FileItem />

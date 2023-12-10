@@ -20,5 +20,6 @@ export {
     getGifItems,
     updateFriendShip,
     changeLanguage,
+    changeOnline,
 } from './Action';
 export default actionTypes;

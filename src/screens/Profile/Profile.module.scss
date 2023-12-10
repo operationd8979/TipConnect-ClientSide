@@ -3,6 +3,7 @@
     height: var(--default-layout-height);
     justify-content: center;
     padding-top: 50px;
+    --default-width-input: 4rem;
 }
 
 .sidebar {
@@ -17,52 +18,53 @@
     display: flex;
     justify-content: center;
     img {
-        height: 16rem;
-        width: 16rem;
+        height: 20rem;
+        width: 20rem;
         border-radius: 90px;
     }
 }
 
 .user_name {
-    margin: 10px 10px;
+    margin: var(--default-medium-zone);
     display: flex;
     justify-content: center;
-    font-weight: bold;
-    font-size: 2rem;
+    font-weight: var(--default-large-font-weight);
+    font-size: var(--default-large-font-size);
 }
 
 .active_button_avatar {
-    margin: 10px 10px;
+    margin: var(--default-small-zone);
     width: 50%;
 }
 
 .content {
-    padding: 20px 20px;
+    padding: var(-default-large-zone);
     flex: 7;
 }
 
 .header_content {
-    font-size: xx-large;
+    font-size: var(--default-xlarge-font-size);
 }
 
 .info_area {
-    margin: 20px 20px;
+    margin: var(--default-medium-zone);
 }
 
-.info_pack {
+.info_pack + .info_pack {
+    margin-top: var(--default-small-zone);
 }
 
 .lable {
     width: 100%;
-    font-size: 1.8rem;
-    font-weight: bold;
+    font-size: var(--default-small-font-size);
+    font-weight: var(--default-medium-font-weight);
 }
 
 .input {
     display: flex;
     align-items: center;
     margin: 2px 0px;
-    height: 40px;
+    height: var(--default-width-input);
     width: 70%;
     border: solid rgba(29, 30, 36, 0.3) 1px;
     border-radius: 10px;
@@ -71,7 +73,7 @@
         height: 100%;
         flex: 6;
         background-color: transparent;
-        font-size: 1.5rem;
+        font-size: var(--default-small-font-size);
         color: var(--black);
     }
 
@@ -90,9 +92,8 @@
     padding-left: 5px;
     flex: 4;
     background-color: transparent;
-    font-size: 1.3rem;
+    font-size: var(--default-mini-font-size);
     color: rgba(29, 30, 36, 0.8);
-
     input {
         padding: 0px 10px;
         flex: 8;
@@ -104,7 +105,9 @@
     display: flex;
     justify-content: center;
     svg {
-        width: 2.8rem;
+        width: var(--default-small-icon-size);
+        height: var(--default-small-icon-size);
+        color: red;
     }
 }
 
@@ -122,8 +125,8 @@
 
 .lable_password {
     width: 100%;
-    font-size: 1.3rem;
-    font-weight: 450;
+    font-size: var(--default-mini-font-size);
+    font-weight: var(--default-medium-font-weight);
     color: red;
 }
 
@@ -131,7 +134,7 @@
     display: flex;
     align-items: center;
     margin: 0px 10px;
-    height: 40px;
+    height: var(--default-width-input);
     width: 70%;
     border: solid rgba(29, 30, 36, 0.3) 1px;
     border-radius: 10px;
@@ -140,7 +143,7 @@
         height: 100%;
         flex: 6;
         background-color: transparent;
-        font-size: 1.5rem;
+        font-size: var(--default-mini-icon-size);
         color: var(--black);
     }
 
@@ -155,5 +158,5 @@
 
 .change_password {
     border-width: 2px;
-    border-color: rgba(253, 0, 0, 0.992);
+    border-color: red;
 }

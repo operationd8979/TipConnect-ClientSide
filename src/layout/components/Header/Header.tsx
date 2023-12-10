@@ -35,6 +35,7 @@ import {
     removeFriendRequest,
     updateLastMessage,
     changeLanguage,
+    changeOnline,
 } from '../../../reducers';
 import {
     State,
@@ -44,9 +45,11 @@ import {
     MessageChat,
     NotificationChat,
     SettingItem,
+    OnlineNotification,
 } from '../../../type';
 import { Client } from 'webstomp-client';
 import Menu from '../../../components/Menu';
+import hardData from '../../../contants/hardData';
 
 const cx = classNames.bind(styles);
 
@@ -105,6 +108,20 @@ function Header() {
     }, []);
 
     useEffect(() => {
+        const notifyIOnline = () => {
+            const onlineNotification = {
+                from: user?.userID || '',
+                type: hardData.typeMessage.ONLINE.name,
+                timestamp: new Date().getTime().toString(),
+            };
+            SocketService.notifyOnline(stompClient, onlineNotification);
+        };
+        notifyIOnline();
+        const intervalId = setInterval(notifyIOnline, 50000);
+        return () => clearInterval(intervalId);
+    }, [user, stompClient]);
+
+    useEffect(() => {
         //connect websocket
         if (isLoggedIn) {
             if (!stompClient.connected) {
@@ -121,9 +138,15 @@ function Header() {
                             }
                             SocketService.connectStomp(socket, stompClient, newUser.userID).then((response) => {
                                 const { socket, stompClient } = response;
+                                const onlineNotification: OnlineNotification = {
+                                    from: user?.userID || '',
+                                    type: hardData.typeMessage.ONLINE.name,
+                                    timestamp: new Date().getTime().toString(),
+                                };
+                                SocketService.notifyOnline(stompClient, onlineNotification);
                                 stompClient.subscribe('/users/private', function (message) {
                                     try {
-                                        const data = JSON.parse(message.body) as RawChat;
+                                        const data = JSON.parse(message.body);
                                         switch (data.type) {
                                             case 'SYSTEM':
                                                 const notificationData = data as NotificationChat;
@@ -179,6 +202,9 @@ function Header() {
                                                 if (data.body === 'cancel') {
                                                     setCallGuy(null);
                                                 }
+                                                break;
+                                            case 'ONLINE':
+                                                dispatch(changeOnline(data as OnlineNotification));
                                                 break;
                                             default:
                                         }
@@ -380,7 +406,7 @@ function Header() {
                                 <div className={cx('action-btn')}>
                                     <button
                                         onClick={() => {
-                                            setShowNotification(true);
+                                            setShowNotification(!showNotification);
                                         }}
                                     >
                                         <UserGroupIcon />
@@ -411,7 +437,7 @@ function Header() {
                                 <button
                                     style={{ backgroundColor: 'transparent' }}
                                     onClick={() => {
-                                        setShowSetting(true);
+                                        setShowSetting(!showSetting);
                                     }}
                                 >
                                     <div className={cx('avatar_user')}>

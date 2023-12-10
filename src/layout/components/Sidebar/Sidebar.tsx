@@ -39,7 +39,7 @@ function Sidebar() {
         return listFriend.filter(
             (f) =>
                 (typeSelect === 0 || f.type === hardData.typeFriendShip[typeSelect - 1].name) &&
-                (!f.message || !isNonSeen || f.message.seen === !isNonSeen) &&
+                (!f.message || !isNonSeen || (!f.message.seen && !f.message.user)) &&
                 f.friend.fullName.trim().toLowerCase().includes(query.toLowerCase().trim()),
         );
     }, [listFriend, query, isNonSeen, typeSelect]);
@@ -219,7 +219,7 @@ function Sidebar() {
                         >
                             <button
                                 onClick={() => {
-                                    setShowTypeTab(true);
+                                    setShowTypeTab(!showTypeTab);
                                 }}
                             >
                                 {typeSelect === 0 ? (
@@ -289,14 +289,19 @@ function Sidebar() {
                 {typeSelect !== 0 && <div>{hardData.typeFriendShip[typeSelect - 1].name}</div>}
                 {showList().map((friendShip) => {
                     let showTime = 'now';
-                    const { message, friend } = friendShip;
+                    let online = false;
+                    const { message, friend, timeStamp } = friendShip;
                     if (message?.timestamp) {
                         showTime = DataReconstruct.TranslateTimeStampToDisplayString(message.timestamp);
+                    }
+                    if (timeStamp) {
+                        online = new Date().getTime() - Number(timeStamp) < 60000;
                     }
                     return (
                         <Link
                             className={cx('friend_card', {
                                 'non-seen': message && !message.seen && !message.user,
+                                online: online,
                             })}
                             key={friendShip.id}
                             onClick={() => {

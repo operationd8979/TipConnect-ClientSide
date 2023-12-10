@@ -1,32 +1,35 @@
 .wrapper {
     --default-card-info-width: 580px;
     --default-chat-content-width: 800px;
+    --default-width-type-area: 18rem;
+    --default-width-file-chat: 10rem;
+    --default-width-media-chat: 20rem;
+    --default-width-item-header-send: 12rem;
+    --default-width-gif-area: 50rem;
 
     display: flex;
     flex-direction: column;
     height: var(--default-layout-height);
-    // background-color: aqua;
 }
 
 .header {
     flex: 1;
-    border: solid 1px black;
     display: flex;
     align-items: center;
 }
 
 .card-img {
-    margin-left: 8px;
-    width: 52px;
+    margin-left: var(--default-small-zone);
+    width: var(--default-xlarge-icon-size);
     img {
-        height: 5rem;
+        height: var(--default-xlarge-icon-size);
         border-radius: 50%;
     }
 }
 
 .card-info {
     width: var(--default-card-info-width);
-    margin-left: 8px;
+    margin-left: var(--default-small-zone);
 }
 
 .card-action {
@@ -34,40 +37,49 @@
     margin-right: 20px;
     background-color: white;
     button {
-        padding: 8px;
-        margin-left: 10px;
+        cursor: pointer;
+        padding: var(--default-small-zone);
+        margin-left: var(--default-small-zone);
         background-color: transparent;
         border-radius: 90px;
         border: solid black 1px;
-        color: green;
+        color: var(--primary);
+        svg {
+            width: var(--default-small-icon-size);
+            height: var(--default-small-icon-size);
+        }
     }
     :hover {
-        background-color: green;
-        color: white;
+        background-color: var(--primary);
+        color: var(--white);
+        svg {
+            width: var(--default-large-icon-size);
+            height: var(--default-large-icon-size);
+        }
     }
 }
 
 .card-name {
     width: 100%;
-    font-size: large;
+    font-size: var(--default-small-font-size);
 }
 
 .card-detail {
     width: 100%;
-    font-size: small;
+    font-size: var(--default-small-font-size);
 }
 
 .change-type {
-    margin-left: 8px;
-
+    margin-left: var(--default-small-zone);
     button {
-        width: 2.8rem;
-        height: 2.8rem;
+        cursor: pointer;
+        width: var(--default-small-icon-size);
+        height: var(--default-small-icon-size);
         svg {
             width: 100%;
             height: 100%;
             :hover {
-                color: red;
+                color: var(--primary);
             }
         }
     }
@@ -82,17 +94,17 @@
 }
 
 .last-message {
-    margin: 12px;
+    margin: var(--default-medium-zone);
     text-align: center;
-    color: black;
-    font-size: 1.7rem;
-    font-weight: 600;
+    color: var(--color-text);
+    font-size: var(--default-mini-icon-size);
+    font-weight: var(--default-medium-font-weight);
 }
 
 .type-area {
-    width: 20rem;
-    border-radius: 8px;
-    background: rgb(255, 255, 255);
+    width: var(--default-width-type-area);
+    border-radius: var(--default-small-zone);
+    background: var(--white);
     box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
 }
 
@@ -101,14 +113,20 @@
 
 .type-title {
     padding: 5px 12px;
-    font-size: 1.6rem;
-    font-weight: 600;
+    font-size: var(--default-small-font-size);
+    font-weight: var(--default-medium-font-weight);
     color: rgba(22, 24, 35, 0.7);
+    display: flex;
+    align-items: center;
+    svg {
+        margin-right: var(--default-small-zone);
+        width: var(--default-mini-icon-size);
+        height: var(--default-mini-icon-size);
+    }
 }
 
 .type-item {
-    border: solid black 1px;
-    font-size: 1.8rem;
+    font-size: var(--default-mini-icon-size);
     font-weight: bold;
     button {
         width: 100%;
@@ -117,65 +135,69 @@
 }
 
 .selectedType {
-    background-color: red;
+    background-color: var(--color-text);
+    button {
+        cursor: auto;
+        color: var(--white);
+    }
 }
 
 .nonSelectType {
     :hover {
-        background-color: aqua;
+        background-color: var(--primary);
     }
 }
 
 .wrapper-chat {
-    margin-top: 8px;
+    margin-top: var(--default-small-zone);
     display: flex;
     align-items: center;
 }
 
 .chat-avatar {
-    margin-left: 8px;
-    width: 52px;
+    margin-left: var(--default-small-zone);
+    width: var(--default-xlarge-icon-size);
     img {
-        height: 5rem;
+        height: var(--default-xlarge-icon-size);
         border-radius: 50%;
     }
 }
 
 .chat-content {
-    color: white;
+    color: var(--white);
     padding: 18px 20px;
     line-height: 26px;
-    font-size: 16px;
-    border-radius: 7px;
-    margin-bottom: 12px;
+    font-size: var(--default-small-font-size);
+    border-radius: var(--default-small-zone);
+    margin-bottom: var(--default-small-zone);
     position: relative;
     background: black;
     min-width: 90px;
     max-width: var(--default-chat-content-width);
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-left: var(--default-small-zone);
+    margin-right: var(--default-small-zone);
     word-wrap: break-word;
 }
 
 .seen-notification {
     margin-top: auto;
     margin-bottom: 12px;
-    color: black;
+    color: var(--black);
     font-weight: bold;
 }
 
 .chat-content-file {
     display: flex;
     flex-direction: column;
-    color: white;
+    color: var(--white);
     img {
-        width: 100px;
-        height: 100px;
+        width: var(--default-width-file-chat);
+        height: var(--default-width-file-chat);
     }
 }
 
 .chat-content-gif {
-    height: 200px;
+    height: var(--default-width-media-chat);
 }
 
 .friend-chat {
@@ -199,7 +221,8 @@
 .chat-content-call {
     display: flex;
     svg {
-        width: 2.8rem;
+        width: var(--default-small-icon-size);
+        height: var(--default-small-icon-size);
     }
 }
 
@@ -243,33 +266,37 @@
         border-radius: 5px;
         box-shadow: 3px 3px rgba(0, 0, 0, 0.15);
         svg {
-            height: 50px;
+            height: var(--default-small-icon-size);
+            width: var(--default-small-icon-size);
+        }
+    }
+    :hover {
+        svg {
+            height: var(--default-large-icon-size);
+            width: var(--default-large-icon-size);
         }
     }
 }
 
 .header-send-icon,
 .header-send-picture {
-    width: 8rem;
+    width: var(--default-width-item-header-send);
     display: flex;
     align-items: center;
-    margin-left: 5px;
+    margin-left: var(--default-mini-zone);
     button {
+        cursor: pointer;
     }
 }
 
 .gif-area {
-    width: 60rem;
+    width: var(--default-width-gif-area);
     max-height: 40rem;
-
     display: flex;
     flex-direction: column;
-    // max-height: min((100vh - 96px) - 60px, 734px);
-    // min-height: 100px;
-    // padding-top: 8px;
     border-radius: 8px;
-    background: rgb(255, 255, 255);
-    box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
+    background: var(--white);
+    box-shadow: rgb(0 0 0 / 12%) 0px 4px 12px;
 }
 
 .gif-data {
@@ -277,15 +304,15 @@
     flex-direction: row;
     overflow-y: scroll;
     img {
-        margin-right: 5px;
-        height: 20rem;
+        margin-right: var(--default-mini-zone);
+        height: 18rem;
     }
 }
 
 .gif-title {
     padding: 5px 12px;
-    font-size: 1.6rem;
-    font-weight: 600;
+    font-size: var(--default-small-font-size);
+    font-weight: var(--default-medium-font-weight);
     color: rgba(22, 24, 35, 0.7);
 }
 
@@ -300,14 +327,14 @@
 
 .input-chat {
     flex: 8;
-    padding: 8px;
-    border-top: solid 1px black;
-    border-right: solid 1px black;
-    border-radius: 8px;
+    padding: var(--default-small-zone);
+    border-top: solid 1px var(--black);
+    border-right: solid 1px var(--black);
+    border-radius: 5px;
     input {
         width: 100%;
         height: 100%;
-        background-color: white;
+        background-color: var(--white);
         font-size: 1.7rem;
         font-weight: 550;
         line-height: 2rem;
@@ -328,8 +355,14 @@
     button {
         height: 100%;
         svg {
-            width: 5rem;
-            height: 5rem;
+            width: var(--default-large-icon-size);
+            height: var(--default-large-icon-size);
+        }
+    }
+    :hover {
+        svg {
+            width: var(--default-xlarge-icon-size);
+            height: var(--default-xlarge-icon-size);
         }
     }
 }

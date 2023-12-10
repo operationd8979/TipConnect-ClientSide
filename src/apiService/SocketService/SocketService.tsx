@@ -1,6 +1,7 @@
 import Stomp, { Frame, VERSIONS, client, over, Client } from 'webstomp-client';
 import SockJS from 'sockjs-client';
 import { useDispatch, useSelector } from 'react-redux';
+import { OnlineNotification, SeenNotification } from '../../type';
 
 const connectStomp = (socket: WebSocket, stompClient: Client, userID: string) =>
     new Promise<{ socket: WebSocket; stompClient: Client }>((resolve) => {
@@ -34,4 +35,27 @@ const sendPrivateMessage = (stompClient: Client, data: any) => {
     }
 };
 
-export default { connectStomp, disconnectStomp, sendTradeMessage, sendPrivateMessage };
+const sendSeenNotification = (stompClient: Client, data: SeenNotification) => {
+    if (stompClient.connected) {
+        stompClient.send('/app/seen', JSON.stringify(data));
+    } else {
+        console.log('Socket is not opened!');
+    }
+};
+
+const notifyOnline = (stompClient: Client, data: OnlineNotification) => {
+    if (stompClient.connected) {
+        stompClient.send('/app/online', JSON.stringify(data));
+    } else {
+        console.log('Socket is not opened!');
+    }
+};
+
+export default {
+    connectStomp,
+    disconnectStomp,
+    sendTradeMessage,
+    sendPrivateMessage,
+    sendSeenNotification,
+    notifyOnline,
+};

@@ -182,7 +182,7 @@ const Profile = () => {
                     <div className={cx('info_pack')}>
                         <div className={cx('lable')}>{i18n.t('FINAL_email')}</div>
                         <div className={cx('input', 'disabled')}>
-                            <input value={user?.email || ''} disabled={true}></input>
+                            <input value={user?.email || ''} disabled={true} />
                             <div className={cx('old_property')}></div>
                         </div>
                     </div>
@@ -199,7 +199,8 @@ const Profile = () => {
                                         setInfoUser({ ...infoUser, firstName: user?.firstName || '' });
                                     }
                                 }}
-                            ></input>
+                                checked={false}
+                            />
                             <div className={cx('old_property')}>
                                 {firstName === user?.firstName ? '' : user?.firstName}
                             </div>
@@ -218,7 +219,8 @@ const Profile = () => {
                                         setInfoUser({ ...infoUser, lastName: user?.lastName || '' });
                                     }
                                 }}
-                            ></input>
+                                checked={false}
+                            />
                             <div className={cx('old_property')}>
                                 {lastName === user?.lastName ? '' : user?.lastName}
                             </div>
@@ -238,7 +240,7 @@ const Profile = () => {
                                         setInfoUser({ ...infoUser, newPassword: examplePassword });
                                     }
                                 }}
-                            ></input>
+                            />
                             {newPassword !== examplePassword && (
                                 <div className={cx('old_property')}>
                                     {i18n.t('FINAL_passwordRe')}:
@@ -248,7 +250,7 @@ const Profile = () => {
                                         onChange={(e) => {
                                             setRePassword(e.target.value);
                                         }}
-                                    ></input>
+                                    />
                                     <div className={cx('icon_check')}>
                                         {newPassword === rePassword && newPassword !== '' ? (
                                             <CheckIcon></CheckIcon>
