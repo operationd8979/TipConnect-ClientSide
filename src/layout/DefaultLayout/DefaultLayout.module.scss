@@ -6,6 +6,7 @@
 
 .container {
     margin-top: 5px;
+    min-width: var(--default-layout-width-sidebar);
     width: var(--default-layout-width);
     height: var(--default-layout-height);
 }
@@ -17,4 +18,16 @@
     --default-blur-background-color: rgba(0, 229, 255, 0.877);
     --default-blur-value: 90px;
     --default-color-link-a: blue;
+}
+
+@media (max-width: 40rem) {
+    .container {
+        width: var(--default-min-width-resize-size);
+    }
+}
+
+@media (min-width: 40rem) and (max-width: 100rem) {
+    .container {
+        width: var(--default-medium-width-resize-size);
+    }
 }

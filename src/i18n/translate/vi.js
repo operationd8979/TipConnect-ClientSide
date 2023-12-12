@@ -46,6 +46,7 @@ export const vi = {
     HOME_INRO_DES: `Khám phá những tiện ích kết nối với bạn bè và đồng nhiệp.`,
     MESSAGE_AREA_last_message: 'Tin nhắn cuối cùng',
     MESSAGE_AREA_list_gif: 'Danh sách gif',
+    MESSAGE_AREA_geo_ask: 'Bạn có chắc là muốn chia sẽ vị trí hiện tại của bạn?',
     PROFILE_NAME_SIDE: 'Account Setting',
     PROFILE_CHANGE_AVATAR: 'Đổi ảnh đại diện',
     PROFILE_enter_your_password: 'Nhập mật khẩu của bạn',

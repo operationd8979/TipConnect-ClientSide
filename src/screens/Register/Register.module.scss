@@ -79,3 +79,36 @@
     opacity: var(--default-dark-blur-opacity);
     filter: blur(var(--default-blur-value));
 }
+
+@media (max-width: 40rem) {
+    .wrapper {
+        width: var(--default-min-width-resize-size);
+    }
+    .img-side {
+        display: none;
+    }
+}
+@media (min-width: 40rem) and (max-width: 100rem) {
+    .wrapper {
+        width: var(--default-medium-width-resize-size);
+    }
+    .img-side {
+        display: none;
+    }
+}
+@media (max-height: 40rem) {
+    .wrapper {
+        height: 50rem;
+    }
+    .header {
+        display: none;
+    }
+    .title {
+        display: none;
+    }
+}
+@media (min-height: 40rem) and (max-height: 60rem) {
+    .wrapper {
+        height: 80rem;
+    }
+}

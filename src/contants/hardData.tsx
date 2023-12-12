@@ -12,13 +12,13 @@ const typeMessage = {
     EXCEL: { code: 4, name: 'EXCEL' },
     PDF: { code: 5, name: 'PDF' },
     GIF: { code: 6, name: 'GIF' },
-    MULTIFILES: { code: 7, name: 'MULTIFILES' },
-    CALL: { code: 8, name: 'CALL' },
-    ENDCALL: { code: 9, name: 'ENDCALL' },
-    SYSTEM: { code: 10, name: 'SYSTEM' },
-    RTC: { code: 11, name: 'RTC' },
-    SEEN: { code: 12, name: 'SEEN' },
-    ONLINE: { code: 13, name: 'ONLINE' },
+    CALL: { code: 7, name: 'CALL' },
+    ENDCALL: { code: 8, name: 'ENDCALL' },
+    SYSTEM: { code: 9, name: 'SYSTEM' },
+    RTC: { code: 10, name: 'RTC' },
+    SEEN: { code: 11, name: 'SEEN' },
+    ONLINE: { code: 12, name: 'ONLINE' },
+    GEO: { code: 13, name: 'GEO' },
 };
 
 export default { typeFriendShip, typeMessage };

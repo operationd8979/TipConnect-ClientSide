@@ -279,7 +279,8 @@
 }
 
 .header-send-icon,
-.header-send-picture {
+.header-send-picture,
+.header-send-location {
     width: var(--default-width-item-header-send);
     display: flex;
     align-items: center;

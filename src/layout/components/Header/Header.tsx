@@ -174,16 +174,17 @@ function Header() {
                                                     }
                                                 }
                                                 break;
-                                            case 'MESSAGE':
-                                            case 'PHOTO':
-                                            case 'GIF':
-                                            case 'PDF':
-                                            case 'WORD':
-                                            case 'EXCEL':
-                                            case 'ENDCALL':
+                                            case hardData.typeMessage.MESSAGE.name:
+                                            case hardData.typeMessage.PHOTO.name:
+                                            case hardData.typeMessage.GIF.name:
+                                            case hardData.typeMessage.PDF.name:
+                                            case hardData.typeMessage.WORD.name:
+                                            case hardData.typeMessage.EXCEL.name:
+                                            case hardData.typeMessage.ENDCALL.name:
+                                            case hardData.typeMessage.GEO.name:
                                                 dispatch(updateLastMessage(data as MessageChat));
                                                 break;
-                                            case 'CALL':
+                                            case hardData.typeMessage.CALL.name:
                                                 console.log('[get private call]:');
                                                 if (!callGuy) {
                                                     const body = JSON.parse(data.body) as {
@@ -198,12 +199,12 @@ function Header() {
                                                     setCallGuy({ friendID, fullName, urlAvatar, type });
                                                 }
                                                 break;
-                                            case 'RTC':
+                                            case hardData.typeMessage.RTC.name:
                                                 if (data.body === 'cancel') {
                                                     setCallGuy(null);
                                                 }
                                                 break;
-                                            case 'ONLINE':
+                                            case hardData.typeMessage.ONLINE.name:
                                                 dispatch(changeOnline(data as OnlineNotification));
                                                 break;
                                             default:

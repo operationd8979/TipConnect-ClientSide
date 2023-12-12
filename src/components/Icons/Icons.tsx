@@ -347,7 +347,7 @@ export const Call = ({ width = '3.2rem', height = '3.2rem', className = '' }) =>
         width={width}
         height={height}
         viewBox="0 0 118.875 122.877"
-        enable-background="new 0 0 118.875 122.877"
+        enableBackground="new 0 0 118.875 122.877"
         xmlSpace="preserve"
         fill="currentColor"
     >
@@ -423,18 +423,17 @@ export const GifItem = ({ width = '3.2rem', height = '3.2rem', className = '' })
         fill="currentColor"
     >
         <defs>
-            {' '}
             <style>{`
-    .cls-1-GifItem, .cls-2-GifItem {
-      fill-rule: evenodd;
-    }
-    .cls-2-GifItem {
-      fill: red;
-    }
-    .cls-3-GifItem {
-      fill: #fff;
-    }
-  `}</style>
+                .cls-1-GifItem, .cls-2-GifItem {
+                fill-rule: evenodd;
+                }
+                .cls-2-GifItem {
+                fill: red;
+                }
+                .cls-3-GifItem {
+                fill: #fff;
+                }
+            `}</style>
         </defs>
         <title>gif</title>
         <path
@@ -603,14 +602,14 @@ export const TripleDot = ({ width = '3.2rem', height = '3.2rem', className = '' 
         width={width}
         height={height}
         viewBox="0 0 29.957 122.88"
-        enable-background="new 0 0 29.957 122.88"
+        enableBackground="new 0 0 29.957 122.88"
         xmlSpace="preserve"
         fill="currentColor"
     >
         <g>
             <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M14.978,0c8.27,0,14.979,6.708,14.979,14.979c0,8.27-6.709,14.976-14.979,14.976 C6.708,29.954,0,23.249,0,14.979C0,6.708,6.708,0,14.978,0L14.978,0z M14.978,92.926c8.27,0,14.979,6.708,14.979,14.979 s-6.709,14.976-14.979,14.976C6.708,122.88,0,116.175,0,107.904S6.708,92.926,14.978,92.926L14.978,92.926z M14.978,46.463 c8.27,0,14.979,6.708,14.979,14.979s-6.709,14.978-14.979,14.978C6.708,76.419,0,69.712,0,61.441S6.708,46.463,14.978,46.463 L14.978,46.463z"
             />
         </g>
@@ -629,7 +628,7 @@ export const ArrowBack = ({ width = '3.2rem', height = '3.2rem', className = '' 
         width={width}
         height={height}
         viewBox="0 0 80.593 122.88"
-        enable-background="new 0 0 80.593 122.88"
+        enableBackground="new 0 0 80.593 122.88"
         xmlSpace="preserve"
         fill="currentColor"
     >
@@ -677,14 +676,14 @@ export const ProfileItem = ({ width = '3.2rem', height = '3.2rem', className = '
         width={width}
         height={height}
         viewBox="0 0 122.88 92.126"
-        enable-background="new 0 0 122.88 92.126"
+        enableBackground="new 0 0 122.88 92.126"
         xmlSpace="preserve"
         fill="currentColor"
     >
         <g>
             <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M6.022,0h52.021c3.878,0,7.048,3.17,7.048,7.048v5.254h52.149 c3.102,0,5.64,2.535,5.64,5.637v68.549c0,3.101-2.538,5.638-5.64,5.638h-12.219V81.464H89.949v10.662H34.681V81.464H19.608v10.662 H6.662c-3.1,0-6.662-2.537-6.662-5.638C0,58.626,0,33.214,0,6.023C0,2.71,2.709,0,6.022,0L6.022,0z M70.785,27.972h43.325v6.39 H70.785V27.972L70.785,27.972z M70.785,44.648h43.325v6.39H70.785V44.648L70.785,44.648z M70.785,61.324h43.325v6.388H70.785 V61.324L70.785,61.324z M9.086,67.712v-8.194c4.385-1.95,17.81-5.57,18.443-10.938c0.145-1.211-2.715-5.923-3.37-8.139 c-0.823-1.313-1.268-1.782-1.245-3.401c0.011-0.912,0.025-1.81,0.156-2.687c0.166-1.121,0.134-1.154,0.719-2.057 c0.61-0.938,0.349-4.358,0.349-5.65c0-12.851,22.518-12.855,22.518,0c0,1.625-0.374,4.61,0.508,5.889 c0.431,0.621,0.354,0.694,0.496,1.456c0.191,0.993,0.204,2.011,0.22,3.05c0.021,1.619-0.422,2.089-1.245,3.401 c-0.799,2.327-3.835,6.726-3.576,8.046c0.966,4.902,13.42,8.195,17.341,9.939v9.285H9.086L9.086,67.712z M99.875,92.126h-4.656 v-5.025h4.656V92.126L99.875,92.126z M29.534,92.126h-4.658v-5.025h4.658V92.126L29.534,92.126z"
             />
         </g>
@@ -703,14 +702,14 @@ export const LogoutItem = ({ width = '3.2rem', height = '3.2rem', className = ''
         width={width}
         height={height}
         viewBox="0 0 110.395 122.88"
-        enable-background="new 0 0 110.395 122.88"
+        enableBackground="new 0 0 110.395 122.88"
         xmlSpace="preserve"
         fill="currentColor"
     >
         <g>
             <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M93.359,17.16L75.68,9.377L75.99,0h34.404v61.439v61.44H75.99l-0.311-6.835 l17.68-10.946V17.16L93.359,17.16z M82.029,79.239v-34.54H47.004V13.631L0,61.937l47.004,48.373v-31.07H82.029L82.029,79.239z"
             />
         </g>
@@ -849,7 +848,7 @@ export const TagItem = ({ width = '3.2rem', height = '3.2rem', className = '' })
         width={width}
         height={height}
         viewBox="0 0 122.879 122.891"
-        enable-background="new 0 0 122.879 122.891"
+        enableBackground="new 0 0 122.879 122.891"
         xmlSpace="preserve"
         fill="currentColor"
     >
@@ -878,5 +877,33 @@ export const ArrowShow = ({ width = '3.2rem', height = '3.2rem', className = '' 
         <g>
             <polygon points="122.88,0 122.88,30.82 61.44,80.593 0,30.82 0,0 61.44,49.772 122.88,0" />
         </g>
+    </svg>
+);
+
+export const LocationItem = ({ width = '3.2rem', height = '3.2rem', className = '' }) => (
+    <svg
+        className={className}
+        id="Layer_1"
+        data-name="Layer 1"
+        xmlns="http://www.w3.org/2000/svg"
+        x="0px"
+        y="0px"
+        width={width}
+        height={height}
+        viewBox="0 0 122.88 115.23"
+        fill="currentColor"
+    >
+        <defs>
+            <style>{`.cls-1{fill:#212121;}.cls-1,.cls-2{fill-rule:evenodd;}.cls-2{fill:#f44336;}`}</style>
+        </defs>
+        <title>location</title>
+        <path
+            className="cls-1"
+            d="M25.32,75.31a3.59,3.59,0,1,1,0,7.18H18.58L9.7,108.07H112.93l-9.64-25.58H97.72a3.59,3.59,0,0,1,0-7.18h10.7l14.46,39.92H0L13.32,75.31Z"
+        />
+        <path
+            className="cls-2"
+            d="M79.06,83.64A70.16,70.16,0,0,1,63.78,96.28a2.15,2.15,0,0,1-2.45.08,86.21,86.21,0,0,1-21.25-19C32.34,67.69,27.46,56.92,25.8,46.55s-.11-20.63,5.12-28.86a35.35,35.35,0,0,1,7.91-8.76C46.21,3.05,54.64-.06,63,0A34.1,34.1,0,0,1,86,9.38a33.87,33.87,0,0,1,6.13,7.47c5.63,9.27,6.84,21.09,4.37,33.07a72.84,72.84,0,0,1-17.46,33.7v0ZM61.44,18.7A18.06,18.06,0,1,1,43.38,36.76,18.06,18.06,0,0,1,61.44,18.7Z"
+        />
     </svg>
 );

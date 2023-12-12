@@ -11,10 +11,11 @@ import Chat from './Chat';
 import Button from '../../components/Button';
 import { SocketService, UserService } from '../../apiService';
 import { getGifItems, updateLastMessage, updateFriendShip } from '../../reducers';
-import { Call, EditItem, FileItem, GifItem, Send, TagItem, VideoCall } from '../../components/Icons';
+import { Call, EditItem, FileItem, GifItem, LocationItem, Send, TagItem, VideoCall } from '../../components/Icons';
 import { State, StateWS, MessageChat, Gif, RawChat, SeenNotification } from '../../type';
 import { pathImage } from '../../contants';
 import hardData from '../../contants/hardData';
+import Map from '../../components/Map';
 
 const cx = classNames.bind(Styles);
 
@@ -71,6 +72,7 @@ const MessageArea = () => {
                         case hardData.typeMessage.WORD.name:
                         case hardData.typeMessage.EXCEL.name:
                         case hardData.typeMessage.ENDCALL.name:
+                        case hardData.typeMessage.GEO.name:
                             setCurrentMessage(data as MessageChat);
                             dispatch(updateLastMessage(data as MessageChat));
                             break;
@@ -305,22 +307,6 @@ const MessageArea = () => {
         if (bodyChat !== '') onSendPrivate(bodyChat, hardData.typeMessage.MESSAGE.name);
     }
 
-    function onSendPrivate(body: string, type: string) {
-        const chat: MessageChat = {
-            from: user?.userID || '',
-            to: friendId || '',
-            body: body,
-            timestamp: new Date().getTime().toString(),
-            type: type,
-            seen: false,
-            user: true,
-        };
-        SocketService.sendPrivateMessage(stompClient, chat);
-        setListMessage((preList) => [...preList, chat]);
-        setBodyChat('');
-        dispatch(updateLastMessage(chat));
-    }
-
     function onSendSeenNotification(seenNotification: SeenNotification) {
         SocketService.sendSeenNotification(stompClient, seenNotification);
     }
@@ -343,18 +329,7 @@ const MessageArea = () => {
     };
 
     const onClickIcon = (url: string) => {
-        const chat: MessageChat = {
-            from: user?.userID || '',
-            to: friendId || '',
-            type: 'GIF',
-            timestamp: new Date().getTime().toString(),
-            body: url,
-            seen: false,
-            user: true,
-        };
-        SocketService.sendPrivateMessage(stompClient, chat);
-        setListMessage((preList) => [...preList, chat]);
-        dispatch(updateLastMessage(chat));
+        onSendPrivate(url, hardData.typeMessage.GIF.name);
         setShowGifTab(false);
     };
 
@@ -430,6 +405,40 @@ const MessageArea = () => {
             }
         }
     };
+
+    const handleShareLocation = () => {
+        if ('geolocation' in navigator) {
+            const userConfirmation = window.confirm(i18n.t('MESSAGE_AREA_geo_ask'));
+            if (userConfirmation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    onSendPrivate(
+                        position.coords.latitude + '@' + position.coords.longitude,
+                        hardData.typeMessage.GEO.name,
+                    );
+                });
+            }
+        } else {
+            console.log('Geolocation is not available in your browser.');
+        }
+    };
+
+    function onSendPrivate(body: string, type: string) {
+        const chat: MessageChat = {
+            from: user?.userID || '',
+            to: friendId || '',
+            body: body,
+            timestamp: new Date().getTime().toString(),
+            type: type,
+            seen: false,
+            user: true,
+        };
+        SocketService.sendPrivateMessage(stompClient, chat);
+        setListMessage((preList) => [...preList, chat]);
+        if (type === hardData.typeMessage.MESSAGE.name) {
+            setBodyChat('');
+        }
+        dispatch(updateLastMessage(chat));
+    }
 
     return (
         <div className={cx('wrapper')}>
@@ -562,6 +571,11 @@ const MessageArea = () => {
                                 onChange={(e) => onChangeFile(e)}
                             />
                             <FileItem />
+                        </button>
+                    </div>
+                    <div className={cx('header-send-location')}>
+                        <button onClick={handleShareLocation} disabled={loading}>
+                            <LocationItem />
                         </button>
                     </div>
                 </div>

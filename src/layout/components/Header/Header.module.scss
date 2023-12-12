@@ -145,3 +145,15 @@
     width: var(--default-width-setting-area);
     color: var(--white);
 }
+
+@media (max-width: 40rem) {
+    .inner {
+        width: var(--default-min-width-resize-size);
+    }
+}
+
+@media (min-width: 40rem) and (max-width: 70rem) {
+    .inner {
+        width: var(--default-medium-width-resize-size);
+    }
+}

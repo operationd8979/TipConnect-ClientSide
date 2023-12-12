@@ -337,14 +337,14 @@ const Call = () => {
                 <div className={cx('name')}>{fullName}</div>
                 <div className={cx('video')} style={{ backgroundColor: 'black' }}>
                     {!isVideo && 'Only voice!!!'}
-                    <video height={160} width={160} ref={friendVideo} autoPlay={true} />
+                    <video ref={friendVideo} autoPlay={true} />
                 </div>
                 {isConnected ? <div></div> : <div>{!isAccept ? 'Kết nối...' : 'Khởi tạo đường truyền...'}</div>}
             </div>
             <div className={cx('user-area')}>
                 <div className={cx('name')}>{user?.fullName}</div>
                 <div className={cx('video')} style={{ backgroundColor: 'black' }}>
-                    <video height={160} width={160} ref={userVideo} autoPlay={true} hidden={!isVideo} muted />
+                    <video ref={userVideo} autoPlay={true} hidden={!isVideo} muted />
                 </div>
                 {!isVideo && (
                     <div className={cx('image')}>

@@ -12,3 +12,9 @@
     margin-left: 5px;
     // background-color: blue;
 }
+
+@media (max-width: 1000px) {
+    .content {
+        display: none;
+    }
+}

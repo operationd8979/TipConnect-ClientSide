@@ -160,3 +160,9 @@
     border-width: 2px;
     border-color: red;
 }
+
+@media (max-width: 1000px) {
+    .content {
+        display: none;
+    }
+}

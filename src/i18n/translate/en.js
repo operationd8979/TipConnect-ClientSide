@@ -46,6 +46,7 @@ export const en = {
     HOME_INRO_DES: `Let's explore the benefits of connecting with friends and colleagues.`,
     MESSAGE_AREA_last_message: 'This is the last message',
     MESSAGE_AREA_list_gif: 'List gifs',
+    MESSAGE_AREA_geo_ask: 'Are you sure share your current location?',
     PROFILE_NAME_SIDE: 'Account Setting',
     PROFILE_CHANGE_AVATAR: 'Change Avatar',
     PROFILE_enter_your_password: 'Enter your password',

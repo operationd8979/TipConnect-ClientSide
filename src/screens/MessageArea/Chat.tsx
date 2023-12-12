@@ -3,6 +3,8 @@ import Styles from './MessageArea.module.scss';
 import { useEffect } from 'react';
 import { pathImage } from '../../contants';
 import { Call, CallIncome, CallOut } from '../../components/Icons';
+import hardData from '../../contants/hardData';
+import Map from '../../components/Map';
 
 interface Chat {
     fullName: string;
@@ -26,34 +28,36 @@ const Chat = ({ fullName, urlAvatar, content, isUser, seen, type, isLast }: Chat
             )}
             {isLast && isUser && seen && <div className={cx('seen-notification')}>đã xem</div>}
             <div className={cx('chat-content')}>
-                {type === 'MESSAGE' ? (
+                {type === hardData.typeMessage.MESSAGE.name ? (
                     content
-                ) : type === 'PHOTO' || type === 'GIF' ? (
+                ) : type === hardData.typeMessage.PHOTO.name || type === hardData.typeMessage.GIF.name ? (
                     <a href={content} target="_blank">
                         <img src={content} className={cx('chat-content-gif')} />
                     </a>
-                ) : type === 'PDF' ? (
+                ) : type === hardData.typeMessage.PDF.name ? (
                     <a className={cx('chat-content-file')} href={content} target="_blank">
                         <img src={pathImage.pdfFile} />
                         {content.substring(86)}
                     </a>
-                ) : type === 'WORD' ? (
+                ) : type === hardData.typeMessage.WORD.name ? (
                     <a className={cx('chat-content-file')} href={content} target="_blank">
                         <img src={pathImage.wordFile} />
                         {content.substring(86)}
                     </a>
-                ) : type === 'EXCEL' ? (
+                ) : type === hardData.typeMessage.EXCEL.name ? (
                     <a className={cx('chat-content-file')} href={content} target="_blank">
                         <img src={pathImage.excelFile} />
                         {content.substring(86)}
                     </a>
-                ) : type === 'ENDCALL' ? (
+                ) : type === hardData.typeMessage.ENDCALL.name ? (
                     <div className={cx('chat-content-call')}>
                         {isUser ? <CallOut /> : <CallIncome />}
                         <div className={cx('chat-content-call-duration')}>
                             {(Number.parseInt(content) / 1000).toFixed()} giây
                         </div>
                     </div>
+                ) : type === hardData.typeMessage.GEO.name ? (
+                    <Map lat={Number(content.split('@')[0])} lng={Number(content.split('@')[1])}></Map>
                 ) : (
                     'WRONG TYPE'
                 )}

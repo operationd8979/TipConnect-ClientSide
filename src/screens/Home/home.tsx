@@ -42,6 +42,16 @@ const Home = () => {
                 {i18n.t('HOME_WELCOME_DES')} <b>{i18n.t('FINAL_NAME_APP')}</b>
                 <br />
                 {i18n.t('HOME_INRO_DES')}
+                {/* <video
+                    src="http://localhost:8080/api/user/live/live.mp4"
+                    controls
+                    autoPlay
+                    muted
+                    loop
+                    width={400}
+                    height={400}
+                    itemType="video/mp4"
+                /> */}
             </div>
         </div>
     );
