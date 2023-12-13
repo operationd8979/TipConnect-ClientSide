@@ -1,5 +1,5 @@
 import userReducerAction from './userReducerAction';
-import { User, FriendShip, FriendRequestResponse, MessageChat, Gif, OnlineNotification } from '../../../type';
+import { User, RelationShip, FriendRequestResponse, MessageChat, Gif, OnlineNotification } from '../../../type';
 import { I18n } from 'i18n-js';
 
 export const loginSuccess = (payload: User) => {
@@ -54,7 +54,7 @@ export const uploadAvatarFail = () => {
     };
 };
 
-export const getListFriendSuccess = (payload: FriendShip[]) => {
+export const getListFriendSuccess = (payload: RelationShip[]) => {
     return {
         type: userReducerAction.GET_LIST_FRIEND_SUCCESS,
         payload,
@@ -114,7 +114,7 @@ export const getGifItems = (payload: Gif[]) => {
     };
 };
 
-export const updateFriendShip = (payload: FriendShip) => {
+export const updateFriendShip = (payload: RelationShip) => {
     return {
         type: userReducerAction.UPDATE_FRIEND_SHIP,
         payload,

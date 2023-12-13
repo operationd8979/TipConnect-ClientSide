@@ -1,0 +1,35 @@
+.wrapper {
+    height: var(--default-layout-height);
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+.live-area {
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-area {
+    height: 100%;
+    flex: 3;
+    background-color: blue;
+    video {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.chat-area {
+    height: 100%;
+    background-color: red;
+    flex: 1;
+}
+
+.action-area {
+    height: 10%;
+    background-color: red;
+}

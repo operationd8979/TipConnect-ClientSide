@@ -8,7 +8,7 @@ import HeadlessTippy from '@tippyjs/react/headless';
 import Search from '../Search';
 import { Wrapper } from '../../../components/Popper';
 import { PlusFriend, OnWait, TagItem, ArrowShow, Close } from '../../../components/Icons';
-import { State, FriendShip, SearchResponse, Response } from '../../../type';
+import { State, RelationShip, SearchResponse, Response } from '../../../type';
 import { UserService } from '../../../apiService/';
 import { getListFriendSuccess, getListFriendFail, updateLastMessage, logout } from '../../../reducers';
 import DataReconstruct from '../../../utils/DataReconstruct';
@@ -23,9 +23,9 @@ function Sidebar() {
     const navigate = useNavigate();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const { isLoggedIn, user, listFriend, i18n } = currentUser;
+    const { isLoggedIn, user, listRelationShip, i18n } = currentUser;
 
-    const [query, setQuery] = useState<string>('');
+    const [query, setQuery] = useState<string>('operationddd@gmail.com');
     const [searchResult, setSearchResult] = useState<SearchResponse>({ tinyUser: null, messages: [] });
     const [triggerLoadMore, setTriggerLoadMore] = useState<boolean>(true);
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
@@ -36,13 +36,13 @@ function Sidebar() {
     const [typeSelect, setTypeSelect] = useState<number>(0);
 
     const showList = useCallback(() => {
-        return listFriend.filter(
-            (f) =>
-                (typeSelect === 0 || f.type === hardData.typeFriendShip[typeSelect - 1].name) &&
-                (!f.message || !isNonSeen || (!f.message.seen && !f.message.user)) &&
-                f.friend.fullName.trim().toLowerCase().includes(query.toLowerCase().trim()),
+        return listRelationShip.filter(
+            (r) =>
+                (typeSelect === 0 || r.type === hardData.typeFriendShip[typeSelect - 1].name) &&
+                (!r.message || !isNonSeen || (!r.message.seen && !r.message.user)) &&
+                r.name.trim().toLowerCase().includes(query.toLowerCase().trim()),
         );
-    }, [listFriend, query, isNonSeen, typeSelect]);
+    }, [listRelationShip, query, isNonSeen, typeSelect]);
 
     useEffect(() => {
         if (user) {
@@ -50,34 +50,9 @@ function Sidebar() {
                 try {
                     const response = await UserService.getListFriend();
                     if (response?.ok) {
-                        const reader = response.body?.getReader();
-                        if (reader) {
-                            const decoder = new TextDecoder();
-                            while (true) {
-                                const { done, value }: any = await reader.read();
-                                if (done) {
-                                    console.log('Streaming data friends ended!');
-                                    break;
-                                }
-                                let jsonString = decoder.decode(value, { stream: true });
-                                const jsonArray = jsonString.split(']');
-
-                                jsonArray.forEach((jsonData) => {
-                                    try {
-                                        const json: FriendShip[] = JSON.parse(jsonData + ']') as FriendShip[];
-                                        if (json.length > 0) {
-                                            dispatch(getListFriendSuccess(json));
-                                        }
-                                    } catch (error) {
-                                        jsonData = jsonData.substring(1);
-                                        const json: FriendShip[] = JSON.parse('[' + jsonData + ']') as FriendShip[];
-                                        if (json.length > 0) {
-                                            dispatch(getListFriendSuccess(json));
-                                        }
-                                    }
-                                });
-                            }
-                        }
+                        response.json().then((data) => {
+                            dispatch(getListFriendSuccess(data));
+                        });
                     } else {
                         if (response === null || response?.status == 403) {
                             dispatch(getListFriendFail());
@@ -89,7 +64,7 @@ function Sidebar() {
                     console.log(error);
                 }
             };
-            if (listFriend.length == 0) {
+            if (listRelationShip.length == 0) {
                 callApiGetFriend();
             }
         }
@@ -98,8 +73,8 @@ function Sidebar() {
     const handleAddFriend = async () => {
         setLoading(true);
         if (searchResult.tinyUser) {
-            const userID = searchResult.tinyUser.userID;
-            const response = await UserService.addFriend(userID);
+            const friendID = searchResult.tinyUser.userID;
+            const response = await UserService.addFriend(friendID);
             if (response) {
                 const res = response.data as Response;
                 switch (res.code) {
@@ -287,10 +262,10 @@ function Sidebar() {
                     </div>
                 )}
                 {typeSelect !== 0 && <div>{hardData.typeFriendShip[typeSelect - 1].name}</div>}
-                {showList().map((friendShip) => {
+                {showList().map((relationShip) => {
                     let showTime = 'now';
                     let online = false;
-                    const { message, friend, timeStamp } = friendShip;
+                    const { message, timeStamp } = relationShip;
                     if (message?.timestamp) {
                         showTime = DataReconstruct.TranslateTimeStampToDisplayString(message.timestamp);
                     }
@@ -303,25 +278,25 @@ function Sidebar() {
                                 'non-seen': message && !message.seen && !message.user,
                                 online: online,
                             })}
-                            key={friendShip.id}
+                            key={relationShip.id}
                             onClick={() => {
-                                if (friendShip?.message) {
-                                    if (!friendShip.message.seen) {
-                                        let newMessage = friendShip.message;
+                                if (relationShip?.message) {
+                                    if (!relationShip.message.seen) {
+                                        let newMessage = relationShip.message;
                                         newMessage.seen = true;
                                         dispatch(updateLastMessage(newMessage));
                                     }
                                 }
                             }}
-                            to={`/message/${friend.userID}`}
+                            to={`/message/${relationShip.id}`}
                         >
                             <div className={cx('card_img')}>
-                                <img src={friend.urlAvatar} alt={friend.fullName} />
+                                <img src={relationShip.urlPic} alt={relationShip.name} />
                             </div>
                             <div className={cx('card_content')}>
                                 <div style={{ width: '100%' }}>
                                     <div className={cx('card_holder')}>
-                                        <div className={cx('info_name')}>{friend.fullName}</div>
+                                        <div className={cx('info_name')}>{relationShip.name}</div>
                                         {showTime && <div className={cx('info_time')}>{showTime}</div>}
                                     </div>
                                     <div className={cx('info_detail')}>
@@ -351,25 +326,22 @@ function Sidebar() {
                         <div className={cx('header_search')}>{i18n.t('FINAL_message')}</div>
                         {searchResult.messages.map((message, index) => {
                             let showTime = 'now';
-                            const friendShip = listFriend.find(
-                                (c) => c.friend.userID === message.from || c.friend.userID === message.to,
-                            );
-                            if (!friendShip) {
+                            const relationShip = listRelationShip.find((r) => r.id === message.to);
+                            if (!relationShip) {
                                 return;
                             }
-                            const { friend } = friendShip;
                             if (message.timestamp) {
                                 showTime = DataReconstruct.TranslateTimeStampToDisplayString(message.timestamp);
                             }
                             return (
                                 <div className={cx('friend_card')} key={index}>
                                     <div className={cx('card_img')}>
-                                        <img src={friend.urlAvatar} alt={friend.fullName} />
+                                        <img src={relationShip.urlPic} alt={relationShip.name} />
                                     </div>
                                     <div className={cx('card_content')}>
                                         <div style={{ width: '100%' }}>
                                             <div className={cx('card_holder')}>
-                                                <div className={cx('info_name')}>{friend.fullName}</div>
+                                                <div className={cx('info_name')}>{relationShip.name}</div>
                                                 {showTime && <div className={cx('info_time')}>{showTime}</div>}
                                             </div>
                                             <div className={cx('info_detail')}>

@@ -58,7 +58,7 @@ function Header() {
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
-    const { isLoggedIn, user, notifications, listFriend, i18n } = currentUser;
+    const { isLoggedIn, user, notifications, listRelationShip, i18n } = currentUser;
     const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient } = currentStomp;
     const [showNotification, setShowNotification] = useState(false);
@@ -68,14 +68,14 @@ function Header() {
     const navigate = useNavigate();
 
     const [callGuy, setCallGuy] = useState<{
-        friendID: string;
+        relationShipID: string;
         fullName: string;
         urlAvatar: string;
         type: string;
     } | null>(null);
 
     useEffect(() => {
-        //get list friend
+        //get list friend request
         if (isLoggedIn && user) {
             const callApiGetFriendRequests = async () => {
                 try {
@@ -105,7 +105,7 @@ function Header() {
                 SocketService.disconnectStomp(stompClient);
             }
         };
-    }, []);
+    }, [isLoggedIn]);
 
     useEffect(() => {
         const notifyIOnline = () => {
@@ -150,7 +150,7 @@ function Header() {
                                         switch (data.type) {
                                             case 'SYSTEM':
                                                 const notificationData = data as NotificationChat;
-                                                const { friendRResponse, friendShipRespone, actionCode } =
+                                                const { friendRResponse, relationShipResponse, actionCode } =
                                                     notificationData;
                                                 if (friendRResponse) {
                                                     switch (actionCode) {
@@ -163,10 +163,10 @@ function Header() {
                                                         default:
                                                     }
                                                 }
-                                                if (friendShipRespone) {
+                                                if (relationShipResponse) {
                                                     switch (actionCode) {
                                                         case 101:
-                                                            dispatch(getListFriendSuccess([friendShipRespone]));
+                                                            dispatch(getListFriendSuccess([relationShipResponse]));
                                                             break;
                                                         case 102:
                                                             break;
@@ -192,11 +192,11 @@ function Header() {
                                                         urlAvatar: string;
                                                         type: string;
                                                     };
-                                                    const friendID = (data as MessageChat).from;
+                                                    const relationShipID = (data as MessageChat).to;
                                                     const fullName = body.fullName;
                                                     const type = body.type;
                                                     const urlAvatar = body.urlAvatar;
-                                                    setCallGuy({ friendID, fullName, urlAvatar, type });
+                                                    setCallGuy({ relationShipID, fullName, urlAvatar, type });
                                                 }
                                                 break;
                                             case hardData.typeMessage.RTC.name:
@@ -317,6 +317,13 @@ function Header() {
             to: config.routes.profile,
         },
         {
+            icon: <ProfileItem />,
+            title: 'Live',
+            onClick: () => {
+                window.open(`/live/`, '_blank', 'width=1920,height=1080');
+            },
+        },
+        {
             icon: <LogoutItem />,
             title: i18n.t('FINAL_logout'),
             onClick: () => {
@@ -340,7 +347,7 @@ function Header() {
                         <CallCard
                             stompClient={stompClient}
                             userID={user.userID}
-                            friendID={callGuy.friendID}
+                            relationShipID={callGuy.relationShipID}
                             fullName={callGuy.fullName}
                             urlAvatar={callGuy.urlAvatar}
                             type={callGuy.type}
@@ -371,9 +378,9 @@ function Header() {
                                                             <div className={cx('notification-name')}>
                                                                 {sender.fullName}
                                                             </div>
-                                                            <div className={cx('notification-content')}>
+                                                            {/* <div className={cx('notification-content')}>
                                                                 {i18n.t('FINAL_email')}:{sender.email}
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                         <div className={cx('notification-action-area')}>
                                                             <button

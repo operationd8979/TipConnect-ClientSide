@@ -28,7 +28,7 @@ const Profile = () => {
     const inputFile = useRef<HTMLInputElement>(null);
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const { isLoggedIn, user, listFriend } = currentUser;
+    const { isLoggedIn, user } = currentUser;
 
     const [infoUser, setInfoUser] = useState<UpdateInfoRequest>({
         firstName: user?.firstName || '',

@@ -4,11 +4,11 @@ import { publicRoutes } from './routes/index';
 import { DefaultLayout } from './layout';
 import { useSelector } from 'react-redux';
 import { State } from './type';
-import { Call } from './screens';
+import { Call, Live, WatchLive } from './screens';
 
 function App() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
-    const { isLoggedIn, user, listFriend } = currentUser;
+    const { isLoggedIn } = currentUser;
 
     return (
         <div className="App" id="App">
@@ -30,7 +30,9 @@ function App() {
                         />
                     );
                 })}
-                <Route path="/call/:friendId/:fullName/:type/:caller" element={<Call />} />
+                <Route path="/call/:relationShipID/:fullName/:type/:caller" element={<Call />} />
+                <Route path="/live" element={<Live />} />
+                <Route path="/watch/:liveID" element={<WatchLive />} />
             </Routes>
         </div>
     );

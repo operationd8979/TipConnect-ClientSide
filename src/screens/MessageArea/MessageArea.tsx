@@ -31,7 +31,7 @@ const TypeFile = {
 let currentHeightChat = 0;
 
 const MessageArea = () => {
-    const { friendId } = useParams();
+    const { relationShipID } = useParams();
 
     const dispatch = useDispatch();
 
@@ -41,12 +41,12 @@ const MessageArea = () => {
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as StateWS;
-    const { user, listFriend, listGifItem, i18n } = currentUser;
+    const { user, listRelationShip, listGifItem, i18n } = currentUser;
     const { stompClient } = currentStomp;
-    const friendShip = listFriend.find((f) => f.friend.userID === friendId);
+    const relationShip = listRelationShip.find((r) => r.id === relationShipID);
 
     const [listMessage, setListMessage] = useState<MessageChat[]>([]);
-    const [currentMessage, setCurrentMessage] = useState<MessageChat | null>(friendShip?.message || null);
+    const [currentMessage, setCurrentMessage] = useState<MessageChat | null>(relationShip?.message || null);
     const [seenGet, setSeenGet] = useState<SeenNotification | null>(null);
     const [bodyChat, setBodyChat] = useState('');
 
@@ -113,13 +113,13 @@ const MessageArea = () => {
     useEffect(() => {
         setListMessage([]);
         setCurrentOffset('');
-        setCurrentMessage(friendShip?.message || null);
-        callApiGetMessages(friendId || '', '', 20);
-    }, [friendId]);
+        setCurrentMessage(relationShip?.message || null);
+        callApiGetMessages(relationShipID || '', '', 20);
+    }, [relationShipID]);
 
     useEffect(() => {
         if (currentMessage) {
-            if (currentMessage.from === friendId) {
+            if (currentMessage.to === relationShipID) {
                 if (
                     listMessage.length === 0 ||
                     currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
@@ -136,13 +136,6 @@ const MessageArea = () => {
                         };
                         onSendSeenNotification(seenNotification);
                     }
-                    dispatch(updateLastMessage(newMessage));
-                }
-            } else if (currentMessage.to === friendId) {
-                if (currentMessage.type === hardData.typeMessage.ENDCALL.name) {
-                    let newMessage = currentMessage;
-                    newMessage.seen = true;
-                    setListMessage((prevList) => [...prevList, currentMessage]);
                     dispatch(updateLastMessage(newMessage));
                 }
             }
@@ -166,8 +159,10 @@ const MessageArea = () => {
         async (friendId: string, offset: string, limit: number) => {
             try {
                 const response = await UserService.getMessageChats(friendId, offset, limit);
+                console.log(response);
                 if (response?.ok) {
-                    response.json().then((data: MessageChat[]) => {
+                    response.json().then((data: any) => {
+                        console.log(data);
                         if (data[0]) {
                             setCurrentOffset(data[0].offset || '');
                         } else {
@@ -192,10 +187,10 @@ const MessageArea = () => {
     const handleScroll = useCallback(() => {
         if (messageAreaRef.current) {
             if (messageAreaRef.current.scrollTop === 0 && !isEnd) {
-                callApiGetMessages(friendId || '', currentOffset, 20);
+                callApiGetMessages(relationShipID || '', currentOffset, 20);
             }
         }
-    }, [callApiGetMessages, isEnd, currentOffset, friendId]);
+    }, [callApiGetMessages, isEnd, currentOffset, relationShipID]);
 
     useEffect(() => {
         if (messageAreaRef.current) {
@@ -312,11 +307,7 @@ const MessageArea = () => {
     }
 
     const handleCall = async (type: string) => {
-        window.open(
-            `/call/${friendId}/${friendShip?.friend.fullName}/${type}/caller`,
-            '_blank',
-            'width=500,height=500',
-        );
+        window.open(`/call/${relationShipID}/${relationShip?.name}/${type}/caller`, '_blank', 'width=500,height=500');
     };
 
     const handleClickPicture = () => {
@@ -393,14 +384,14 @@ const MessageArea = () => {
 
     const [showTypeTab, setShowTypeTab] = useState(false);
     const handleClickType = (code: number) => {
-        if (friendShip) {
-            if (friendShip.type !== hardData.typeFriendShip[code - 1].name) {
+        if (relationShip) {
+            if (relationShip.type !== hardData.typeFriendShip[code - 1].name) {
                 const response = UserService.changeTypeFriendShip(
-                    friendId || '',
+                    relationShipID || '',
                     hardData.typeFriendShip[code - 1].name,
                 );
-                friendShip.type = hardData.typeFriendShip[code - 1].name;
-                dispatch(updateFriendShip(friendShip));
+                relationShip.type = hardData.typeFriendShip[code - 1].name;
+                dispatch(updateFriendShip(relationShip));
                 setShowTypeTab(false);
             }
         }
@@ -425,7 +416,7 @@ const MessageArea = () => {
     function onSendPrivate(body: string, type: string) {
         const chat: MessageChat = {
             from: user?.userID || '',
-            to: friendId || '',
+            to: relationShipID || '',
             body: body,
             timestamp: new Date().getTime().toString(),
             type: type,
@@ -444,13 +435,13 @@ const MessageArea = () => {
         <div className={cx('wrapper')}>
             <div className={cx('header')}>
                 <div className={cx('card-img')}>
-                    <img src={friendShip?.friend.urlAvatar} alt={friendShip?.friend.fullName} />
+                    <img src={relationShip?.urlPic} alt={relationShip?.name} />
                 </div>
                 <div className={cx('card-info')}>
-                    <div className={cx('card-name')}>{friendShip?.friend.fullName}</div>
+                    <div className={cx('card-name')}>{relationShip?.name}</div>
                     <div className={cx('card-detail')}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            {friendShip?.type}
+                            {relationShip?.type}
                             <div className={cx('change-type')}>
                                 <HeadlessTippy
                                     placement="right"
@@ -471,8 +462,8 @@ const MessageArea = () => {
                                                     return (
                                                         <div
                                                             className={cx('type-item', {
-                                                                selectedType: friendShip?.type === name,
-                                                                nonSelectType: friendShip?.type !== name,
+                                                                selectedType: relationShip?.type === name,
+                                                                nonSelectType: relationShip?.type !== name,
                                                             })}
                                                             key={code}
                                                         >
@@ -515,12 +506,16 @@ const MessageArea = () => {
                 <div style={{ flex: 1 }} />
                 {isEnd && <div className={cx('last-message')}>{i18n.t('MESSAGE_AREA_last_message')}</div>}
                 {listMessage.map((message, index) => {
-                    if (user && friendShip)
+                    let sender = null;
+                    if (relationShip) {
+                        sender = relationShip.friends.filter((f) => f.userID === message.from)[0] || user;
+                    }
+                    if (user && sender)
                         return (
                             <Chat
                                 key={index}
-                                fullName={message.user ? user.fullName : friendShip.friend.fullName}
-                                urlAvatar={message.user ? user.urlAvatar : friendShip.friend.urlAvatar}
+                                fullName={message.user ? user.fullName : sender.fullName}
+                                urlAvatar={message.user ? user.urlAvatar : sender.urlAvatar}
                                 content={message.body}
                                 isUser={message.user}
                                 seen={message.seen}
@@ -528,6 +523,9 @@ const MessageArea = () => {
                                 isLast={index === listMessage.length - 1}
                             />
                         );
+                    else {
+                        return <div>mat du lieu</div>;
+                    }
                 })}
             </div>
             <div className={cx('chat-area')}>

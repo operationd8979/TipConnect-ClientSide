@@ -40,10 +40,10 @@ const Menu = ({ header, menuItem, setMenuItem, setShowTab }: Menu) => {
                     </button>
                 )}
             </div>
-            {menuItem[menuItem.length - 1].map((item) => {
+            {menuItem[menuItem.length - 1].map((item, index) => {
                 if (item.to) {
                     return (
-                        <Link className={cx('item-wrapper')} to={item.to}>
+                        <Link className={cx('item-wrapper')} to={item.to} key={index}>
                             {item.title}
                             {item.icon}
                         </Link>
@@ -51,7 +51,7 @@ const Menu = ({ header, menuItem, setMenuItem, setShowTab }: Menu) => {
                 }
                 if (item.onClick) {
                     return (
-                        <button className={cx('item-wrapper')} onClick={() => handleClickItem(item)}>
+                        <button className={cx('item-wrapper')} onClick={() => handleClickItem(item)} key={index}>
                             {item.title}
                             {item.icon}
                         </button>

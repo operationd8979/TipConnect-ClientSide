@@ -27,12 +27,13 @@ const servers = {
 };
 
 let peerConnection = new RTCPeerConnection(servers);
-// let localStream: MediaStream = new MediaStream();
-// let remoteStream: MediaStream = new MediaStream();
+
+const defaultURL =
+    'https://firebasestorage.googleapis.com/v0/b/tipconnect-14d4b.appspot.com/o/Default%2FdefaultAvatar.jpg?alt=media&token=a0a33d34-e4c4-4ed0-8b52-6da79b7b048a';
 
 const Call = () => {
     const [loading, setLoading] = useState(false);
-    const { friendId, fullName, type, caller } = useParams();
+    const { relationShipID, fullName, type, caller } = useParams();
 
     const [beginTime, setBeginTime] = useState<Date | null>(null);
 
@@ -51,6 +52,8 @@ const Call = () => {
     const { socket, stompClient } = currentStomp;
 
     const [isVideo, setIsVideo] = useState<boolean>(type === 'video' ? true : false);
+    const [isFriendVideo, setIsFriendVideo] = useState<boolean>(type === 'video' ? true : false);
+
     const [isAudio, setIsAudio] = useState<boolean>(true);
     const [isAccept, setIsAccept] = useState(!(caller === 'caller'));
     const [isConnected, setIsConnected] = useState(false);
@@ -86,6 +89,10 @@ const Call = () => {
                         if (!isDone) {
                             setIsDone(true);
                         }
+                    } else if (message.body === 'video') {
+                        setIsFriendVideo(true);
+                    } else if (message.body === 'audio') {
+                        setIsFriendVideo(false);
                     } else {
                         const jsonData = JSON.parse(message.body);
                         switch (jsonData.type) {
@@ -151,13 +158,16 @@ const Call = () => {
     }, []);
 
     useEffect(() => {
-        console.log('change local stream');
-        console.log(localStream);
+        if (friendVideo.current) {
+            friendVideo.current.srcObject = remoteStream;
+        }
+    }, [isFriendVideo]);
+
+    useEffect(() => {
         if (userVideo.current) {
             userVideo.current.srcObject = localStream;
         }
         localStream.getTracks().forEach((track) => {
-            console.log('send track');
             const sender = peerConnection.getSenders().find((s) => s.track?.kind === track.kind);
             if (sender) {
                 sender.replaceTrack(track);
@@ -168,8 +178,6 @@ const Call = () => {
     }, [localStream]);
 
     useEffect(() => {
-        console.log('change remote stream');
-        console.log(remoteStream);
         if (friendVideo.current) {
             friendVideo.current.srcObject = remoteStream;
         }
@@ -179,7 +187,7 @@ const Call = () => {
         //OPEN MEDIA STREAM
         if (stompClient.connected) {
             function openStream() {
-                const config = { audio: isAudio, video: isVideo };
+                const config = { audio: true, video: true };
                 console.log('open camera');
                 return navigator.mediaDevices.getUserMedia(config);
             }
@@ -231,6 +239,11 @@ const Call = () => {
     const handleChangeType = (isAudio: boolean, isVideo: boolean) => {
         console.log('[audio]:' + isAudio);
         console.log('[video]:' + isVideo);
+        if (isVideo) {
+            sendPrivateMassage('video');
+        } else {
+            sendPrivateMassage('audio');
+        }
         function openStream() {
             const config = { audio: isAudio, video: isVideo };
             return navigator.mediaDevices.getUserMedia(config);
@@ -243,15 +256,6 @@ const Call = () => {
                 });
             }
             setLocalStream(stream);
-            stream.getTracks().forEach((track) => {
-                console.log('send track');
-                const sender = peerConnection.getSenders().find((s) => s.track?.kind === track.kind);
-                if (sender) {
-                    sender.replaceTrack(track);
-                } else {
-                    peerConnection.addTrack(track, stream);
-                }
-            });
         }
         setLoading(true);
         if (!isAudio && !isVideo) {
@@ -272,7 +276,11 @@ const Call = () => {
 
     useEffect(() => {
         if (isDone) {
-            console.log(peerConnection);
+            if (isVideo) {
+                sendPrivateMassage('video');
+            } else {
+                sendPrivateMassage('audio');
+            }
         }
     }, [isDone]);
 
@@ -280,7 +288,7 @@ const Call = () => {
         if (stompClient.connected) {
             const chat: MessageChat = {
                 from: user?.userID || '',
-                to: friendId || '',
+                to: relationShipID || '',
                 type: 'RTC',
                 timestamp: new Date().getTime().toString(),
                 body: body,
@@ -300,7 +308,7 @@ const Call = () => {
             };
             const chat: MessageChat = {
                 from: user?.userID || '',
-                to: friendId || '',
+                to: relationShipID || '',
                 type: 'CALL',
                 timestamp: new Date().getTime().toString(),
                 body: JSON.stringify(tinyUser),
@@ -318,7 +326,7 @@ const Call = () => {
             if (stompClient.connected && user) {
                 const chat: MessageChat = {
                     from: user.userID || '',
-                    to: friendId || '',
+                    to: relationShipID || '',
                     timestamp: new Date().getTime().toString(),
                     type: 'ENDCALL',
                     body: duration.toString(),
@@ -336,15 +344,19 @@ const Call = () => {
             <div className={cx('friend-area')}>
                 <div className={cx('name')}>{fullName}</div>
                 <div className={cx('video')} style={{ backgroundColor: 'black' }}>
-                    {!isVideo && 'Only voice!!!'}
-                    <video ref={friendVideo} autoPlay={true} />
+                    <video ref={friendVideo} hidden={!isFriendVideo} autoPlay={true} />
                 </div>
+                {!isFriendVideo && (
+                    <div className={cx('image')}>
+                        <img src={defaultURL} />
+                    </div>
+                )}
                 {isConnected ? <div></div> : <div>{!isAccept ? 'Kết nối...' : 'Khởi tạo đường truyền...'}</div>}
             </div>
             <div className={cx('user-area')}>
                 <div className={cx('name')}>{user?.fullName}</div>
                 <div className={cx('video')} style={{ backgroundColor: 'black' }}>
-                    <video ref={userVideo} autoPlay={true} hidden={!isVideo} muted />
+                    <video ref={userVideo} hidden={!isVideo} autoPlay={true} muted />
                 </div>
                 {!isVideo && (
                     <div className={cx('image')}>

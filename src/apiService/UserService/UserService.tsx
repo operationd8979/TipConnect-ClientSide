@@ -126,9 +126,19 @@ const getGifItems = async () => {
     }
 };
 
-const changeTypeFriendShip = async (friendID: string, type: string) => {
+const changeTypeFriendShip = async (relationShipID: string, type: string) => {
     try {
-        const response = await get({ path: `user/updateTypeFriend/${friendID}&${type}` });
+        const response = await get({ path: `user/updateTypeFriend/${relationShipID}&${type}` });
+        return response;
+    } catch (error) {
+        //alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
+const getListLive = async () => {
+    try {
+        const response = await getStream({ path: `user/live/getListLive` });
         return response;
     } catch (error) {
         //alert(ERROR.ERR_NETWORK.message);
@@ -150,4 +160,5 @@ export default {
     denyFriendRequest,
     getGifItems,
     changeTypeFriendShip,
+    getListLive,
 };

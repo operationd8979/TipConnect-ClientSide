@@ -1,4 +1,4 @@
-import { Action, User, State, FriendShip, FriendRequestResponse, MessageChat } from '../../type';
+import { Action, User, State, MessageChat } from '../../type';
 import actionTypes from './Action';
 import i18n from '../../i18n/i18n';
 
@@ -12,7 +12,7 @@ const initalState: State = user
     ? {
           isLoggedIn: true,
           user,
-          listFriend: [],
+          listRelationShip: [],
           listGifItem: [],
           notifications: { listFriendRequest: [], listNotification: [] },
           i18n: i18n,
@@ -20,7 +20,7 @@ const initalState: State = user
     : {
           isLoggedIn: false,
           user: null,
-          listFriend: [],
+          listRelationShip: [],
           listGifItem: [],
           notifications: { listFriendRequest: [], listNotification: [] },
           i18n: i18n,
@@ -28,40 +28,44 @@ const initalState: State = user
 
 const UserReducer = (state: State = initalState, action: Action) => {
     const { type, payload } = action;
+    console.log('>>>>>>>[reducer][action]:' + type + ' [payload]:' + payload);
     switch (type) {
+        //register
         case actionTypes.REGISTER_SUCCESS:
             return { ...state, isLoggedIn: true, user: payload };
+        //login
         case actionTypes.LOGIN_SUCCESS:
             return { ...state, isLoggedIn: true, user: payload };
 
+        //add relationShip
         case actionTypes.GET_LIST_FRIEND_SUCCESS:
-            return { ...state, listFriend: [...state.listFriend, ...payload] };
+            return { ...state, listRelationShip: [...state.listRelationShip, ...payload] };
         case actionTypes.UPDATE_FRIEND_SHIP:
-            const UPDATE_FRIEND_SHIP = state.listFriend.map((friendShip) => {
-                if (friendShip.friend.userID === payload.friend.userID) {
+            const UPDATE_FRIEND_SHIP = state.listRelationShip.map((relationShip) => {
+                if (relationShip.id === payload.id) {
                     return payload;
                 }
-                return friendShip;
+                return relationShip;
             });
-            return { ...state, listFriend: UPDATE_FRIEND_SHIP };
+            return { ...state, listRelationShip: UPDATE_FRIEND_SHIP };
         case actionTypes.NOTIFY_ONLINE:
-            const friendShip = state.listFriend.find((f) => f.friend.userID === payload.from);
-            if (friendShip) {
-                friendShip.timeStamp = payload.timestamp;
+            const relationShip = state.listRelationShip.find((r) => r.id === payload.to);
+            if (relationShip) {
+                relationShip.timeStamp = payload.timestamp;
             }
-            const newListFriendOnline = [...state.listFriend];
-            return { ...state, listFriend: newListFriendOnline };
+            const newListRelationShip_NOTIFY_ONLINE = [...state.listRelationShip];
+            return { ...state, listRelationShip: newListRelationShip_NOTIFY_ONLINE };
         case actionTypes.UPDATE_LAST_MESSAGE:
-            const newListFriend = state.listFriend.map((friendShip) => {
+            const newListRelationShip_UPDATE_LAST_MESSAGE = state.listRelationShip.map((relationShip) => {
                 if (
-                    friendShip.friend.userID === (payload as MessageChat).from ||
-                    friendShip.friend.userID === (payload as MessageChat).to
+                    relationShip.id === (payload as MessageChat).from ||
+                    relationShip.id === (payload as MessageChat).to
                 ) {
-                    return { ...friendShip, message: payload };
+                    return { ...relationShip, message: payload };
                 }
-                return friendShip;
+                return relationShip;
             });
-            return { ...state, listFriend: newListFriend };
+            return { ...state, listRelationShip: newListRelationShip_UPDATE_LAST_MESSAGE };
 
         case actionTypes.UPDATE_USER_SUCCESS:
             return { ...state, user: payload };
@@ -114,7 +118,7 @@ const UserReducer = (state: State = initalState, action: Action) => {
             return {
                 isLoggedIn: false,
                 user: null,
-                listFriend: [],
+                listRelationShip: [],
                 listGifItem: [],
                 notifications: { listFriendRequest: [], listNotification: [] },
                 i18n: i18n,

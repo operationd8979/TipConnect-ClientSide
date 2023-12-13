@@ -24,12 +24,15 @@ export interface UpdateAvatarRequest {
     urlAvatar: string;
 }
 
-export interface FriendShip {
+export interface RelationShip {
     id: string;
-    friend: User;
+    name: string;
+    urlPic: string;
+    friends: User[];
     type: string;
     message?: MessageChat;
     timeStamp?: string;
+    isGroup: boolean;
 }
 
 export interface Action {
@@ -92,7 +95,7 @@ export interface Gif {
 export interface State {
     isLoggedIn: boolean;
     user: User | null;
-    listFriend: FriendShip[];
+    listRelationShip: RelationShip[];
     listGifItem: Gif[];
     notifications: Notifications;
     i18n: I18n;
@@ -133,7 +136,7 @@ export interface MessageChat extends RawChat {
 
 export interface NotificationChat extends RawChat {
     friendRResponse?: FriendRequestResponse;
-    friendShipRespone?: FriendShip;
+    relationShipResponse?: RelationShip;
     actionCode: number;
 }
 

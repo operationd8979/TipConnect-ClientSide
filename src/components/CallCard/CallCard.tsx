@@ -13,13 +13,13 @@ const cx = classNames.bind(Styles);
 interface CallCard {
     userID: string;
     stompClient: Client;
-    friendID: string;
+    relationShipID: string;
     fullName: string;
     urlAvatar: string;
     type: string;
     setCallGuy: React.Dispatch<
         React.SetStateAction<{
-            friendID: string;
+            relationShipID: string;
             fullName: string;
             urlAvatar: string;
             type: string;
@@ -27,7 +27,7 @@ interface CallCard {
     >;
 }
 
-const CallCard = ({ userID, stompClient, friendID, fullName, urlAvatar, type, setCallGuy }: CallCard) => {
+const CallCard = ({ userID, stompClient, relationShipID, fullName, urlAvatar, type, setCallGuy }: CallCard) => {
     useEffect(() => {
         const audioElement = new Audio(pathAudio.nokiaSound);
         audioElement.loop = true;
@@ -44,13 +44,13 @@ const CallCard = ({ userID, stompClient, friendID, fullName, urlAvatar, type, se
 
     const handleAcceptCall = () => {
         setCallGuy(null);
-        window.open(`/call/${friendID}/${fullName}/${type}/listener`, '_blank', 'width=500,height=500');
+        window.open(`/call/${relationShipID}/${fullName}/${type}/listener`, '_blank', 'width=500,height=500');
     };
 
     const handleCloseCall = () => {
         const chat: MessageChat = {
             from: userID,
-            to: friendID,
+            to: relationShipID,
             type: 'RTC',
             body: 'cancel',
             timestamp: new Date().getTime().toString(),

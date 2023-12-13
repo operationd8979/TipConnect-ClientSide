@@ -19,3 +19,53 @@
         box-shadow: 10px 10px rgba(0, 0, 0, 0.25);
     }
 }
+
+.live-area {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.live-area-header {
+    height: 6rem;
+    font-size: xx-large;
+    font-weight: bold;
+    box-shadow: 20px 20px rgba(0, 0, 0, 0.15);
+}
+
+.live-area-content {
+    flex: 1;
+    display: flex;
+    padding: 5rem;
+}
+
+.live-item {
+    border: solid black 1px;
+    border-radius: 10px;
+    width: 30rem;
+    height: 35rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.live-image {
+    margin-top: 8px;
+    height: 20rem;
+    img {
+        height: 100%;
+        border-radius: 50%;
+    }
+}
+
+.live-name {
+    margin-top: auto;
+    height: 10rem;
+    font-size: large;
+}
+
+.living {
+    font-size: large;
+    font-weight: bold;
+    color: var(--primary);
+}

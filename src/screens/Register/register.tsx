@@ -22,7 +22,7 @@ const Register = () => {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
     const { socket, stompClient } = currentStomp;
-    const { isLoggedIn, user, listFriend, i18n } = currentUser;
+    const { isLoggedIn, i18n } = currentUser;
 
     const [registerRequest, setRegisterRequest] = useState<RegisterRequest>({
         email: 'operationddd@gmail.com',
