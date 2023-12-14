@@ -1,6 +1,6 @@
 import { get, getStream, post, postMultipart } from '../../utils/httpRequest';
 import ERROR from '../../contants/errorMessage';
-import { SearchQuery, UpdateInfoRequest, UpdateAvatarRequest } from '../../type';
+import { SearchQuery, UpdateInfoRequest, UpdateAvatarRequest, AddGroupRequest } from '../../type';
 import { useDispatch } from 'react-redux';
 
 const getUserInfo = async () => {
@@ -146,6 +146,15 @@ const getListLive = async () => {
     }
 };
 
+const addGroup = async (addGroupRequest: AddGroupRequest) => {
+    try {
+        const response = await post({ path: `user/addGroup`, options: addGroupRequest });
+        return response;
+    } catch (error) {
+        return null;
+    }
+};
+
 export default {
     getUserInfo,
     getListFriend,
@@ -161,4 +170,5 @@ export default {
     getGifItems,
     changeTypeFriendShip,
     getListLive,
+    addGroup,
 };

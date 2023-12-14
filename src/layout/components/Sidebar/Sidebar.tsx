@@ -7,13 +7,14 @@ import HeadlessTippy from '@tippyjs/react/headless';
 
 import Search from '../Search';
 import { Wrapper } from '../../../components/Popper';
-import { PlusFriend, OnWait, TagItem, ArrowShow, Close } from '../../../components/Icons';
+import { PlusFriend, OnWait, TagItem, ArrowShow, Close, UserGroupIcon, GroupItem } from '../../../components/Icons';
 import { State, RelationShip, SearchResponse, Response } from '../../../type';
 import { UserService } from '../../../apiService/';
 import { getListFriendSuccess, getListFriendFail, updateLastMessage, logout } from '../../../reducers';
 import DataReconstruct from '../../../utils/DataReconstruct';
 import hardData from '../../../contants/hardData';
 import Button from '../../../components/Button';
+import MenuAddGroup from './MenuAddGroup';
 
 const cx = className.bind(styles);
 
@@ -25,7 +26,7 @@ function Sidebar() {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const { isLoggedIn, user, listRelationShip, i18n } = currentUser;
 
-    const [query, setQuery] = useState<string>('operationddd@gmail.com');
+    const [query, setQuery] = useState<string>('');
     const [searchResult, setSearchResult] = useState<SearchResponse>({ tinyUser: null, messages: [] });
     const [triggerLoadMore, setTriggerLoadMore] = useState<boolean>(true);
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
@@ -34,6 +35,9 @@ function Sidebar() {
 
     const [showTypeTab, setShowTypeTab] = useState(false);
     const [typeSelect, setTypeSelect] = useState<number>(0);
+
+    const [showGroupAdd, setShowGroupAdd] = useState(false);
+    const [render, setRender] = useState<boolean>(false);
 
     const showList = useCallback(() => {
         return listRelationShip.filter(
@@ -128,19 +132,41 @@ function Sidebar() {
         setTriggerLoadMore(!triggerLoadMore);
     };
 
+    const handleClickAddGroup = () => {
+        setShowGroupAdd(true);
+    };
+
     return (
         <aside className={cx('wrapper')}>
-            <div className={cx('header')}>
-                {isLoggedIn && (
-                    <Search
-                        query={query}
-                        setQuery={setQuery}
-                        setSearchResult={setSearchResult}
-                        searchResult={searchResult}
-                        triggerLoadMore={triggerLoadMore}
-                        setShowLoadMore={setShowLoadMore}
-                    />
+            <HeadlessTippy
+                placement="bottom"
+                visible={showGroupAdd}
+                interactive
+                onClickOutside={() => {
+                    setShowGroupAdd(false);
+                }}
+                render={(attrs) => (
+                    <div className={cx('group-add-area')} tabIndex={-1} {...attrs}>
+                        <MenuAddGroup
+                            listRelationShip={listRelationShip}
+                            render={render}
+                            setRender={setRender}
+                            setShowGroupAdd={setShowGroupAdd}
+                        />
+                    </div>
                 )}
+            >
+                <div className={cx('absolute')}></div>
+            </HeadlessTippy>
+            <div className={cx('header')}>
+                <Search
+                    query={query}
+                    setQuery={setQuery}
+                    setSearchResult={setSearchResult}
+                    searchResult={searchResult}
+                    triggerLoadMore={triggerLoadMore}
+                    setShowLoadMore={setShowLoadMore}
+                />
                 <div className={cx('controll-area')}>
                     <div className={cx('controll-area-fillter-button')}>
                         <button
@@ -156,6 +182,16 @@ function Sidebar() {
                             }}
                         >
                             |{i18n.t('SIDEBAR_UNSEEN_MESSAGE')}
+                        </button>
+                    </div>
+                    <div className={cx('controll-area-filter-create-group')}>
+                        <button
+                            onClick={() => {
+                                setShowGroupAdd(true);
+                                setRender(!render);
+                            }}
+                        >
+                            <GroupItem />+
                         </button>
                     </div>
                     <HeadlessTippy

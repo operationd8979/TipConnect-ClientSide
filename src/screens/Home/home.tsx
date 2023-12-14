@@ -57,8 +57,10 @@ const Home = () => {
                 console.log(error);
             }
         };
-        callGetListLive();
-    }, []);
+        if (isLoggedIn) {
+            callGetListLive();
+        }
+    }, [isLoggedIn]);
 
     const handleWatchLive = (liveID: string) => {
         window.open(`/watch/${liveID}`, '_blank', 'width=1920,height=1080');

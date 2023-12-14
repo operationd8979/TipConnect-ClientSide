@@ -147,3 +147,9 @@ export interface SettingItem {
     onClick?: Function;
     to?: string;
 }
+
+export interface AddGroupRequest {
+    nameGroup: string;
+    urlAvatar: string;
+    listUserID: string[];
+}
