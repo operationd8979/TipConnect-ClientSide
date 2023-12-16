@@ -3,8 +3,9 @@ import { Wrapper } from '../../../components/Popper';
 import className from 'classnames/bind';
 import styles from './Sidebar.module.scss';
 import { AddGroupRequest, RelationShip } from '../../../type';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { UserService } from '../../../apiService';
+import Crop from '../../../components/Crop';
 const cx = className.bind(styles);
 
 interface MenuAddGroup {
@@ -24,9 +25,12 @@ const urlDefault =
 
 const MenuAddGroup = ({ listRelationShip, render, setRender, setShowGroupAdd }: MenuAddGroup) => {
     const [nameGroup, setNameGroup] = useState('');
-    const [urlAvatar, setUrlAvatar] = useState<string>(urlDefault);
-    const [listUserID, setListUserID] = useState<string[]>([]);
+    const [urlAvatar, setUrlAvatar] = useState<string | null>(null);
     const [query, setQuery] = useState('');
+
+    const inputFile = useRef<HTMLInputElement>(null);
+
+    const [showCrop, setShowCrop] = useState(false);
 
     useEffect(() => {
         setNameGroup('');
@@ -102,8 +106,38 @@ const MenuAddGroup = ({ listRelationShip, render, setRender, setShowGroupAdd }: 
         }
     };
 
+    const handleOpenFile = () => {
+        inputFile?.current?.click();
+    };
+
+    useEffect(() => {
+        return () => {
+            urlAvatar && URL.revokeObjectURL(urlAvatar);
+        };
+    }, [urlAvatar]);
+
+    const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            const file: File = event.target.files[0];
+            setShowCrop(true);
+            setUrlAvatar(URL.createObjectURL(file));
+            event.target.value = '';
+        }
+    };
+
+    const onCancel = () => {
+        setShowCrop(false);
+        setUrlAvatar(null);
+    };
+
+    const handleCropImage = (preViewUrl: string) => {
+        setUrlAvatar(preViewUrl);
+        setShowCrop(false);
+    };
+
     return (
         <Wrapper>
+            {showCrop && <Crop urlAvatar={urlAvatar} handleCropImage={handleCropImage} onCancel={onCancel} />}
             <div className={cx('group-add-wrapper')}>
                 <div className={cx('group-add-header-area')}>
                     <h2>Create group</h2>
@@ -111,8 +145,16 @@ const MenuAddGroup = ({ listRelationShip, render, setRender, setShowGroupAdd }: 
                 <div className={cx('group-add-filter-area')}>
                     <div className={cx('group-add-filter-input-area')}>
                         <div className={cx('group-add-filter-input-avatar-area')}>
-                            <button onClick={() => alert('change photo')}>
-                                <img src={urlAvatar}></img>
+                            <input
+                                type="file"
+                                id="image_uploads"
+                                ref={inputFile}
+                                style={{ display: 'none' }}
+                                accept="image/png, image/jpeg"
+                                onChange={(e) => onChangeFile(e)}
+                            />
+                            <button onClick={handleOpenFile}>
+                                <img src={urlAvatar || urlDefault}></img>
                             </button>
                         </div>
                         <div className={cx('group-add-filter-input-name-area')}>

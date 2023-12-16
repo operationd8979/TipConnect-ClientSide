@@ -24,7 +24,6 @@
         "react-scripts": "5.0.1",
         "redux": "^4.2.1",
         "scss": "^0.2.4",
-        "simple-peer": "^9.11.1",
         "sockjs-client": "^1.6.1",
         "typescript": "^4.9.5",
         "web-vitals": "^2.1.4",
