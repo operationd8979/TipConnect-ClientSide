@@ -16,7 +16,6 @@
 .video-area {
     height: 100%;
     flex: 3;
-    background-color: blue;
     video {
         height: 100%;
         width: 100%;
@@ -25,11 +24,11 @@
 
 .chat-area {
     height: 100%;
-    background-color: red;
+    border: double var(--primary) 5px;
     flex: 1;
 }
 
 .action-area {
+    margin-top: 10px;
     height: 10%;
-    background-color: red;
 }

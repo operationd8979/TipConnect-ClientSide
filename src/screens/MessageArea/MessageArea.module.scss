@@ -6,6 +6,7 @@
     --default-width-media-chat: 20rem;
     --default-width-item-header-send: 12rem;
     --default-width-gif-area: 50rem;
+    --default-height-message-area: 84rem;
 
     display: flex;
     flex-direction: column;
@@ -88,9 +89,77 @@
 .message-area {
     flex: 8;
     display: flex;
-    flex-direction: column;
     border: double 5px black;
+    flex-direction: row;
+}
+
+.message-wrapper {
+    flex: 8;
+    height: var(--default-height-message-area);
+    display: flex;
+    flex-direction: column;
     overflow-y: scroll;
+}
+
+.message-detail-show-area {
+    border-left: solid black 2px;
+    display: flex;
+    align-items: center;
+    button {
+        height: 100%;
+        svg {
+            width: var(--default-mini-icon-size);
+            height: var(--default-mini-icon-size);
+        }
+    }
+}
+
+.message-detail-area {
+    flex: 2;
+    height: var(--default-height-message-area);
+    border-left: solid black 2px;
+    overflow-y: scroll;
+}
+
+.message-detail-wrapper {
+    margin-top: var(--default-medium-zone);
+    margin-bottom: var(--default-medium-zone);
+    margin-left: var(--default-small-zone);
+}
+.message-detail-header {
+    font-size: var(--default-medium-font-size);
+    color: var(--color-text);
+    box-shadow: 10px 10px var(--color-shadow);
+}
+.message-detail-content {
+    margin-top: var(--default-medium-zone);
+}
+
+.message-detail-content-group-member {
+    display: flex;
+    align-items: center;
+}
+
+.message-detail-content-group-member-img {
+    img {
+        height: 6rem;
+        border-radius: 50%;
+    }
+}
+.message-detail-content-group-member-name {
+    margin-left: var(--default-small-zone);
+}
+
+.message-detail-media-file-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-detail-media-file {
+    border: solid black 1px;
+    img {
+        width: 200px;
+    }
 }
 
 .last-message {

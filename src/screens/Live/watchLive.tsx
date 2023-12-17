@@ -160,7 +160,7 @@ const WatchLive = () => {
                             const data: MessageChat = JSON.parse(message.body);
                             setMessage(data);
                         } catch (error) {
-                            alert(error);
+                            console.log(error);
                         }
                     });
                     const chat: MessageChat = {

@@ -155,6 +155,26 @@ const addGroup = async (addGroupRequest: AddGroupRequest) => {
     }
 };
 
+const getAllMediaFiles = async (relationShipID: string) => {
+    try {
+        const response = await getStream({ path: `user/getAllMediaFiles/${relationShipID}` });
+        return response;
+    } catch (error) {
+        //alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
+const openLive = async (openLiveRequest: { title: string }) => {
+    try {
+        const response = await post({ path: `user/openLive`, options: openLiveRequest });
+        return response;
+    } catch (error) {
+        //alert(ERROR.ERR_NETWORK.message);
+        return null;
+    }
+};
+
 export default {
     getUserInfo,
     getListFriend,
@@ -171,4 +191,6 @@ export default {
     changeTypeFriendShip,
     getListLive,
     addGroup,
+    getAllMediaFiles,
+    openLive,
 };

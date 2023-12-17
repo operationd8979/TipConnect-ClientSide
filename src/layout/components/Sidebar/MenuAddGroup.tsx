@@ -2,10 +2,13 @@ import Button from '../../../components/Button';
 import { Wrapper } from '../../../components/Popper';
 import className from 'classnames/bind';
 import styles from './Sidebar.module.scss';
-import { AddGroupRequest, RelationShip } from '../../../type';
+import { AddGroupRequest, RelationShip, State } from '../../../type';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { UserService } from '../../../apiService';
 import Crop from '../../../components/Crop';
+import { uploadBytes, getDownloadURL, storageRef, storage } from '../../../firebase';
+import { useSelector } from 'react-redux';
+
 const cx = className.bind(styles);
 
 interface MenuAddGroup {
@@ -20,13 +23,15 @@ interface RelationShipItem {
     choose: boolean;
 }
 
-const urlDefault =
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Vietnam.svg/1200px-Flag_of_Vietnam.svg.png';
+const urlDefault = 'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg';
 
 const MenuAddGroup = ({ listRelationShip, render, setRender, setShowGroupAdd }: MenuAddGroup) => {
     const [nameGroup, setNameGroup] = useState('');
     const [urlAvatar, setUrlAvatar] = useState<string | null>(null);
     const [query, setQuery] = useState('');
+
+    const currentUser = useSelector<any>((state) => state.UserReducer) as State;
+    const { user } = currentUser;
 
     const inputFile = useRef<HTMLInputElement>(null);
 
@@ -34,7 +39,7 @@ const MenuAddGroup = ({ listRelationShip, render, setRender, setShowGroupAdd }: 
 
     useEffect(() => {
         setNameGroup('');
-        setUrlAvatar(urlDefault);
+        setUrlAvatar(null);
         setListData(
             listRelationShip
                 .filter((r) => !r.isGroup)
@@ -94,13 +99,17 @@ const MenuAddGroup = ({ listRelationShip, render, setRender, setShowGroupAdd }: 
 
     const handleClickSave = async () => {
         if (urlAvatar && nameGroup && selectedItem().length > 0) {
-            const requestAddGroup: AddGroupRequest = {
-                nameGroup: nameGroup,
-                urlAvatar: urlAvatar,
-                listUserID: selectedItem().map((item) => item.relationShip.friends[0].userID),
-            };
-            const response = await UserService.addGroup(requestAddGroup);
-            console.log(response);
+            const url = await uploadImage(urlAvatar);
+            if (url) {
+                const requestAddGroup: AddGroupRequest = {
+                    nameGroup: nameGroup,
+                    urlAvatar: url,
+                    listUserID: selectedItem().map((item) => item.relationShip.friends[0].userID),
+                };
+                const response = await UserService.addGroup(requestAddGroup);
+                console.log(response);
+            }
+            setShowGroupAdd(false);
         } else {
             alert('Vui lòng cập nhật đầy đủ thông tin tên group, ảnh đại diện, bạn bè');
         }
@@ -133,6 +142,20 @@ const MenuAddGroup = ({ listRelationShip, render, setRender, setShowGroupAdd }: 
     const handleCropImage = (preViewUrl: string) => {
         setUrlAvatar(preViewUrl);
         setShowCrop(false);
+    };
+
+    const uploadImage = async (previewUrl: string) => {
+        try {
+            const ref = storageRef(storage, `UserArea/${user?.email}/group/${nameGroup}.jpeg`);
+            const fileData = await fetch(previewUrl);
+            const bytes = await fileData.blob();
+            const snapshot = await uploadBytes(ref, bytes, { contentType: 'image/jpeg' });
+            const url = await getDownloadURL(snapshot.ref);
+            return url;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
     };
 
     return (

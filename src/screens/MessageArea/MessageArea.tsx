@@ -11,7 +11,18 @@ import Chat from './Chat';
 import Button from '../../components/Button';
 import { SocketService, UserService } from '../../apiService';
 import { getGifItems, updateLastMessage, updateFriendShip } from '../../reducers';
-import { Call, EditItem, FileItem, GifItem, LocationItem, Send, TagItem, VideoCall } from '../../components/Icons';
+import {
+    ArrowBack,
+    ArrowTo,
+    Call,
+    EditItem,
+    FileItem,
+    GifItem,
+    LocationItem,
+    Send,
+    TagItem,
+    VideoCall,
+} from '../../components/Icons';
 import { State, StateWS, MessageChat, Gif, RawChat, SeenNotification } from '../../type';
 import { pathImage } from '../../contants';
 import hardData from '../../contants/hardData';
@@ -46,7 +57,7 @@ const MessageArea = () => {
     const relationShip = listRelationShip.find((r) => r.id === relationShipID);
 
     const [listMessage, setListMessage] = useState<MessageChat[]>([]);
-    const [currentMessage, setCurrentMessage] = useState<MessageChat | null>(relationShip?.message || null);
+    const [currentMessage, setCurrentMessage] = useState<MessageChat | null>(null);
     const [seenGet, setSeenGet] = useState<SeenNotification | null>(null);
     const [bodyChat, setBodyChat] = useState('');
 
@@ -111,33 +122,34 @@ const MessageArea = () => {
     }, []);
 
     useEffect(() => {
+        setShowDetail(false);
+        setShowGifTab(false);
         setListMessage([]);
         setCurrentOffset('');
-        setCurrentMessage(relationShip?.message || null);
+        setListMediaFile([]);
+        setCurrentMessage(null);
         callApiGetMessages(relationShipID || '', '', 20);
     }, [relationShipID]);
 
     useEffect(() => {
-        if (currentMessage) {
-            if (currentMessage.to === relationShipID) {
-                if (
-                    listMessage.length === 0 ||
-                    currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
-                ) {
-                    setListMessage((prevList) => [...prevList, currentMessage]);
-                    let newMessage = currentMessage;
-                    newMessage.seen = true;
-                    if (currentMessage.type !== hardData.typeMessage.ENDCALL.name) {
-                        const seenNotification: SeenNotification = {
-                            from: currentMessage.from,
-                            to: currentMessage.to,
-                            type: hardData.typeMessage.SEEN.name,
-                            timestamp: currentMessage.timestamp || new Date().getTime().toString(),
-                        };
-                        onSendSeenNotification(seenNotification);
-                    }
-                    dispatch(updateLastMessage(newMessage));
+        if (currentMessage && currentMessage.to === relationShipID) {
+            if (
+                listMessage.length === 0 ||
+                currentMessage.timestamp !== listMessage[listMessage.length - 1].timestamp
+            ) {
+                setListMessage((prevList) => [...prevList, currentMessage]);
+                let newMessage = currentMessage;
+                newMessage.seen = true;
+                if (currentMessage.type !== hardData.typeMessage.ENDCALL.name && currentMessage.from !== user?.userID) {
+                    const seenNotification: SeenNotification = {
+                        from: currentMessage.from,
+                        to: currentMessage.to,
+                        type: hardData.typeMessage.SEEN.name,
+                        timestamp: currentMessage.timestamp || new Date().getTime().toString(),
+                    };
+                    onSendSeenNotification(seenNotification);
                 }
+                dispatch(updateLastMessage(newMessage));
             }
         }
     }, [currentMessage]);
@@ -431,6 +443,24 @@ const MessageArea = () => {
         dispatch(updateLastMessage(chat));
     }
 
+    const [showDetail, setShowDetail] = useState(false);
+    const [listMediaFile, setListMediaFile] = useState<MessageChat[]>([]);
+
+    const handleOpenShowDetailRelationShip = async () => {
+        if (!showDetail && listMediaFile.length === 0) {
+            if (relationShipID) {
+                const response = await UserService.getAllMediaFiles(relationShipID);
+                if (response?.ok) {
+                    response.json().then((data) => {
+                        console.log(data);
+                        setListMediaFile(data);
+                    });
+                }
+            }
+        }
+        setShowDetail(!showDetail);
+    };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('header')}>
@@ -493,40 +523,104 @@ const MessageArea = () => {
                         </div>
                     </div>
                 </div>
-                <div className={cx('card-action')}>
-                    <button onClick={() => handleCall('call')}>
-                        <Call />
-                    </button>
-                    <button onClick={() => handleCall('video')}>
-                        <VideoCall />
+                {!relationShip?.isGroup && (
+                    <div className={cx('card-action')}>
+                        <button onClick={() => handleCall('call')}>
+                            <Call />
+                        </button>
+                        <button onClick={() => handleCall('video')}>
+                            <VideoCall />
+                        </button>
+                    </div>
+                )}
+            </div>
+            <div className={cx('message-area')}>
+                <div className={cx('message-wrapper')} ref={messageAreaRef}>
+                    <div style={{ flex: 1 }} />
+                    {isEnd && <div className={cx('last-message')}>{i18n.t('MESSAGE_AREA_last_message')}</div>}
+                    {listMessage.map((message, index) => {
+                        let sender = null;
+                        if (relationShip) {
+                            sender = relationShip.friends.filter((f) => f.userID === message.from)[0] || user;
+                        }
+                        if (user && sender)
+                            return (
+                                <Chat
+                                    key={index}
+                                    fullName={message.user ? user.fullName : sender.fullName}
+                                    urlAvatar={message.user ? user.urlAvatar : sender.urlAvatar}
+                                    content={message.body}
+                                    isUser={message.user}
+                                    seen={message.seen}
+                                    type={message.type}
+                                    isLast={index === listMessage.length - 1}
+                                />
+                            );
+                        else {
+                            return <div>mat du lieu</div>;
+                        }
+                    })}
+                </div>
+                <div className={cx('message-detail-show-area')}>
+                    <button onClick={handleOpenShowDetailRelationShip}>
+                        {showDetail ? <ArrowTo /> : <ArrowBack />}
                     </button>
                 </div>
-            </div>
-            <div className={cx('message-area')} ref={messageAreaRef}>
-                <div style={{ flex: 1 }} />
-                {isEnd && <div className={cx('last-message')}>{i18n.t('MESSAGE_AREA_last_message')}</div>}
-                {listMessage.map((message, index) => {
-                    let sender = null;
-                    if (relationShip) {
-                        sender = relationShip.friends.filter((f) => f.userID === message.from)[0] || user;
-                    }
-                    if (user && sender)
-                        return (
-                            <Chat
-                                key={index}
-                                fullName={message.user ? user.fullName : sender.fullName}
-                                urlAvatar={message.user ? user.urlAvatar : sender.urlAvatar}
-                                content={message.body}
-                                isUser={message.user}
-                                seen={message.seen}
-                                type={message.type}
-                                isLast={index === listMessage.length - 1}
-                            />
-                        );
-                    else {
-                        return <div>mat du lieu</div>;
-                    }
-                })}
+                {showDetail && (
+                    <div className={cx('message-detail-area')}>
+                        {relationShip?.isGroup && (
+                            <div className={cx('message-detail-wrapper')}>
+                                <div className={cx('message-detail-header')}>
+                                    <p>Thành viên trong nhóm</p>
+                                </div>
+                                <div className={cx('message-detail-content')}>
+                                    {relationShip.friends.map((friend, index) => {
+                                        return (
+                                            <div className={cx('message-detail-content-group-member')} key={index}>
+                                                <div className={cx('message-detail-content-group-member-img')}>
+                                                    <img src={friend.urlAvatar} />
+                                                </div>
+                                                <div className={cx('message-detail-content-group-member-name')}>
+                                                    {friend.fullName}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                        <div className={cx('message-detail-wrapper')}>
+                            <div className={cx('message-detail-header')}>
+                                <p>Tệp tin đa phương tiện</p>
+                            </div>
+                            <div className={cx('message-detail-content')}>
+                                <div className={cx('message-detail-media-file-wrapper')}>
+                                    {listMediaFile.map((mediaFile, index) => {
+                                        return (
+                                            <div className={cx('message-detail-media-file')} key={index}>
+                                                <a href={mediaFile.body} target="_blank">
+                                                    {mediaFile.type === hardData.typeMessage.PHOTO.name && (
+                                                        <img src={mediaFile.body} alt={mediaFile.body} />
+                                                    )}
+                                                    {mediaFile.type === hardData.typeMessage.PDF.name && (
+                                                        <iframe title="pdf" src={mediaFile.body} />
+                                                    )}
+                                                    {mediaFile.type === hardData.typeMessage.WORD.name && (
+                                                        <img src={pathImage.wordFile} alt={mediaFile.body} />
+                                                    )}
+                                                    {mediaFile.type === hardData.typeMessage.EXCEL.name && (
+                                                        <img src={pathImage.excelFile} alt={mediaFile.body} />
+                                                    )}
+                                                    {mediaFile.body.substring(113, 150)}
+                                                </a>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
             <div className={cx('chat-area')}>
                 <div className={cx('header-send')}>
@@ -621,7 +715,7 @@ const MessageArea = () => {
                         )}
                     </div>
                     <div className={cx('button-chat')}>
-                        <Button primary large onClick={handleSendMessage}>
+                        <Button primary large onClick={handleSendMessage} disabled={loading}>
                             <Send />
                         </Button>
                     </div>

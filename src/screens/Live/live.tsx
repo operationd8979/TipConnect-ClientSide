@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Stomp, { Frame, VERSIONS, client, over, Client } from 'webstomp-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { MessageChat, State } from '../../type';
-import { SocketService } from '../../apiService';
+import { SocketService, UserService } from '../../apiService';
 import { useNavigate } from 'react-router-dom';
 import { connectSuccess } from '../../reducers';
 import Button from '../../components/Button';

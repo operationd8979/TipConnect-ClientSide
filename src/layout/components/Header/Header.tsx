@@ -13,6 +13,7 @@ import {
     EnglishItem,
     LanguegeItem,
     LogoutItem,
+    OpenLive,
     ProfileItem,
     TripleDot,
     UserGroupIcon,
@@ -317,8 +318,8 @@ function Header() {
             to: config.routes.profile,
         },
         {
-            icon: <ProfileItem />,
-            title: 'Live',
+            icon: <OpenLive />,
+            title: 'Open a live',
             onClick: () => {
                 window.open(`/live/`, '_blank', 'width=1920,height=1080');
             },
