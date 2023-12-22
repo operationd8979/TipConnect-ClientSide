@@ -25,8 +25,8 @@ const servers = {
     ],
 };
 
-let peerConnection = new RTCPeerConnection(servers);
-let peerConnection2 = new RTCPeerConnection(servers);
+let peerConnection: RTCPeerConnection;
+let peerConnection2: RTCPeerConnection;
 
 const WatchLive = () => {
     const { liveID } = useParams();
@@ -50,8 +50,19 @@ const WatchLive = () => {
     const [friendID, setFriendID] = useState<string>('');
 
     useEffect(() => {
-        if (videoRef.current) {
+        if (videoRef.current && stream) {
             videoRef.current.srcObject = stream;
+            if (peerConnection2) {
+                stream.getTracks().forEach((track) => {
+                    console.log('send track');
+                    const sender = peerConnection2.getSenders().find((s) => s.track?.kind === track.kind);
+                    if (sender) {
+                        sender.replaceTrack(track);
+                    } else {
+                        peerConnection2.addTrack(track, stream);
+                    }
+                });
+            }
         }
     }, [stream]);
 
@@ -65,6 +76,10 @@ const WatchLive = () => {
 
     useEffect(() => {
         if (hostID !== '') {
+            if (peerConnection) {
+                peerConnection.close();
+            }
+            peerConnection = new RTCPeerConnection(servers);
             peerConnection.ontrack = (event) => {
                 console.log('get track');
                 setStream(event.streams[0]);
@@ -81,7 +96,11 @@ const WatchLive = () => {
 
     useEffect(() => {
         if (friendID !== '') {
-            const handleCreateOffer = async () => {
+            const handleOpenLineConnect = async () => {
+                if (peerConnection2) {
+                    peerConnection2.close();
+                }
+                peerConnection2 = new RTCPeerConnection(servers);
                 stream.getTracks().forEach((track) => {
                     console.log('send track');
                     const sender = peerConnection2.getSenders().find((s) => s.track?.kind === track.kind);
@@ -95,7 +114,7 @@ const WatchLive = () => {
                 await peerConnection2.setLocalDescription(offer);
                 sendPrivateMassage(JSON.stringify(offer), friendID);
             };
-            handleCreateOffer();
+            handleOpenLineConnect();
         }
     }, [friendID]);
 
@@ -105,14 +124,14 @@ const WatchLive = () => {
                 if (message.type === 'LIVE') {
                     switch (message.body) {
                         case 'host':
-                            if (peerConnection) {
-                                setHostID(message.from);
-                            }
+                            setHostID(message.from);
                             break;
                         case 'connect':
-                            if (peerConnection2) {
-                                setFriendID(message.from);
-                            }
+                            setFriendID(message.from);
+                            break;
+                        case 'off':
+                            alert('Đóng stream!!!');
+                            handleCloseCall();
                             break;
                         default:
                             const jsonData = JSON.parse(message.body);

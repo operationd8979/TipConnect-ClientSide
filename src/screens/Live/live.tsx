@@ -19,13 +19,13 @@ const servers = {
                 'stun:stun1.l.google.com:19302',
                 'stun:stun2.l.google.com:19302',
                 'stun:stun3.l.google.com:19302',
-                'stun:stun4.l.google.com:19302',
+                // 'stun:stun4.l.google.com:19302',
             ],
         },
     ],
 };
 
-let peerConnection = new RTCPeerConnection(servers);
+let peerConnection: RTCPeerConnection;
 
 const Live = () => {
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
@@ -50,9 +50,7 @@ const Live = () => {
                 if (message.type === 'LIVE') {
                     switch (message.body) {
                         case 'connect':
-                            if (peerConnection) {
-                                setFriendID(message.from);
-                            }
+                            setFriendID(message.from);
                             break;
                         default:
                             const jsonData = JSON.parse(message.body);
@@ -80,12 +78,25 @@ const Live = () => {
 
     useEffect(() => {
         if (friendID !== '') {
-            const handleCreateOffer = async () => {
+            const handleOpenLineConnect = async () => {
+                if (peerConnection) {
+                    peerConnection.close();
+                }
+                peerConnection = new RTCPeerConnection(servers);
+                localStream.getTracks().forEach((track) => {
+                    console.log('send track');
+                    const sender = peerConnection.getSenders().find((s) => s.track?.kind === track.kind);
+                    if (sender) {
+                        sender.replaceTrack(track);
+                    } else {
+                        peerConnection.addTrack(track, localStream);
+                    }
+                });
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
                 sendPrivateMassage(JSON.stringify(offer), friendID);
             };
-            handleCreateOffer();
+            handleOpenLineConnect();
         }
     }, [friendID]);
 
@@ -128,19 +139,10 @@ const Live = () => {
     useEffect(() => {
         const config = { audio: false, video: true };
         navigator.mediaDevices.getUserMedia(config).then((stream) => {
-            setLocalSteram(localStream);
+            setLocalSteram(stream);
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
             }
-            stream.getTracks().forEach((track) => {
-                console.log('send track');
-                const sender = peerConnection.getSenders().find((s) => s.track?.kind === track.kind);
-                if (sender) {
-                    sender.replaceTrack(track);
-                } else {
-                    peerConnection.addTrack(track, stream);
-                }
-            });
         });
     }, []);
 
