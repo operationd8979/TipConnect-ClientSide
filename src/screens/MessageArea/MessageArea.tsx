@@ -47,7 +47,7 @@ const MessageArea = () => {
     const dispatch = useDispatch();
 
     const messageAreaRef = useRef<HTMLDivElement>(null);
-    const chatInputRef = useRef<HTMLInputElement>(null);
+    const chatInputRef = useRef<HTMLTextAreaElement>(null);
     const inputFile = useRef<HTMLInputElement>(null);
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
@@ -702,7 +702,7 @@ const MessageArea = () => {
                                 );
                             })
                         ) : (
-                            <input
+                            <textarea
                                 ref={chatInputRef}
                                 spellCheck={false}
                                 maxLength={500}

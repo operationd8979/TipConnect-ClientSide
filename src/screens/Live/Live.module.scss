@@ -1,5 +1,5 @@
 .wrapper {
-    height: var(--default-layout-height);
+    height: 100vh;
     background-color: black;
     display: flex;
     flex-direction: column;
@@ -24,11 +24,72 @@
 
 .chat-area {
     height: 100%;
-    border: double var(--primary) 5px;
     flex: 1;
+    border: double var(--primary) 5px;
+    display: flex;
+    flex-direction: column;
 }
 
 .action-area {
     margin-top: 10px;
     height: 10%;
+}
+
+.message-area {
+    flex: 1;
+}
+
+.send-area {
+    height: 16rem;
+    border-top: double var(--primary) 5px;
+    display: flex;
+}
+
+.send-input {
+    flex: 1;
+    textarea {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.send-button {
+    width: 12rem;
+    border-left: double var(--primary) 5px;
+    button {
+        height: 100%;
+        svg {
+            width: var(--default-large-icon-size);
+            height: var(--default-large-icon-size);
+        }
+    }
+    :hover {
+        svg {
+            width: var(--default-xlarge-icon-size);
+            height: var(--default-xlarge-icon-size);
+        }
+    }
+}
+
+.message-wrapper {
+    margin-left: var(--default-small-zone);
+}
+
+.message-name {
+    color: var(--color-light-text);
+    font-size: var(--default-small-font-size);
+    font-weight: bold;
+}
+
+.message-content {
+    margin-left: var(--default-small-zone);
+    color: var(--white);
+    font-size: var(--default-small-font-size);
+    font-weight: bold;
+}
+
+.number-watcher-live {
+    position: absolute;
+    color: red;
+    right: 10px;
 }

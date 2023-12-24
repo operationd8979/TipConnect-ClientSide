@@ -8,6 +8,7 @@ import { SocketService, UserService } from '../../apiService';
 import { useNavigate } from 'react-router-dom';
 import { connectSuccess } from '../../reducers';
 import Button from '../../components/Button';
+import { Send } from '../../components/Icons';
 
 const cx = classNames.bind(Styles);
 
@@ -28,11 +29,15 @@ const servers = {
 let peerConnection: RTCPeerConnection;
 
 const Live = () => {
+    const [loading, setLoading] = useState(false);
+
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
     const currentStomp = useSelector<any>((state) => state.StompReducer) as { socket: WebSocket; stompClient: Client };
     const { isLoggedIn, user, notifications, listRelationShip, i18n } = currentUser;
     const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient } = currentStomp;
+    const [listMessage, setListMessage] = useState<{ name: string; content: string }[]>([]);
+    const [valueChat, setValueChat] = useState('');
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const [localStream, setLocalSteram] = useState(new MediaStream());
@@ -43,6 +48,7 @@ const Live = () => {
     const [message, setMessage] = useState<MessageChat | null>(null);
 
     const [friendID, setFriendID] = useState<string>('');
+    const [numberWatcher, setNumberWatcher] = useState(0);
 
     useEffect(() => {
         if (message != null) {
@@ -70,6 +76,11 @@ const Live = () => {
                                 break;
                             }
                     }
+                } else if (message.type === 'LIVECHAT') {
+                    const chat = { name: message.from, content: message.body };
+                    setListMessage([...listMessage, chat]);
+                } else if (message.type === 'LIVENOTIFY') {
+                    setNumberWatcher(Number(message.body));
                 }
             };
             handleLiveRequest();
@@ -116,7 +127,7 @@ const Live = () => {
                         }
                     });
                     const chat: MessageChat = {
-                        from: user?.userID || '',
+                        from: user.userID,
                         to: '',
                         type: 'LIVE',
                         timestamp: new Date().getTime().toString(),
@@ -147,10 +158,10 @@ const Live = () => {
     }, []);
 
     function sendLiveRequest(body: string) {
-        if (stompClient.connected) {
+        if (stompClient.connected && user) {
             const chat: MessageChat = {
-                from: user?.userID || '',
-                to: '',
+                from: user.userID,
+                to: user.userID,
                 type: 'LIVE',
                 timestamp: new Date().getTime().toString(),
                 body: body,
@@ -162,9 +173,9 @@ const Live = () => {
     }
 
     function sendPrivateMassage(body: string, friendID: string) {
-        if (stompClient.connected) {
+        if (stompClient.connected && user) {
             const chat: MessageChat = {
-                from: user?.userID || '',
+                from: user.userID,
                 to: friendID,
                 type: 'LIVE',
                 timestamp: new Date().getTime().toString(),
@@ -181,13 +192,59 @@ const Live = () => {
         window.close();
     };
 
+    const handleKeyEnter = (e: any) => {
+        if (e.key === 'Enter') {
+            handleSendMessage();
+        }
+    };
+
+    const handleSendMessage = () => {
+        setLoading(true);
+        if (valueChat != '' && user) {
+            sendLiveRequest(user.fullName + '@' + valueChat);
+            setValueChat('');
+            setListMessage([...listMessage, { name: user.fullName, content: valueChat }]);
+        }
+        setLoading(false);
+    };
+
     return (
         <div className={cx('wrapper')}>
+            <div className={cx('number-watcher-live')}>{numberWatcher} lines</div>
             <div className={cx('live-area')}>
                 <div className={cx('video-area')}>
                     <video height={1280} width={720} ref={videoRef} muted autoPlay={true}></video>
                 </div>
-                <div className={cx('chat-area')}>CHAT AREA</div>
+                <div className={cx('chat-area')}>
+                    <div className={cx('message-area')}>
+                        {listMessage.map((item, index) => {
+                            return (
+                                <div className={cx('message-wrapper')} key={index}>
+                                    <span className={cx('message-name')}>{item.name}</span>
+                                    <span className={cx('message-content')}>{item.content}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className={cx('send-area')}>
+                        <div className={cx('send-input')}>
+                            <textarea
+                                spellCheck={false}
+                                maxLength={500}
+                                value={valueChat}
+                                onChange={(e) => {
+                                    if (e.target.value != '\n') setValueChat(e.target.value);
+                                }}
+                                onKeyDown={handleKeyEnter}
+                            />
+                        </div>
+                        <div className={cx('send-button')}>
+                            <Button primary large onClick={handleSendMessage} disabled={loading}>
+                                <Send />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div className={cx('action-area')}>
                 <Button primary onClick={handleCloseCall}>

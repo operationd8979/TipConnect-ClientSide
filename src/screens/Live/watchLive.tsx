@@ -8,6 +8,7 @@ import { SocketService } from '../../apiService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { connectSuccess } from '../../reducers';
 import Button from '../../components/Button';
+import { Send } from '../../components/Icons';
 
 const cx = classNames.bind(Styles);
 
@@ -29,6 +30,7 @@ let peerConnection: RTCPeerConnection;
 let peerConnection2: RTCPeerConnection;
 
 const WatchLive = () => {
+    const [loading, setLoading] = useState(false);
     const { liveID } = useParams();
 
     const currentUser = useSelector<any>((state) => state.UserReducer) as State;
@@ -43,6 +45,8 @@ const WatchLive = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const [listMessage, setListMessage] = useState<{ name: string; content: string }[]>([]);
+    const [valueChat, setValueChat] = useState('');
     const [message, setMessage] = useState<MessageChat | null>(null);
     const [candidate, setCandidate] = useState<RTCSessionDescription | null>(null);
 
@@ -118,6 +122,22 @@ const WatchLive = () => {
         }
     }, [friendID]);
 
+    const handleKeyEnter = (e: any) => {
+        if (e.key === 'Enter') {
+            handleSendMessage();
+        }
+    };
+
+    const handleSendMessage = () => {
+        setLoading(true);
+        if (valueChat != '' && user) {
+            sendLiveRequest(user.fullName + '@' + valueChat);
+            setValueChat('');
+            setListMessage([...listMessage, { name: user.fullName, content: valueChat }]);
+        }
+        setLoading(false);
+    };
+
     useEffect(() => {
         if (message != null) {
             const handleLiveRequest = async () => {
@@ -161,6 +181,9 @@ const WatchLive = () => {
                                 break;
                             }
                     }
+                } else if (message.type === 'LIVECHAT') {
+                    const chat = { name: message.from, content: message.body };
+                    setListMessage([...listMessage, chat]);
                 }
             };
             handleLiveRequest();
@@ -204,9 +227,9 @@ const WatchLive = () => {
     }, []);
 
     function sendLiveRequest(body: string) {
-        if (stompClient.connected) {
+        if (stompClient.connected && user) {
             const chat: MessageChat = {
-                from: user?.userID || '',
+                from: user.userID,
                 to: liveID || '',
                 type: 'LIVE',
                 timestamp: new Date().getTime().toString(),
@@ -244,7 +267,36 @@ const WatchLive = () => {
                 <div className={cx('video-area')}>
                     <video height={1280} width={720} ref={videoRef} muted autoPlay={true}></video>
                 </div>
-                <div className={cx('chat-area')}>CHAT AREA</div>
+                <div className={cx('chat-area')}>
+                    <div className={cx('message-area')}>
+                        {listMessage.map((item, index) => {
+                            return (
+                                <div className={cx('message-wrapper')} key={index}>
+                                    <span className={cx('message-name')}>{item.name}</span>
+                                    <span className={cx('message-content')}>{item.content}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className={cx('send-area')}>
+                        <div className={cx('send-input')}>
+                            <textarea
+                                spellCheck={false}
+                                maxLength={500}
+                                value={valueChat}
+                                onChange={(e) => {
+                                    if (e.target.value != '\n') setValueChat(e.target.value);
+                                }}
+                                onKeyDown={handleKeyEnter}
+                            />
+                        </div>
+                        <div className={cx('send-button')}>
+                            <Button primary large onClick={handleSendMessage} disabled={loading}>
+                                <Send />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div className={cx('action-area')}>
                 <Button primary onClick={handleCloseCall}>
