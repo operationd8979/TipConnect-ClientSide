@@ -95,9 +95,6 @@ const WatchLive = () => {
                 }
             };
             sendPrivateMassage('connect', hostID);
-            // if (user) {
-            //     sendLiveRequest(user.fullName + '@' + 'đã tham gia phòng live!');
-            // }
         }
     }, [hostID]);
 
@@ -147,6 +144,9 @@ const WatchLive = () => {
                 if (message.type === 'LIVE') {
                     switch (message.body) {
                         case 'host':
+                            if (user) {
+                                sendLiveRequest(user.fullName + '@' + 'đã tham gia vào phòng live!');
+                            }
                             setHostID(message.from);
                             break;
                         case 'connect':
