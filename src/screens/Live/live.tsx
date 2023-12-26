@@ -36,7 +36,7 @@ const Live = () => {
     const { isLoggedIn, user, notifications, listRelationShip, i18n } = currentUser;
     const { listFriendRequest, listNotification } = notifications;
     const { socket, stompClient } = currentStomp;
-    const [listMessage, setListMessage] = useState<{ name: string; content: string }[]>([]);
+    const [listMessage, setListMessage] = useState<{ name: string; content: string; host: boolean }[]>([]);
     const [valueChat, setValueChat] = useState('');
 
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -77,7 +77,7 @@ const Live = () => {
                             }
                     }
                 } else if (message.type === 'LIVECHAT') {
-                    const chat = { name: message.from, content: message.body };
+                    const chat = { name: message.from, content: message.body, host: message.user };
                     setListMessage([...listMessage, chat]);
                 } else if (message.type === 'LIVENOTIFY') {
                     setNumberWatcher(Number(message.body));
@@ -166,7 +166,7 @@ const Live = () => {
                 timestamp: new Date().getTime().toString(),
                 body: body,
                 seen: false,
-                user: false,
+                user: true,
             };
             stompClient.send('/app/live', JSON.stringify(chat));
         }
@@ -203,7 +203,7 @@ const Live = () => {
         if (valueChat != '' && user) {
             sendLiveRequest(user.fullName + '@' + valueChat);
             setValueChat('');
-            setListMessage([...listMessage, { name: user.fullName, content: valueChat }]);
+            setListMessage([...listMessage, { name: user.fullName, content: valueChat, host: true }]);
         }
         setLoading(false);
     };
@@ -220,7 +220,7 @@ const Live = () => {
                         {listMessage.map((item, index) => {
                             return (
                                 <div className={cx('message-wrapper')} key={index}>
-                                    <span className={cx('message-name')}>{item.name}</span>
+                                    <span className={cx('message-name', { host: item.host })}>{item.name}</span>
                                     <span className={cx('message-content')}>{item.content}</span>
                                 </div>
                             );

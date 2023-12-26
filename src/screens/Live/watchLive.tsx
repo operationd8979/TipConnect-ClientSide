@@ -45,7 +45,7 @@ const WatchLive = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [listMessage, setListMessage] = useState<{ name: string; content: string }[]>([]);
+    const [listMessage, setListMessage] = useState<{ name: string; content: string; host: boolean }[]>([]);
     const [valueChat, setValueChat] = useState('');
     const [message, setMessage] = useState<MessageChat | null>(null);
     const [candidate, setCandidate] = useState<RTCSessionDescription | null>(null);
@@ -95,6 +95,9 @@ const WatchLive = () => {
                 }
             };
             sendPrivateMassage('connect', hostID);
+            // if (user) {
+            //     sendLiveRequest(user.fullName + '@' + 'đã tham gia phòng live!');
+            // }
         }
     }, [hostID]);
 
@@ -133,7 +136,7 @@ const WatchLive = () => {
         if (valueChat != '' && user) {
             sendLiveRequest(user.fullName + '@' + valueChat);
             setValueChat('');
-            setListMessage([...listMessage, { name: user.fullName, content: valueChat }]);
+            setListMessage([...listMessage, { name: user.fullName, content: valueChat, host: false }]);
         }
         setLoading(false);
     };
@@ -182,7 +185,7 @@ const WatchLive = () => {
                             }
                     }
                 } else if (message.type === 'LIVECHAT') {
-                    const chat = { name: message.from, content: message.body };
+                    const chat = { name: message.from, content: message.body, host: message.user };
                     setListMessage([...listMessage, chat]);
                 }
             };
@@ -258,6 +261,9 @@ const WatchLive = () => {
 
     const handleCloseCall = () => {
         sendLiveRequest('off-watch');
+        if (user) {
+            sendLiveRequest(user.fullName + '@' + 'đã thoát phòng live!');
+        }
         window.close();
     };
 
@@ -272,7 +278,7 @@ const WatchLive = () => {
                         {listMessage.map((item, index) => {
                             return (
                                 <div className={cx('message-wrapper')} key={index}>
-                                    <span className={cx('message-name')}>{item.name}</span>
+                                    <span className={cx('message-name', { host: item.host })}>{item.name}</span>
                                     <span className={cx('message-content')}>{item.content}</span>
                                 </div>
                             );
