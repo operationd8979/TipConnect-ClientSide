@@ -13,7 +13,7 @@
     // Default layout
     --default-layout-header-height: 90px;
     --default-layout-width: 2350px;
-    --default-layout-height: 1150px;
+    --default-layout-height: 1350px;
     --default-layout-width-sidebar: 410px;
     --default-mini-zone: 5px;
     --default-small-zone: 8px;
@@ -68,6 +68,10 @@ button {
 a {
     color: var(--textColor);
     text-decoration: none;
+}
+
+html {
+    background-color: white;
 }
 
 // Scrollbar CSS

@@ -359,6 +359,14 @@ function Header() {
                 <div className={cx('actions')}>
                     {isLoggedIn ? (
                         <>
+                            {user?.role === 'ADMIN' && (
+                                <Link to={config.routes.dashBoard} className={cx('link')}>
+                                    Admin
+                                </Link>
+                            )}
+                            <Link to={config.routes.homeMessage} className={cx('link')}>
+                                {i18n.t('HEADER_message')}
+                            </Link>
                             <HeadlessTippy
                                 interactive
                                 visible={showNotification}
@@ -459,12 +467,12 @@ function Header() {
                         </>
                     ) : (
                         <>
-                            <Button primary to={config.routes.login}>
+                            <Link to={config.routes.login} className={cx('link')}>
                                 {i18n.t('HEADER_login')}
-                            </Button>
-                            <Button outline to={config.routes.register}>
+                            </Link>
+                            <Link to={config.routes.register} className={cx('link')}>
                                 {i18n.t('HEADER_register')}
-                            </Button>
+                            </Link>
                             <HeadlessTippy
                                 interactive
                                 placement="bottom-end"

@@ -22,6 +22,7 @@ import {
     changeOnline,
 } from './userReducer/Action';
 import { connectSuccess, connectFail, disconnect } from './stompReducer/Action';
+import { getGenres, addHotMovies, addMovies, addTrendingMovies, addUsers } from './movieReducer/Action';
 
 export {
     loginSuccess,
@@ -48,6 +49,11 @@ export {
     updateFriendShip,
     changeLanguage,
     changeOnline,
+    getGenres,
+    addHotMovies,
+    addMovies,
+    addTrendingMovies,
+    addUsers,
 };
 
 export { default } from './Reducers';

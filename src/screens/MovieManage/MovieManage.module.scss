@@ -1,0 +1,85 @@
+.wrapper {
+    width: 100%;
+    color: var(--white);
+    min-height: 1400px;
+}
+.section-1,
+.section-2 {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+.section-2 {
+    background-color: rgb(39, 39, 39);
+    table {
+        border-collapse: unset;
+    }
+}
+.section-1 {
+    display: flex;
+    justify-content: space-between;
+}
+.wrapper-left,
+.wrapper-right {
+    margin-left: auto;
+    width: 50%;
+    display: flex;
+    gap: 2rem;
+    button {
+        background-color: red;
+        width: 18rem;
+        height: 4rem;
+        cursor: pointer;
+        color: var(--white);
+        font-weight: 600;
+        border-radius: 8px;
+    }
+    button:hover {
+        background-color: rgb(113, 113, 113);
+    }
+}
+.wrapper-left {
+    .btn-none {
+        background-color: transparent;
+        border: 1px solid #b9b9b9;
+    }
+}
+.wrapper-right {
+    justify-content: end;
+}
+.btn-edit,
+.btn-delete {
+    width: 4rem;
+    height: 4rem;
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-edit:hover,
+.btn-delete:hover {
+    border: 1px solid #5a5a5a;
+    background-color: transparent;
+}
+.btn-edit {
+    background-color: rgb(34, 255, 0);
+}
+.btn-delete {
+    background-color: red;
+}
+.movie-box {
+    display: inline-flex;
+    align-items: center;
+    width: -webkit-fill-available;
+    height: 14rem;
+    gap: 1rem;
+    .img-movie {
+        width: 8rem;
+        height: 8rem;
+        overflow: hidden;
+        img {
+            width: 100%;
+            object-fit: cover;
+        }
+    }
+}

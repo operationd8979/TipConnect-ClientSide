@@ -1,0 +1,27 @@
+.wrapper {
+    width: 20rem;
+    height: 30rem;
+    background-color: rgb(12, 12, 12);
+    border-radius: 0.5rem;
+    p {
+        margin: 0.5rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    margin-left: 2rem;
+    color: white;
+}
+.poster {
+    width: 100%;
+    height: 84%;
+    overflow: hidden;
+    img {
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}

@@ -1,9 +1,10 @@
 .wrapper {
     display: flex;
     height: var(--default-layout-height);
-    background-image: url('../../../public/assets/images/background-login.png');
+    background-image: url('../../../public/assets/images/background-login2.png');
     background-size: cover;
     background-repeat: no-repeat;
+    color: white;
 }
 
 .content-side {
@@ -20,9 +21,11 @@
 .background-image {
     position: absolute;
     height: 100%;
-    width: 100%;
+    width: 50%;
     background-color: var(--default-blur-background-color);
-    opacity: var(--default-light-blur-opacity);
+    // opacity: var(--default-light-blur-opacity);
+    // filter: blur(var(--default-blur-value));
+    opacity: 0.18;
     filter: blur(var(--default-blur-value));
 }
 .header {
@@ -47,7 +50,7 @@
 }
 
 .input-text {
-    margin-left: 140px;
+    margin-left: 160px;
     margin-top: 8px;
     margin-bottom: 8px;
     width: 100%;

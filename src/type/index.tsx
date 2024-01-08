@@ -153,3 +153,39 @@ export interface AddGroupRequest {
     urlAvatar: string;
     listUserID: string[];
 }
+
+export type Movie = {
+    id: string;
+    name: string;
+    preview: string;
+    year: string;
+    duration: number;
+    genre: string;
+    info: string;
+    rate: number;
+    trailer: string;
+    uri: string;
+    viewer: string;
+    tbdmRating: string;
+    tbdmVote: string;
+};
+
+export type Genre = {
+    genreId: number;
+    genreName: string;
+};
+
+export type StreamingState = {
+    hotMovies: Movie[];
+    trendingMovies: Movie[];
+    movies: Movie[];
+    genres: Genre[];
+    users: User[];
+};
+
+export type Routing = {
+    parent: string;
+    children1?: string;
+    children2?: string;
+    endpoint: string;
+};

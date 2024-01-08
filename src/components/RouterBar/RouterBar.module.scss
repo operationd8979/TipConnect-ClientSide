@@ -1,0 +1,15 @@
+.wrapper {
+    width: 100%;
+    padding: 1rem;
+    align-items: center;
+    display: flex;
+    //border-bottom: 1px solid var(--color-text);
+    span {
+        display: flex;
+        align-items: center;
+        color: var(--white);
+    }
+}
+.home-icon {
+    margin-right: 0.5rem;
+}

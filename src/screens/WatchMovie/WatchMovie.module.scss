@@ -1,0 +1,50 @@
+.wrapper {
+    width: 100%;
+    margin: auto;
+    background-color: rgb(23, 22, 22);
+}
+.topbar {
+    margin-top: var(--default-layout-header-height);
+}
+
+.video-wrapper {
+    width: 100%;
+    text-align: center;
+    margin-top: 1rem;
+    background-color: rgb(16, 16, 16);
+    video {
+        width: 68%;
+    }
+}
+
+.section-movie {
+    margin-top: 2rem;
+    border-top: 1px solid #3e3e3e;
+    color: var(--white);
+    .name-movie {
+        color: #f22c3d;
+    }
+}
+
+.info-wrapper {
+    background-color: #3e3e3e;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.section-comment {
+    margin-top: 2rem;
+    margin-left: 5rem;
+    border-top: 1px solid #434343;
+    color: var(--white);
+    .row {
+        display: flex;
+    }
+    .left {
+        width: 70%;
+        margin-right: 2rem;
+    }
+    .right {
+        width: 30%;
+    }
+}

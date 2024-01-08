@@ -22,6 +22,7 @@ export const en = {
     WARRING_WRONG_RETYPE_PASSWORD: 'Your re-type password not match!',
     HEADER_login: 'Login in',
     HEADER_register: 'Register',
+    HEADER_message: 'Messages',
     HEADER_search_placeholder: 'Search account and messages',
     HEADER_no_notification: 'Your notification is emtry',
     HEADER_friend_request: 'Friend request',
@@ -50,4 +51,7 @@ export const en = {
     PROFILE_NAME_SIDE: 'Account Setting',
     PROFILE_CHANGE_AVATAR: 'Change Avatar',
     PROFILE_enter_your_password: 'Enter your password',
+    HOMEMESSAGE_watch_together: 'WATCH TOGETHER',
+    HOMEMESSAGE_living: 'Living',
+    HOMEMESSAGE_join_watch: 'Join to watch',
 };

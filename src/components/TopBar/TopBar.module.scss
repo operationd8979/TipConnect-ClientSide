@@ -1,0 +1,53 @@
+.wrapper {
+    width: 100%;
+    padding: 1rem;
+    background-color: rgb(40, 40, 40);
+    ul {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    li {
+        list-style: none;
+        color: white;
+    }
+}
+.search {
+    background-color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    width: 40rem;
+}
+
+.link {
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.link:hover {
+    color: red;
+}
+.list-content {
+    position: absolute;
+    background-color: aliceblue;
+    padding: 1.5rem;
+    visibility: hidden;
+    display: flex;
+    width: 800px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.list:hover .list-content {
+    visibility: visible;
+}
+
+.genre-item {
+    color: black;
+    font-size: 1.8rem;
+    margin-right: 5rem;
+    cursor: pointer;
+    :hover {
+        color: red;
+    }
+}

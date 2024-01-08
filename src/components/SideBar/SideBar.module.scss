@@ -1,0 +1,39 @@
+.wrapper {
+    width: 100%;
+    border: 0.2rem solid;
+    border-radius: 1rem;
+    padding: 2rem;
+    border-color: rgb(102, 123, 195);
+    li {
+        list-style: none;
+    }
+    color: white;
+}
+.movie-section {
+    .link {
+        display: flex;
+        background-color: black;
+        margin-bottom: 1rem;
+        .year {
+            font-size: 11px;
+            color: var(--color-light-text);
+        }
+    }
+    img {
+        width: 7rem;
+        height: 7rem;
+        overflow: hidden;
+        object-fit: cover;
+        margin-right: 1rem;
+    }
+}
+.start-fill {
+    position: absolute;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.tbdm-rating {
+    color: var(--primary);
+    font-weight: bold;
+}

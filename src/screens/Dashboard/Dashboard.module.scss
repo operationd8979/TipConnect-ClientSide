@@ -1,0 +1,121 @@
+.wrapper {
+    color: var(--white);
+    .row {
+        width: 100%;
+        display: flex;
+        margin-bottom: 2rem;
+        .wrapper-left{
+            width: 80%;            
+        }
+        .wrapper-right{            
+            width: 20%;
+            display: flex;            
+            justify-content: end;            
+        }
+    }    
+}
+.button {
+    padding: 1rem;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 5rem;
+    margin-right: 2rem;    
+}
+.button:hover {
+    background-color: #232323;
+}
+.section-2 {    
+    width: 100%;
+    .wrapper-left {
+        display: flex;
+        align-items: center;        
+    }  
+}
+.flex-cen {
+    display: flex;
+    align-items: center;
+    padding-bottom: 1rem;
+    svg {
+        width: 3rem;
+    }
+}
+.jus-sb {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.card-wrapper {
+    width:  21rem;
+    //padding: 2rem;
+    background-color: rgb(41, 41, 41);
+    border-radius: 1rem;
+    .hight-light {
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+    .line {
+        margin: 2rem;
+        display: flex;       
+        justify-content: space-between;
+        .icon {            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.6rem;
+            height: 2.6rem;
+            border-radius: 5rem;
+        }
+        span {
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+.slide-wrapper {
+    width: 100%;
+    background-color: rgb(41, 41, 41);    
+    margin-top: 2rem;
+    padding: 1rem;
+}
+.movie_card {
+    background-color: rgb(13, 13, 13);
+    border-radius: 0.5rem;
+}
+.bg-red {
+    background-color: #dd0101;
+}
+.bg-green {
+    background-color: #00c30d;
+}
+.bg-orange {
+    background-color: rgb(237, 71, 0);
+}
+.bg-yellow {
+    background-color: rgb(219, 190, 0);
+}
+.section-1 {
+    width: 100%;
+    padding: 1rem;
+    background-color: rgb(41, 41, 41);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    text-align: left;
+    padding: 1rem;       
+}
+  
+th {    
+    background-color: rgb(70, 70, 70);
+}
+
+td {
+    background-color: rgb(13, 13, 13);
+    border-bottom: 0.5rem solid rgb(41, 41, 41);          
+}
+.edit-icon {
+    margin-right: 1.5rem;
+}

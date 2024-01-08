@@ -22,6 +22,7 @@ export const vi = {
     WARRING_WRONG_RETYPE_PASSWORD: 'Mật khẩu nhập lại không trùng khớp!',
     HEADER_login: 'Đăng nhập',
     HEADER_register: 'Đăng ký',
+    HEADER_message: 'Tin nhắn',
     HEADER_search_placeholder: 'Search account and messages',
     HEADER_no_notification: 'Bạn không có thông báo mới',
     HEADER_friend_request: 'Yếu cầu kết bạn',
@@ -50,4 +51,7 @@ export const vi = {
     PROFILE_NAME_SIDE: 'Account Setting',
     PROFILE_CHANGE_AVATAR: 'Đổi ảnh đại diện',
     PROFILE_enter_your_password: 'Nhập mật khẩu của bạn',
+    HOMEMESSAGE_watch_together: 'XEM CÙNG NHAU',
+    HOMEMESSAGE_living: 'Living',
+    HOMEMESSAGE_join_watch: 'Vào xem',
 };

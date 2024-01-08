@@ -1,0 +1,39 @@
+.wrapper {
+    width: 100%;
+    margin-top: var(--default-layout-header-height);
+    display: flex;
+    background-color: rgb(0, 0, 0);
+    justify-content: end;
+    .wrapper-left {
+        width: 20%;
+        transition: transform 0.3s ease-in-out;
+        color: white;
+    }
+    .wrapper-right {
+        width: 80%;
+        padding: 2rem;
+    }
+}
+.floating {
+    position: fixed;
+    top: var(--default-layout-header-height);
+    top: 0;
+    left: 0;
+    z-index: 5;
+}
+.link-section {
+    background-color: rgb(41, 41, 41);
+    a {
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+    }
+    svg {
+        width: 4rem;
+        height: 2rem;
+    }
+}
+.link-section:hover {
+    background-color: rgb(13, 13, 13);
+    padding: 2rem;
+}

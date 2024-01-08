@@ -7,6 +7,7 @@
     --default-width-income-call: 70rem;
     --default-width-notification-area: 38rem;
     --default-width-setting-area: 26rem;
+    background-color: transparent;
 }
 
 .inner {
@@ -45,8 +46,10 @@
 .action-btn {
     position: relative;
     padding: 4px 10px;
+    color: white;
     button {
         cursor: pointer;
+        color: white;
         svg {
             width: var(--default-medium-icon-size);
             height: var(--default-medium-icon-size);
@@ -146,6 +149,27 @@
 .setting-area {
     width: var(--default-width-setting-area);
     color: var(--white);
+}
+
+.link {
+    color: white;
+    + .link {
+        margin-left: var(--default-medium-zone);
+    }
+}
+
+.link:before {
+    content: '';
+    position: absolute;
+    top: 6rem;
+    height: 0.3rem;
+    width: 0;
+    background: #b41c1c;
+    border-radius: 5rem;
+    transition: width 0.3s ease;
+}
+.link:hover:before {
+    width: 8rem;
 }
 
 @media (max-width: 40rem) {
